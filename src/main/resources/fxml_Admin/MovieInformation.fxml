@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextArea?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane prefHeight="768.0" prefWidth="1229.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllerAdmin.MovieInformationController"
+            stylesheets="@../css/dashboard.css">
+
+    <AnchorPane prefHeight="768.0" prefWidth="333.0" styleClass="red-sidebar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox alignment="TOP_CENTER" layoutX="44.0" layoutY="35.0" prefHeight="240.0" prefWidth="245.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+            <children>
+                <FontIcon iconLiteral="fas-cog" iconSize="90" fill="BLACK"/>
+                <Label text="Hello," textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="22.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </Label>
+                <Label text="Manager" textFill="WHITE">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+        <VBox layoutY="280.0" prefHeight="350.0" prefWidth="333.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <Button fx:id="dashboardBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Dashboard" onAction="#handleDashboardButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="movieShowtimeBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="selected-menu-button, menu-button-text, menu-button" text="Movie / Showtime" onAction="#handleMovieShowtimeButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="ticketsForSaleBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Tickets for sale" onAction="#handleTicketsForSaleButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="projectionRoomBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Projection Room" onAction="#handleProjectionRoomButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="userManageBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="User Manage" onAction="#handleUserManageButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+            </children>
+        </VBox>
+        <Button fx:id="logoutBtn" alignment="CENTER_LEFT" layoutY="715.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Log out" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" onAction="#handleLogoutButton">
+            <font>
+                <Font size="14.0" />
+            </font>
+            <padding>
+                <Insets left="26.0" />
+            </padding>
+        </Button>
+    </AnchorPane>
+
+    <AnchorPane layoutX="333.0" prefHeight="768.0" prefWidth="896.0" styleClass="light-gray-background">
+        <children>
+            <VBox alignment="TOP_LEFT" layoutX="40.0" layoutY="30.0" prefWidth="816.0" spacing="20.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="30.0">
+                <Label text="Movie Information" textFill="#880000">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <HBox spacing="40.0" VBox.vgrow="ALWAYS">
+                    <VBox alignment="TOP_CENTER" spacing="15.0" prefWidth="250.0">
+                        <Label text="Poster:">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <ImageView fx:id="moviePosterImageView" fitWidth="200.0" fitHeight="270.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: lightgray; -fx-border-width: 1;"/>
+                        <Button fx:id="uploadImageBtn" text="Upload Image" onAction="#handleUploadImageButton" styleClass="blue-button" prefWidth="120.0"/>
+                    </VBox>
+
+                    <VBox HBox.hgrow="ALWAYS" spacing="15.0">
+                        <GridPane hgap="10" vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="NEVER" minWidth="120" prefWidth="150" />
+                                <ColumnConstraints hgrow="ALWAYS" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints vgrow="SOMETIMES" />
+                                <RowConstraints vgrow="SOMETIMES" />
+                                <RowConstraints vgrow="SOMETIMES" />
+                                <RowConstraints vgrow="SOMETIMES" />
+                                <RowConstraints vgrow="SOMETIMES" />
+                                <RowConstraints vgrow="SOMETIMES" />
+                                <RowConstraints vgrow="SOMETIMES" />
+                            </rowConstraints>
+
+                            <Label text="Movie Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                            <TextField fx:id="movieTitleField" promptText="Enter movie title" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                            <Label text="Genre:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                            <TextField fx:id="genreField" promptText="e.g., Action, Comedy" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                            <Label text="Duration:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <TextField fx:id="durationField" promptText="e.g., 120 minutes" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                            <Label text="Showtime:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <TextField fx:id="showtimeField" promptText="e.g., 10:00, 14:00" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                            <Label text="Release Date:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                            <DatePicker fx:id="releaseDateField" promptText="YYYY-MM-DD" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                            <Label text="Cast:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                            <TextArea fx:id="castTextArea" promptText="Enter main cast" GridPane.rowIndex="5" GridPane.columnIndex="1" prefHeight="60" wrapText="true"/>
+
+                            <Label text="Synopsis:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                            <TextArea fx:id="synopsisTextArea" promptText="Enter movie synopsis" GridPane.rowIndex="6" GridPane.columnIndex="1" prefHeight="100" wrapText="true"/>
+
+                        </GridPane>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                            <Button fx:id="saveButton" text="Save Changes" styleClass="green-button" onAction="#handleSaveChangesButton"/>
+                            <Button fx:id="deleteButton" text="Delete Movie" styleClass="red-button" onAction="#handleDeleteMovieButton"/>
+                            <Button fx:id="backButton" text="Back to List" styleClass="transparent-button" onAction="#handleBackButton"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </children>
+    </AnchorPane>
+</AnchorPane>
