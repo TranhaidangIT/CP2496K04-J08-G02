@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<?import javafx.scene.control.Button?>
+
+<?import javafx.scene.control.Label?>
+
+<?import javafx.scene.image.Image?>
+
+<?import javafx.scene.image.ImageView?>
+
+<?import javafx.scene.layout.AnchorPane?>
+
+<?import javafx.scene.layout.BorderPane?>
+
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.geometry.Insets?>
+
+
+
+<BorderPane fx:id="mainBorderPane"
+
+            xmlns="http://javafx.com/javafx/23.0.1"
+
+            xmlns:fx="http://javafx.com/fxml"
+
+            fx:controller="controller.DashboardController"
+
+            prefWidth="1440.0" prefHeight="768.0"
+
+            stylesheets="@../css/dashboard.css">
+
+
+
+    <left>
+
+        <VBox prefWidth="316.0" styleClass="sideBar">
+
+            <children>
+
+                <ImageView fx:id="managerPic" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+
+                    <VBox.margin>
+
+                        <Insets left="79.0" top="50.0" />
+
+                    </VBox.margin>
+
+                    <image>
+
+                        <Image url="@../icon/manager-pic.png" />
+
+                    </image>
+
+                </ImageView>
+
+
+
+                <Label fx:id="helloUser" prefHeight="111.0" prefWidth="318.0" styleClass="helloUser" text="Hello, Manager" wrapText="true" />
+
+
+
+                <Button fx:id="btnOverview" onAction="#onOverviewClicked" prefHeight="60.0" prefWidth="316.0" styleClass="btnSelect" text="Overview">
+
+                    <graphic>
+
+                        <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
+
+                            <image><Image url="@../icon/house.png" /></image>
+
+                        </ImageView>
+
+                    </graphic>
+
+                </Button>
+
+
+
+                <Button fx:id="btnMovie" onAction="#onMovieClicked" prefHeight="60.0" prefWidth="324.0" styleClass="btnSelect" text="Movie">
+
+                    <graphic>
+
+                        <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
+
+                            <image><Image url="@../icon/multimedia.png" /></image>
+
+                        </ImageView>
+
+                    </graphic>
+
+                </Button>
+
+
+
+                <Button fx:id="btnRoom" onAction="#onRoomClicked" prefHeight="60.0" prefWidth="366.0" styleClass="btnSelect" text="Screening Room">
+
+                    <graphic>
+
+                        <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
+
+                            <image><Image url="@../icon/movie-theater.png" /></image>
+
+                        </ImageView>
+
+                    </graphic>
+
+                </Button>
+
+
+
+                <Button fx:id="btnShowtime" onAction="#onShowtimeClicked" prefHeight="60.0" prefWidth="381.0" styleClass="btnSelect" text="Showtime">
+
+                    <graphic>
+
+                        <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
+
+                            <image><Image url="@../icon/film-reel.png" /></image>
+
+                        </ImageView>
+
+                    </graphic>
+
+                </Button>
+
+
+
+                <Button fx:id="btnService" onAction="#onServiceClicked" prefHeight="60.0" prefWidth="382.0" styleClass="btnSelect" text="Service">
+
+                    <graphic>
+
+                        <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
+
+                            <image><Image url="@../icon/popcorn.png" /></image>
+
+                        </ImageView>
+
+                    </graphic>
+
+                </Button>
+
+
+
+                <AnchorPane prefHeight="156.0" prefWidth="316.0">
+
+                    <children>
+
+                        <Button fx:id="btnLogout" layoutY="99.0" onAction="#onLogoutClicked" prefHeight="50.0" prefWidth="150.0" styleClass="btnLogout" text="Logout">
+
+                            <graphic>
+
+                                <ImageView fitHeight="22.0" fitWidth="20.0" preserveRatio="true">
+
+                                    <image><Image url="@../icon/logout.png" /></image>
+
+                                </ImageView>
+
+                            </graphic>
+
+                        </Button>
+
+                    </children>
+
+                </AnchorPane>
+
+            </children>
+
+        </VBox>
+
+    </left>
+
+
+
+    <center>
+
+        <AnchorPane fx:id="centerContent" />
+
+    </center>
+
+</BorderPane>

@@ -1,0 +1,131 @@
+package dao;
+
+import configs.DBConnection;
+import models.Movie;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MovieDAO {
+
+    public static List<Movie> getAllMovies() {
+        List<Movie> movies = new ArrayList<>();
+        String sql = "SELECT * FROM movies ORDER BY createdAt DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Movie movie = new Movie();
+                movie.setMovieId(rs.getInt("movieId"));
+                movie.setTitle(rs.getString("title"));
+                movie.setDuration(rs.getInt("duration"));
+                movie.setGenre(rs.getString("genre"));
+                movie.setDescription(rs.getString("description"));
+                movie.setDirectedBy(rs.getString("directedBy"));
+                movie.setLanguage(rs.getString("language"));
+                movie.setPoster(rs.getString("poster"));
+                movie.setAgeRating(rs.getString("ageRating"));
+                movie.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                movie.setReleasedDate(rs.getDate("releaseDate").toLocalDate());
+
+                movies.add(movie);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return movies;
+    }
+
+    public static boolean insertMovie(Movie movie) {
+        String sql = "INSERT INTO movies (title, duration, genre, description, directedBy, language, poster, ageRating, releaseDate, createdAt) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, movie.getTitle());
+            stmt.setInt(2, movie.getDuration());
+            stmt.setString(3, movie.getGenre());
+            stmt.setString(4, movie.getDescription());
+            stmt.setString(5, movie.getDirectedBy());
+            stmt.setString(6, movie.getLanguage());
+            stmt.setString(7, movie.getPoster());
+            stmt.setString(8, movie.getAgeRating());
+            stmt.setDate(9, Date.valueOf(movie.getReleasedDate()));
+            stmt.setTimestamp(10, Timestamp.valueOf(movie.getCreatedAt()));
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static boolean isMovieIdExists(int movieId) {
+        String sql = "SELECT 1 FROM movies WHERE movieId = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, movieId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static boolean updateMovie(Movie movie) {
+        String sql = "UPDATE movies SET title = ?, duration = ?, genre = ?, description = ?, directedBy = ?, language = ?, poster = ?, ageRating = ?, releaseDate = ? " +
+                "WHERE movieId = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, movie.getTitle());
+            stmt.setInt(2, movie.getDuration());
+            stmt.setString(3, movie.getGenre());
+            stmt.setString(4, movie.getDescription());
+            stmt.setString(5, movie.getDirectedBy());
+            stmt.setString(6, movie.getLanguage());
+            stmt.setString(7, movie.getPoster());
+            stmt.setString(8, movie.getAgeRating());
+            stmt.setDate(9, Date.valueOf(movie.getReleasedDate()));
+            stmt.setInt(10, movie.getMovieId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static boolean deleteMovieById(int movieId) {
+        String sql = "DELETE FROM movies WHERE movieId = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, movieId);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+}

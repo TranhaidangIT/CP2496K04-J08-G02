@@ -1,0 +1,139 @@
+.sideBar {
+    -fx-background-color: #AA0000;
+}
+
+.helloUser {
+    -fx-text-fill: #FFFFFF;
+    -fx-alignment: center;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+}
+
+.btnSelect {
+    -fx-background-color: #AA0000;
+    -fx-text-fill: #FFFFFF;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 18px;
+    -fx-padding: 0 30px;
+}
+
+.btnSelect:hover {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #AA0000;
+    -fx-font-weight: bold;
+    -fx-background-radius: 100px 0 0 100px;
+}
+
+.btnSelect:selected {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #AA0000;
+    -fx-font-weight: bold;
+    -fx-background-radius: 100px 0 0 100px;
+}
+
+.btnLogout {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-alignment: center-left;
+}
+
+.btnLogout:hover {
+    -fx-font-weight: bold;
+}
+
+.btnLogout:pressed {
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.mainScreen {
+    -fx-background-color: #FFFFFF;
+}
+
+
+.summaryCard {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+
+    -fx-padding: 15px 25px;
+    -fx-spacing: 5px;
+
+    -fx-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0.2, 0, 2);
+}
+
+
+.summaryTitle {
+    -fx-font-size: 20px;
+    -fx-text-fill: #888888;
+    -fx-font-weight: normal;
+}
+
+.summaryValueRevenue {
+    -fx-background-color: #ffd076;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.summaryValueTickets {
+    -fx-background-color: #b9e3ff;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.summaryValueShowtime {
+    -fx-background-color: #fbc6ff;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.summaryValueOccupancy {
+    -fx-background-color: #4fff5f;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.valueNumber {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #AA0000;
+}
+
+.valueNote {
+    -fx-font-size: 16px;
+}
+
+/*CHARTBAR*/
+.chart {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+}
+
+.chart-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: #AA0000;
+    -fx-font-weight: bold;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-font-size: 13px;
+    -fx-text-fill: #555;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
+}
+
+.axis {
+    -fx-tick-label-fill: #444;
+    -fx-tick-length: 5;
+    -fx-font-size: 12px;
+}
+
+.axis-label {
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}

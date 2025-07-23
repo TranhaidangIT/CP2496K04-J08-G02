@@ -1,0 +1,160 @@
+/* ========== GLOBAL FORM BACKGROUND ========== */
+.root {
+    -fx-background-color: #f8f9fa;
+}
+
+/* ========== MAIN TITLE - 32px, Bold, Red ========== */
+.titleMain {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #AA0000;
+    -fx-alignment: center;
+}
+
+/* ========== SUBTITLE - 24px, Bold, Red ========== */
+.titleSub {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #AA0000;
+    -fx-alignment: center-left;
+}
+
+/* ========== LABELS / CAPTIONS (16px, Gray) ========== */
+.labelCaption {
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #495057;
+}
+
+/* ========== UNIFIED INPUT CONTROLS STYLE ========== */
+.textField, .passwordField, .comboBox, .datePicker {
+    -fx-font-size: 16px;
+    -fx-text-fill: #212529;
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 6 10;
+}
+
+/* ========== FOCUSED STATE ========== */
+.textField:focused, .passwordField:focused, .comboBox:focused, .datePicker:focused {
+    -fx-border-color: #AA0000;
+    -fx-border-width: 2;
+}
+
+
+
+/* ========== STANDARD BUTTON BASE STYLE ========== */
+.button {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 6;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+/* ========== BUTTON COLORS ========== */
+
+/* Add / Insert */
+.btnAdd {
+    -fx-background-color: #28a745;
+}
+.btnAdd:hover {
+    -fx-background-color: #218838;
+}
+
+/* Edit / Update */
+.btnEdit {
+    -fx-background-color: #007bff;
+}
+.btnEdit:hover {
+    -fx-background-color: #0069d9;
+}
+
+/* Delete / Remove */
+.btnDelete {
+    -fx-background-color: #dc3545;
+}
+.btnDelete:hover {
+    -fx-background-color: #c82333;
+}
+
+/* Cancel */
+.btnCancel {
+    -fx-background-color: #6c757d;
+}
+.btnCancel:hover {
+    -fx-background-color: #5a6268;
+}
+
+/* Login (Main Red) */
+.btnLogin {
+    -fx-background-color: #AA0000;
+}
+.btnLogin:hover {
+    -fx-background-color: #880000;
+}
+
+/* Refresh / Load */
+.btnRefresh {
+    -fx-background-color: #17a2b8;
+    -fx-background-radius: 25px;
+    -fx-text-fill: white;
+}
+.btnRefresh:hover {
+    -fx-background-color: #138496;
+}
+/* Find */
+.btnFind {
+    -fx-background-color: #0056b3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.btnFind:hover {
+    -fx-background-color: #004494;
+}
+
+.spinner {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 2px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #212529;
+}
+
+/* Text bên trong spinner */
+.spinner .text-field {
+    -fx-background-color: white;
+    -fx-border-width: 0;
+    -fx-text-fill: #212529;
+    -fx-font-weight: normal;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: #e9ecef;
+    -fx-padding: 3px;
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: #dee2e6;
+}
+
+
+
+/* ========== BUTTON CONTAINER (Align Right) ========== */
+.hboxButton-right {
+    -fx-alignment: center-right;
+    -fx-spacing: 10;
+}

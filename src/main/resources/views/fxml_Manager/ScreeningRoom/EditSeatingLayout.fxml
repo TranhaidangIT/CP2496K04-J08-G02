@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="768.0" prefWidth="950.0" style="-fx-background-color: #1e1e1e;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditSeatingLayoutController">
+
+    <!-- Screen Label -->
+    <Label layoutX="445.0" layoutY="14.0" style="-fx-font-weight: bold;" text="SCREEN" textFill="white">
+        <font>
+            <Font size="16" />
+        </font>
+    </Label>
+
+    <Separator layoutX="119.0" layoutY="38.0" prefWidth="700" />
+
+    <!-- Seat Grid inside ScrollPane -->
+    <ScrollPane hbarPolicy="NEVER" layoutX="90.0" layoutY="60.0" prefHeight="570.0" prefWidth="769.0">
+        <content>
+            <GridPane fx:id="seatGrid" alignment="CENTER" hgap="5" style="-fx-background-color: #2e2e2e;" vgap="5">
+                <padding>
+                    <Insets bottom="10" left="10" right="10" top="10" />
+                </padding>
+            </GridPane>
+        </content>
+    </ScrollPane>
+
+    <!-- Center Zone -->
+    <Pane fx:id="centerZone" layoutX="338.0" layoutY="220" mouseTransparent="true" prefHeight="250" prefWidth="268.0" style="-fx-border-color: limegreen; -fx-border-width: 2; -fx-background-color: transparent;" />
+
+    <!-- Legend -->
+    <HBox layoutX="315.0" layoutY="641.0" spacing="30">
+        <HBox alignment="CENTER" spacing="5">
+            <Region prefHeight="20" prefWidth="20" style="-fx-background-color: #28a745;" />
+            <Label text="Available" textFill="white" />
+        </HBox>
+        <HBox alignment="CENTER" spacing="5">
+            <Region prefHeight="20" prefWidth="20" style="-fx-background-color: gray;" />
+            <Label text="Unavailable" textFill="white" />
+        </HBox>
+        <HBox alignment="CENTER" spacing="5">
+            <Region prefHeight="20" prefWidth="20" style="-fx-background-color: orange;" />
+            <Label text="Maintenance" textFill="white" />
+        </HBox>
+    </HBox>
+
+    <!-- Buttons -->
+    <HBox layoutX="350" layoutY="700" spacing="20" />
+    <Button fx:id="btnSave" layoutX="671.0" layoutY="711.0" prefHeight="46.0" prefWidth="94.0" style="-fx-background-color: #28a745; -fx-text-fill: white;" stylesheets="@../../../css/app-style.css" text="Save" />
+    <Button fx:id="btnCancel" layoutX="787.0" layoutY="711.0" prefHeight="46.0" prefWidth="94.0" style="-fx-background-color: #6c757d; -fx-text-fill: white;" stylesheets="@../../../css/app-style.css" text="Cancel" />
+
+</AnchorPane>

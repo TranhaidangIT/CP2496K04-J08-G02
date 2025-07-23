@@ -1,0 +1,147 @@
+tổng quang dự án : đây là dự án JavaFX quảng lý rạp chiếu phim kết thúc môn học của nhóm
+ sau khi hoàn thành xóa file này để không bị dư mấy thứ tiếng việt:))
+
+ * lưu ý : NẾU KHÔNG CHẠY ĐƯỢC DỰ ÁN THÌ HÃY KIỂM TRA CẤU HÌNH HOẶT CẤU HÌNH RUN
+    - nhớ làm chức năng nào thì hãy tạo nhánh trên git tương tự
+    - nếu chức năng mới thì feat-tenchucnang
+    - nếu sửa thì fix-tenchucnang  còn không thì có thể gửi bản fix lên zalo
+ * hiện tại giao diện cũng đã gần xong giờ thì bổ sung chức năng hoặt thêm giao diện mới
+
+ * cấu trúc sự án theo mô hình MVC và quảng lý bắng Maven
+ * nhớ kiểm tra file pom.fxml xem có đúng cấu hình và thư viện không
+  nếu sử dụng thêm thư viện thì nhớ chọn thư viện mới nhất , tui từng mất 1 ngày vì thư viện:)
+  kiểm tra luôn file model-ìno.java
+  nếu sử dụng AI thì gửi form quy định code,  cấu trúc code cho nó code theo quy định của mình
+  - còn phần giao diện thì đã có khung , tùy chỉnh sửa màu sắc
+
+
+  giải thích sơ cấu trúc dự án
+  - controller: dùng để sử lý logic có thể hiểu như là javascipt
+  - controller: chia ra 2 bk gồm của admin và Employee
+  - application: -> Main.java dùng để chạy hệ thống
+  - dao: dùng để tiếp xúc với dử liệu -> database
+
+
+
+
+
+
+
+
+
+ Những thứ đã xong:
+ giao diện admin     - login,forgot , manageUser , MovieCard , MovieManagemt
+                     - ticketsForSale , Room , Dashboard , AddMovie , ServiceManagemt
+
+ Nhanvien            - Booking , Dashboard
+
+
+
+password admin:
+username admin:
+----
+pass nhanvien:
+username nhanvien:
+
+
+
+
+* Chức năng cần làm tiếp theo , đã xong thì đánh dấu #
+thêm nếu thiếu
+
+   1. Administrator – Đăng Trần Hải
+
+     -Quản lý tài khoản người dùng
+     -Hiển thị danh sách tài khoản (admin, nhân viên, khách hàng)
+     -Thêm tài khoản (form nhập thông tin + phân vai trò)
+     -Sửa thông tin tài khoản (tên, email, role,...)
+     -Xóa tài khoản
+     -Phân quyền vai trò (Dropdown: Admin / Ticket Staff / Service Staff / Khách hàng)
+     -Chứng thực & Bảo mật
+     -Đăng nhập (Xác thực username + password)
+     -Đổi mật khẩu (Kiểm tra mật khẩu cũ, xác nhận mật khẩu mới)
+     -Quên mật khẩu (xác minh email/phone, tạo mã OTP hoặc gửi lại mật khẩu)
+     -Xem lịch sử đặt vé người dùng
+     -Tìm kiếm người dùng
+     -Hiển thị danh sách vé theo user:
+     -Mã vé
+     -Phim
+     -Suất chiếu
+     -Ghế
+     -Thời gian đặt
+     -Trạng thái (đã dùng/chưa)
+
+
+
+    Ticket Staff – Duyệt Phạm Thế
+
+   -Bán vé
+   -Tìm phim (lọc theo tên, ngày)
+   -Chọn suất chiếu
+   -Chọn ghế (hiển thị sơ đồ ghế động)
+   -Nhập thông tin khách (nếu chưa có → tạo mới)
+   -Tính tổng tiền (phí vé * số ghế)
+   -Lưu dữ liệu vé vào hệ thống
+   -In vé (xuất vé PDF hoặt file.txt)
+   -Xem trạng thái vé
+   -Tìm vé theo mã hoặc khách hàng
+   -Hiển thị trạng thái vé (Chưa dùng / Đã dùng / Đã hủy)
+   -Hủy vé
+   - Tìm vé
+   -Kiểm tra điều kiện hủy (phim chưa chiếu, chưa quá giờ)
+   -Cập nhật trạng thái "Đã hủy"
+   -(Có thể) hoàn tiền/tính phí hủy (nếu cần)
+
+
+
+
+    Manager – Hân Nguyễn Ngọc Dương
+
+    -Quản lý phim
+    -Thêm phim mới (tên, mô tả, thể loại, thời lượng, áp phích ảnh)
+    -Cập nhật thông tin phim
+    -Xóa phim
+    -Hiển thị danh sách phim (kèm ảnh)
+    -Quản lý phòng chiếu
+    -Thêm mới phòng (tên, loại phòng: 2D/3D)
+    -Cấu hình sơ đồ ghế: số hàng/cột (tự động tạo ghế)
+    -Sửa phòng (sửa loại, sửa ghế)
+    -Xóa phòng
+    -Quản lý suất chiếu
+    -Chọn phim
+    -Chọn phòng
+    -Chọn ngày giờ chiếu
+    -Kiểm tra trùng phòng và trùng giờ
+    - Hiển thị danh sách suất chiếu
+
+
+
+
+   Dịch vụ & Báo cáo – Đạt Nguyễn Hoàng
+
+    - Quản lý dịch vụ
+    - Danh sách sản phẩm dịch vụ: bắp, nước, combo
+    - Thêm mới sản phẩm
+    - Sửa tên, giá, mô tả sản phẩm
+    - Xóa sản phẩm
+    - Thống kê & báo cáo
+    - Doanh thu vé & dịch vụ:
+    - Theo ngày / tuần / tháng (biểu đồ hoặc bảng)
+    - Top sản phẩm bán chạy (bắp/nước/combo)
+    - Thống kê khách theo suất chiếu / phòng (số lượng, tỷ lệ lấp ghế)
+    - Quản lý dịch vụ giữ vật tư
+    - Danh sách vật tư (loa, máy chiếu, ghế,...)
+    - Theo dõi tình trạng (đang sử dụng / cần bảo trì)
+    - Ghi chú hoặc lịch sử sử dụng
+
+
+
+
+
+
+
+
+
+
+
+
