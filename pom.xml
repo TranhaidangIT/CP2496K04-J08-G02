@@ -9,17 +9,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>24</java.version>
-        <javafx.version>24.0.1</javafx.version>
+        <java.version>23</java.version>
+        <javafx.version>23.0.1</javafx.version>
         <ikonli.version>12.3.1</ikonli.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>12.4.2.jre11</version> <!-- hoặc phiên bản phù hợp -->
-        </dependency>
         <!-- JavaFX dependencies -->
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -27,6 +22,7 @@
             <version>${javafx.version}</version>
         </dependency>
         <dependency>
+
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
@@ -35,6 +31,16 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.4.2.jre11</version> <!-- hoặc phiên bản phù hợp -->
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
         </dependency>
 
         <!-- Ikonli -->
@@ -74,15 +80,6 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                </configuration>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>--enable-native-access=javafx.graphics</argLine>
                 </configuration>
             </plugin>
 

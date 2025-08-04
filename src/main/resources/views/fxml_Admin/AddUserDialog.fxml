@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerAdmin.AddUserDialogController" spacing="15" alignment="CENTER_LEFT">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
+    <Label text="Thêm người dùng mới" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+    <GridPane hgap="10" vgap="10">
+        <Label text="Tên đăng nhập:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Họ và tên:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="nameField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label text="Số điện thoại:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+        <Label text="Vai trò:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <ComboBox fx:id="roleComboBox" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="200" />
+    </GridPane>
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Lưu" onAction="#handleSave" />
+        <Button text="Hủy" onAction="#handleCancel" />
+    </HBox>
+</VBox>

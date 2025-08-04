@@ -66,44 +66,6 @@
 .btnAdd:hover {
     -fx-background-color: #218838;
 }
-.btnExit {
-    -fx-background-color: #ff6666;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-padding: 10px;
-    -fx-background-radius: 5px;
-}
-
-.btnExit:hover {
-    -fx-background-color: #cc0000;
-}
-
-.text-area {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-}
-
-.label {
-    -fx-text-fill: #333;
-}
-
-.grid-pane {
-    -fx-background-color: transparent;
-    -fx-alignment: center;
-}
-
-.text-area {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-}
-
-.label {
-    -fx-text-fill: #333;
-}
 
 /* Edit / Update */
 .btnEdit {
@@ -196,4 +158,3 @@
     -fx-alignment: center-right;
     -fx-spacing: 10;
 }
-
