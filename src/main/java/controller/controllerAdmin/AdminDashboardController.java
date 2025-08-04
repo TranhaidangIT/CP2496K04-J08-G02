@@ -103,7 +103,7 @@ public class AdminDashboardController {
             Stage stage = (Stage) mainBorderPane.getScene().getWindow();
 
             // Tải file login FXML
-            Parent loginPage = FXMLLoader.load(getClass().getResource("/views/login.fxml"));
+            Parent loginPage = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/Login.fxml"));
 
             // Tạo một Scene mới và thiết lập nó cho Stage
             Scene scene = new Scene(loginPage);

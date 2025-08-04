@@ -53,10 +53,10 @@ public class LoginController {
                     loadScene("/views/AdminDashboard.fxml", event);
                     break;
                 case "manage":
-                    loadScene("/views/fxml_Manage/ManageDashboard.fxml", event);
+                    loadScene("/views/fxml_Manage/Dashboard.fxml", event);
                     break;
                 case "employee":
-                    loadScene("/views/fxml_Employees/EmployeeDashboard.fxml", event);
+                    loadScene("/views/fxml_Employees/Dashboard.fxml", event);
                     break;
                 default:
                     showAlert(AlertType.ERROR, "Lỗi", "Vai trò không xác định.");
@@ -99,6 +99,6 @@ public class LoginController {
      */
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        loadScene("/views/fxml_Admin/ForgotPassword.fxml", event);
+        loadScene("/views/fxml_Admin/ForgotPassword_Step1.fxml", event);
     }
 }
