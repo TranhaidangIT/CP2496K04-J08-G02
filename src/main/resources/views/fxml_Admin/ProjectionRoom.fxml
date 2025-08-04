@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?> <AnchorPane prefHeight="768.0" prefWidth="1229.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerAdmin.ProjectionRoomController"
+                                                          stylesheets="@../../css/dashboard.css">
+
+    <AnchorPane prefHeight="768.0" prefWidth="333.0" styleClass="red-sidebar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox alignment="TOP_CENTER" layoutX="44.0" layoutY="35.0" prefHeight="240.0" prefWidth="245.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+            <children>
+                <FontIcon iconLiteral="fas-cog" iconSize="90" fill="BLACK"/>
+                <Label text="Hello," textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="22.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </Label>
+                <Label text="Manager" textFill="WHITE">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+        <VBox layoutY="280.0" prefHeight="350.0" prefWidth="333.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <Button fx:id="dashboardBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Dashboard" onAction="#handleDashboardButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="movieShowtimeBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Movie / Showtime" onAction="#handleMovieShowtimeButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="ticketsForSaleBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Tickets for sale" onAction="#handleTicketsForSaleButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="projectionRoomBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="selected-menu-button, menu-button-text, menu-button" text="Projection Room" onAction="#handleProjectionRoomButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="userManageBtn" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="User Manage" onAction="#handleUserManageButton">
+                    <padding>
+                        <Insets left="26.0" />
+                    </padding>
+                </Button>
+            </children>
+        </VBox>
+        <Button fx:id="logoutBtn" alignment="CENTER_LEFT" layoutY="715.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="333.0" styleClass="transparent-menu-button, menu-button-text, menu-button" text="Log out" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" onAction="#handleLogoutButton">
+            <font>
+                <Font size="14.0" />
+            </font>
+            <padding>
+                <Insets left="26.0" />
+            </padding>
+        </Button>
+    </AnchorPane>
+
+    <AnchorPane layoutX="333.0" prefHeight="768.0" prefWidth="896.0" styleClass="light-gray-background">
+        <children>
+            <VBox layoutX="20.0" layoutY="20.0" prefWidth="856.0" spacing="15.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Label text="Tìm kiếm" />
+                        <TextField fx:id="searchField" prefWidth="250.0" promptText="Nhập từ khóa..." HBox.hgrow="ALWAYS" />
+                        <Label text="Loại" />
+                        <TextField fx:id="typeSearchField" prefWidth="150.0" promptText="Loại phòng" />
+                        <Button mnemonicParsing="false" text="Tìm kiếm" />
+                    </children>
+                </HBox>
+
+                <TableView fx:id="roomTable" prefHeight="300.0" prefWidth="856.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="idCol" prefWidth="80.0" text="ID" />
+                        <TableColumn fx:id="roomNameCol" prefWidth="150.0" text="Room name" />
+                        <TableColumn fx:id="roomTypeCol" prefWidth="100.0" text="Room Type" />
+                        <TableColumn fx:id="numSeatsCol" prefWidth="120.0" text="Number of seats" />
+                        <TableColumn fx:id="statusCol" prefWidth="100.0" text="Status" />
+                        <TableColumn fx:id="editCol" prefWidth="80.0" text="[Edit]" />
+                        <TableColumn fx:id="deleteCol" prefWidth="80.0" text="[Delete]" />
+                    </columns>
+                </TableView>
+
+                <HBox alignment="TOP_LEFT" prefHeight="30.0">
+                    <children>
+                        <Button fx:id="addButton" mnemonicParsing="false" text="Add" style="-fx-background-color: #dc3545; -fx-text-fill: white;" onAction="#handleAddButton"/>
+                    </children>
+                </HBox>
+
+                <VBox spacing="10.0" maxWidth="400.0" alignment="TOP_LEFT">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <Label text="Room name" prefWidth="80.0" />
+                            <TextField fx:id="roomNameField" prefWidth="180.0" />
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <Label text="room type" prefWidth="80.0" />
+                            <TextField fx:id="roomTypeField" prefWidth="180.0" />
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <Label text="total seats" prefWidth="80.0" />
+                            <TextField fx:id="totalSeatsField" prefWidth="180.0" />
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <Label text="status" prefWidth="80.0" />
+                            <TextField fx:id="statusField" prefWidth="180.0" />
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <HBox alignment="TOP_RIGHT" spacing="10.0" prefHeight="100.0">
+                    <children>
+                        <Button fx:id="saveButton" mnemonicParsing="false" text="Save" style="-fx-background-color: #28a745; -fx-text-fill: white;" prefWidth="100.0" onAction="#handleSaveButton"/>
+                        <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel" style="-fx-background-color: #dc3545; -fx-text-fill: white;" prefWidth="100.0" onAction="#handleCancelButton"/>
+                    </children>
+                </HBox>
+            </VBox>
+        </children>
+    </AnchorPane>
+</AnchorPane>

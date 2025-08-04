@@ -1,48 +1,152 @@
 package models;
 
-public class Movie {
-    private int id;
-    private String movieName;
-    private String genre;
-    private String duration;
-    private String releaseDate; // Ngày chiếu (hoặc ngày phát hành)
-    private String imagePath;
-    private String synopsis; // Tóm tắt
-    private String cast;     // Diễn viên
-    private String showtime; // Thời gian chiếu (ví dụ: "10:00, 14:00")
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-    // Constructor với 9 tham số
-    public Movie(int id, String movieName, String genre, String duration, String releaseDate, String imagePath, String synopsis, String cast, String showtime) {
-        this.id = id;
-        this.movieName = movieName;
-        this.genre = genre;
+public class Movie {
+    private int movieId;
+    private String title;
+    private int duration;
+    private String genre;
+    private String description;
+    private String directedBy;
+    private String language;
+    private String poster;
+    private String ageRating;
+    private LocalDateTime createdAt;
+    private LocalDate releaseDate;
+
+    public Movie(int movieId,
+                 String title,
+                 int duration,
+                 String genre,
+                 String description,
+                 String directedBy,
+                 String language,
+                 String poster,
+                 String ageRating,
+                 LocalDateTime createdAt,
+                 LocalDate releaseDate) {
+        this.movieId = movieId;
+        this.title = title;
         this.duration = duration;
+        this.genre = genre;
+        this.description = description;
+        this.directedBy = directedBy;
+        this.language = language;
+        this.poster = poster;
+        this.ageRating = ageRating;
+        this.createdAt = createdAt;
         this.releaseDate = releaseDate;
-        this.imagePath = imagePath;
-        this.synopsis = synopsis;
-        this.cast = cast;
-        this.showtime = showtime;
     }
 
-    // --- Getters ---
-    public int getId() { return id; }
-    public String getMovieName() { return movieName; }
-    public String getGenre() { return genre; }
-    public String getDuration() { return duration; }
-    public String getReleaseDate() { return releaseDate; }
-    public String getImagePath() { return imagePath; }
-    public String getSynopsis() { return synopsis; }
-    public String getCast() { return cast; }
-    public String getShowtime() { return showtime; }
+    public Movie() {
 
-    // --- Setters ---
-    public void setId(int id) { this.id = id; }
-    public void setMovieName(String movieName) { this.movieName = movieName; }
-    public void setGenre(String genre) { this.genre = genre; }
-    public void setDuration(String duration) { this.duration = duration; }
-    public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
-    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
-    public void setSynopsis(String synopsis) { this.synopsis = synopsis; }
-    public void setCast(String cast) { this.cast = cast; }
-    public void setShowtime(String showtime) { this.showtime = showtime; }
+    }
+
+    // Getters và Setters
+    public int getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDirectedBy() {
+        return directedBy;
+    }
+
+    public void setDirectedBy(String directedBy) {
+        this.directedBy = directedBy;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
+    }
+
+    public String getAgeRating() {
+        return ageRating;
+    }
+
+    public void setAgeRating(String ageRating) {
+        this.ageRating = ageRating;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDate getReleasedDate() {
+        return releaseDate;
+    }
+
+    public void setReleasedDate(LocalDate releasedDate) {
+        this.releaseDate = releasedDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "movieId=" + movieId +
+                ", title='" + title + '\'' +
+                ", duration=" + duration +
+                ", genre='" + genre + '\'' +
+                ", description='" + description + '\'' +
+                ", directedBy='" + directedBy + '\'' +
+                ", language='" + language + '\'' +
+                ", poster='" + poster + '\'' +
+                ", ageRating='" + ageRating + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                '}';
+    }
 }

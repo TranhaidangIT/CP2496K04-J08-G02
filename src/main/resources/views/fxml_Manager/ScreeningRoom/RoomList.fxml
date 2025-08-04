@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="768.0" prefWidth="1124.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.RoomListController">
+   <children>
+      <AnchorPane layoutX="564.0" layoutY="91.0" prefHeight="666.0" prefWidth="535.0" styleClass="bg-white">
+         <children>
+            <TableView fx:id="tblRoomList" layoutX="14.0" layoutY="104.0" prefHeight="551.0" prefWidth="506.0">
+              <columns>
+                <TableColumn fx:id="colRoomID" prefWidth="40.79998779296875" text="ID" />
+                <TableColumn fx:id="colRoomNumber" prefWidth="100.0" text="Room Number" />
+                  <TableColumn fx:id="colSeatLayout" prefWidth="72.79998779296875" text="Layout" />
+                  <TableColumn fx:id="colRoomCap" minWidth="0.0" prefWidth="98.4000244140625" text="Capacity" />
+                  <TableColumn fx:id="colRoomType" prefWidth="76.0" text="Type" />
+                  <TableColumn fx:id="colRoomStatus" prefWidth="123.199951171875" text="Status" />
+              </columns>
+            </TableView>
+            <Label layoutX="172.0" layoutY="14.0" text="Screening Room Table">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="btnFind" alignment="CENTER" contentDisplay="CENTER" layoutX="432.0" layoutY="51.0" onAction="#btnFindRoom" prefHeight="40.0" prefWidth="79.0" styleClass="btnFind" stylesheets="@../../../css/manager.css" text="Find" textAlignment="CENTER" />
+            <AnchorPane fx:id="tfFindRoom" layoutX="158.0" layoutY="56.0" prefHeight="35.0" prefWidth="266.0" styleClass="search-bar" stylesheets="@../../../css/manager.css">
+               <children>
+                  <TextField layoutX="23.0" layoutY="2.0" prefHeight="18.0" prefWidth="208.0" styleClass="search-barTextField" stylesheets="@../../../css/manager.css" />
+               </children>
+            </AnchorPane>
+         </children>
+         <stylesheets>
+            <URL value="@../../../css/manager.css" />
+            <URL value="@../../../css/app-style.css" />
+         </stylesheets>
+      </AnchorPane>
+      <AnchorPane layoutX="16.0" layoutY="20.0" prefHeight="734.0" prefWidth="535.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+         <children>
+            <Label layoutX="186.0" layoutY="14.0" text="Room Details Form">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <AnchorPane layoutX="24.0" layoutY="64.0" prefHeight="489.0" prefWidth="506.0" stylesheets="@../../../css/app-style.css">
+               <children>
+                  <Label layoutX="18.0" layoutY="86.0" styleClass="labelCaption" text="Seating Layout:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="tfSeatLayout" disable="true" layoutX="137.0" layoutY="79.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <Label layoutX="20.0" layoutY="136.0" styleClass="labelCaption" text="Total Capacity:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="tfTotalCap" disable="true" layoutX="137.0" layoutY="129.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <Label layoutX="39.0" layoutY="182.0" styleClass="labelCaption" text="Room Type:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField id="tfRoomType" fx:id="tfRoomType" disable="true" layoutX="137.0" layoutY="175.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <Label layoutX="39.0" layoutY="222.0" prefHeight="26.0" prefWidth="84.0" styleClass="labelCaption" text="Equipment:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="tfEquipment" disable="true" layoutX="137.0" layoutY="222.0" prefHeight="122.0" prefWidth="350.0" styleClass="textField" />
+                  <Label layoutX="34.0" layoutY="361.0" styleClass="labelCaption" text="Room Status:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="tfRoomStatus" disable="true" layoutX="137.0" layoutY="354.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <Label id="tfCreatedAt" layoutX="41.0" layoutY="409.0" styleClass="labelCaption" text="Created At:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="tfCreatedAt" disable="true" layoutX="137.0" layoutY="402.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <Label fx:id="lbRoomNumb" layoutX="2.0" layoutY="21.0" style="-fx-font-weight: bold;" styleClass="labelCaption" text="Room Number:" />
+                  <TextField fx:id="tfRoomNumb" editable="false" layoutX="133.0" layoutY="14.0" prefHeight="40.0" prefWidth="120.0" styleClass="textField" />
+               </children>
+            </AnchorPane>
+            <Button fx:id="btnEdit" layoutX="414.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleEditRoom" prefHeight="38.0" prefWidth="106.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Edit">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+      <Button fx:id="btnAdd" layoutX="564.0" layoutY="20.0" onAction="#handleAddNewRoom" prefHeight="63.0" prefWidth="535.0" stylesheets="@../../../css/manager.css" text="Add New Room" textFill="GREEN">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+         <graphic>
+            <ImageView fitHeight="35.0" fitWidth="31.0" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icon/add_to_queue.png" />
+               </image>
+            </ImageView>
+         </graphic>
+         <styleClass>
+            <String fx:value="btnCancel" />
+            <String fx:value="bg-white" />
+         </styleClass>
+      </Button>
+   </children>
+</AnchorPane>
