@@ -1,0 +1,183 @@
+/*-------------------------------------------*/
+.bg-white {
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 0);
+    -fx-background-radius: 8px;
+}
+
+.bg-white:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 8, 0, 0, 0);
+}
+
+/*-------------Search Bar----------------*/
+.search-bar {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 50px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 0);
+    -fx-alignment: CENTER_LEFT;
+}
+.search-barTextField {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #999999;
+}
+.search-barButton {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666666;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+.search-bar Button:hover {
+    -fx-text-fill: #000000;
+}
+/* =================== CHOOSE FILE BUTTON =================== */
+.btnChooseFile {
+    -fx-background-color: #17a2b8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+/* Hover effect */
+.btnChooseFile:hover {
+    -fx-background-color: #138496;
+}
+
+/* ==================== */
+.seatStandard, .seatVIP, .seatSweetbox {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+/* ===== STANDARD ===== */
+.seatStandard {
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+    -fx-background-color: #e2c7f0;
+    -fx-text-fill: #212529;
+}
+
+.seatStandard:hover {
+    -fx-background-color: #d3b5e4;
+}
+
+/* ===== VIP ===== */
+.seatVIP {
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+    -fx-background-color: #b4c7f0;
+    -fx-text-fill: #212529;
+}
+
+.seatVIP:hover {
+    -fx-background-color: #98b4ec;
+}
+
+/* ===== SWEETBOX===== */
+.seatSweetbox {
+    -fx-pref-width: 100px;
+    -fx-pref-height: 50px;
+    -fx-background-color: #d48b88;
+    -fx-text-fill: white;
+}
+
+.seatSweetbox:hover {
+    -fx-background-color: #c47371;
+}
+
+
+/* Selected seat */
+.seatSelected {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-background-color: #AA0000;
+    -fx-text-fill: white;
+}
+
+/* ==== STANDARD SEAT ==== */
+.btnStandard {
+    -fx-background-color: #e9c8f3;
+    -fx-text-fill: #000000;
+}
+.btnStandard:hover {
+    -fx-background-color: #d3aee2;
+}
+
+/* ==== VIP SEAT ==== */
+.btnVIP {
+    -fx-background-color: #adbdfb;
+    -fx-text-fill: #000000;
+}
+.btnVIP:hover {
+    -fx-background-color: #8ea1ef;
+}
+
+/* ==== SWEETBOX SEAT ==== */
+.btnSweetbox {
+    -fx-background-color: #d98c85;
+    -fx-text-fill: #000000;
+}
+.btnSweetbox:hover {
+    -fx-background-color: #c7746e;
+}
+
+/* ==== BUTTON AVAILABLE ==== */
+.btnAvailable {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+}
+.btnAvailable:hover {
+    -fx-background-color: #218838;
+}
+
+/* ==== UNDER MAINTENANCE ==== */
+.btnMaintenance {
+    -fx-background-color: #ffc107;
+    -fx-text-fill: #212529;
+}
+.btnMaintenance:hover {
+    -fx-background-color: #e0a800;
+}
+
+/* ==== SEAT LEGEND BUTTON ==== */
+.seatLegend {
+    -fx-pref-width: 40;
+    -fx-pref-height: 40;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-cursor: default;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1;
+}
+
+.btnAddTimeSlot {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 25px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 4, 0, 0, 2);
+}
+
+.btnAddTimeSlot:hover {
+    -fx-background-color: #218838;
+}
+
+
+
+

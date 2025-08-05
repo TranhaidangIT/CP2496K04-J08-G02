@@ -1,0 +1,153 @@
+package controller.controllerManager;
+
+import dao.RoomTypeDAO;
+import dao.ScreeningRoomDAO;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import models.RoomType;
+import models.ScreeningRoom;
+
+import java.util.List;
+
+public class EditRoomController {
+
+    @FXML private Button btnCancel;
+    @FXML private Button btnDelete;
+    @FXML private Button btnUpdate;
+
+    @FXML private ComboBox<String> cbRoomStatus;
+    @FXML private ComboBox<RoomType> cbRoomType;
+
+    @FXML private Label lblLayoutWarning;
+    @FXML private Spinner<Integer> spinnerColumns;
+    @FXML private Spinner<Integer> spinnerRows;
+
+    @FXML private TextArea tfEquipment;
+    @FXML private TextField tfRoomNumber;
+    @FXML private TextField tfTotalCap;
+
+
+    private ScreeningRoom currentRoom;
+
+    // ================================
+    // ========== BUTTONS ============
+    // ================================
+
+    @FXML
+    void handleCancel(ActionEvent event) {
+        Stage stage = (Stage) btnCancel.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    void handleDelete(ActionEvent event) {
+        if (currentRoom != null) {
+            ScreeningRoomDAO.deleteRoomById(currentRoom.getRoomId());
+            ((Stage) btnDelete.getScene().getWindow()).close();
+        }
+    }
+
+    @FXML
+    void handleUpdate(ActionEvent event) {
+        try {
+            String roomNumber = tfRoomNumber.getText();
+            int rows = spinnerRows.getValue();
+            int cols = spinnerColumns.getValue();
+            String layout = rows + "x" + cols;
+            int totalCap = rows * cols;
+
+            RoomType selectedType = cbRoomType.getValue();
+            if (selectedType == null) {
+                System.out.println("Vui lòng chọn loại phòng.");
+                return;
+            }
+
+            String equipment = tfEquipment.getText();
+            String status = cbRoomStatus.getValue();
+            if (status == null) {
+                System.out.println("Vui lòng chọn trạng thái phòng.");
+                return;
+            }
+
+            currentRoom.setRoomNumber(roomNumber);
+            currentRoom.setSeatingLayout(layout);
+            currentRoom.setTotalCapacity(totalCap);
+            currentRoom.setRoomTypeId(selectedType.getRoomTypeId());
+            currentRoom.setEquipment(equipment);
+            currentRoom.setRoomStatus(status);
+
+            ScreeningRoomDAO.updateRoom(currentRoom);
+            ((Stage) btnUpdate.getScene().getWindow()).close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ================================
+    // ========== SET DATA ===========
+    // ================================
+
+    public void setRoomData(ScreeningRoom selected) {
+        this.currentRoom = selected;
+
+        // Init combo + spinner if not done in controller loading
+        initializeSpinners();
+        setRoomStatusCombo();
+        setRoomTypeCombo();
+
+        tfRoomNumber.setText(selected.getRoomNumber());
+        tfEquipment.setText(selected.getEquipment());
+        tfTotalCap.setText(String.valueOf(selected.getTotalCapacity()));
+
+        // Parse seating layout
+        String[] layout = selected.getSeatingLayout().split("x");
+        int rows = Integer.parseInt(layout[0]);
+        int cols = Integer.parseInt(layout[1]);
+        spinnerRows.getValueFactory().setValue(rows);
+        spinnerColumns.getValueFactory().setValue(cols);
+
+        // Set room status
+        cbRoomStatus.setValue(selected.getRoomStatus());
+
+        // Set room type
+        for (RoomType type : cbRoomType.getItems()) {
+            if (type.getRoomTypeId() == selected.getRoomTypeId()) {
+                cbRoomType.setValue(type);
+                break;
+            }
+        }
+    }
+
+    // ================================
+    // ========== INITIALIZER =========
+    // ================================
+
+    public void initializeSpinners() {
+        spinnerRows.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 5));
+        spinnerColumns.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 5));
+
+        spinnerRows.valueProperty().addListener((obs, oldVal, newVal) -> updateSeatLayout());
+        spinnerColumns.valueProperty().addListener((obs, oldVal, newVal) -> updateSeatLayout());
+    }
+
+    private void updateSeatLayout() {
+        int rows = spinnerRows.getValue();
+        int cols = spinnerColumns.getValue();
+        tfTotalCap.setText(String.valueOf(rows * cols));
+    }
+
+    public void setRoomStatusCombo() {
+        cbRoomStatus.setItems(FXCollections.observableArrayList(
+                "Available", "Unavailable", "Under Maintenance"
+        ));
+    }
+
+    public void setRoomTypeCombo() {
+        List<RoomType> roomTypes = RoomTypeDAO.getAllRoomTypes();
+        cbRoomType.setItems(FXCollections.observableArrayList(roomTypes));
+    }
+}

@@ -1,70 +1,139 @@
-/* Màu sắc cơ bản */
-.red-sidebar {
-    -fx-background-color: #C00000; /* Đỏ đậm cho sidebar */
+.sideBar {
+    -fx-background-color: #AA0000;
 }
 
-.selected-menu-button {
-    -fx-background-color: #A00000; /* Đỏ nhạt hơn khi menu được chọn */
-    -fx-font-weight: bold;
-}
-
-.transparent-menu-button {
-    -fx-background-color: transparent;
-}
-
-.menu-button-text {
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-padding: 0 0 0 20px; /* Thêm padding trái để căn chỉnh text */
-    -fx-alignment: center-left; /* Căn chỉnh text sang trái */
-}
-
-.light-gray-background {
-    -fx-background-color: #ECECEC; /* Nền xám nhạt cho khu vực chính */
-}
-
-.card-base {
-    -fx-background-radius: 15;
-    -fx-padding: 10px; /* Padding bên trong card */
+.helloUser {
+    -fx-text-fill: #FFFFFF;
     -fx-alignment: center;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
 }
 
-.card-title {
+.btnSelect {
+    -fx-background-color: #AA0000;
+    -fx-text-fill: #FFFFFF;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 18px;
+    -fx-padding: 0 30px;
+}
+
+.btnSelect:hover {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #AA0000;
+    -fx-font-weight: bold;
+    -fx-background-radius: 100px 0 0 100px;
+}
+
+.btnSelect:selected {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #AA0000;
+    -fx-font-weight: bold;
+    -fx-background-radius: 100px 0 0 100px;
+}
+
+.btnLogout {
+    -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-font-size: 16px;
+    -fx-alignment: center-left;
+}
+
+.btnLogout:hover {
     -fx-font-weight: bold;
 }
 
-.card-value {
-    -fx-text-fill: white;
-    -fx-font-size: 24px;
+.btnLogout:pressed {
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.mainScreen {
+    -fx-background-color: #FFFFFF;
+}
+
+
+.summaryCard {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+
+    -fx-padding: 15px 25px;
+    -fx-spacing: 5px;
+
+    -fx-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0.2, 0, 2);
+}
+
+
+.summaryTitle {
+    -fx-font-size: 20px;
+    -fx-text-fill: #888888;
+    -fx-font-weight: normal;
+}
+
+.summaryValueRevenue {
+    -fx-background-color: #ffd076;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.summaryValueTickets {
+    -fx-background-color: #b9e3ff;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.summaryValueShowtime {
+    -fx-background-color: #fbc6ff;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.summaryValueOccupancy {
+    -fx-background-color: #4fff5f;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+.valueNumber {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #AA0000;
+}
+
+.valueNote {
+    -fx-font-size: 16px;
+}
+
+/*CHARTBAR*/
+.chart {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+}
+
+.chart-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: #AA0000;
     -fx-font-weight: bold;
 }
 
-/* Các màu cụ thể cho từng loại card */
-.revenue-card {
-    -fx-background-color: #6A5ACD; /* Màu xanh tím */
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-font-size: 13px;
+    -fx-text-fill: #555;
 }
 
-.movies-card {
-    -fx-background-color: #8A2BE2; /* Màu tím */
+.chart-legend-item-symbol {
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
 }
 
-.tickets-card {
-    -fx-background-color: #CD5C5C; /* Màu đỏ san hô */
+.axis {
+    -fx-tick-label-fill: #444;
+    -fx-tick-length: 5;
+    -fx-font-size: 12px;
 }
 
-.main-stats-panel {
-    -fx-background-color: white;
-    -fx-background-radius: 15;
-}
-
-/* Kiểu chữ chung */
-.bold-label {
+.axis-label {
+    -fx-text-fill: #333;
     -fx-font-weight: bold;
-}
-
-/* Hiệu ứng khi hover vào nút menu */
-.menu-button:hover {
-    -fx-background-color: #900000; /* Đỏ đậm hơn một chút khi hover */
+    -fx-font-size: 13px;
 }
