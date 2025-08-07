@@ -20,7 +20,6 @@ public class Seat {
         this.isActive = isActive;
     }
 
-    // Getters & Setters
     public int getSeatId() {
         return seatId;
     }

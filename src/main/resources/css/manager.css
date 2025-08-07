@@ -178,6 +178,31 @@
     -fx-background-color: #218838;
 }
 
+.time-ticket {
+    -fx-background-color: linear-gradient(to bottom, #FFC107, #FFA000);
+    -fx-background-radius: 6;
+    -fx-border-color: white;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-padding: 10 20;
+    -fx-text-fill: #4B0000;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 4, 0, 0, 1);
+}
+
+.time-ticket:hover {
+    -fx-background-color: linear-gradient(to bottom, #FFD54F, #FFC107);
+}
+
+.time-ticket.selected {
+    -fx-border-color: red;
+    -fx-border-width: 3;
+}
+
+
 
 
 

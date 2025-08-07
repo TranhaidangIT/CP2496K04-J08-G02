@@ -8,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
@@ -87,8 +86,8 @@ public class SeatingLayoutController {
 
         for (Seat seat : seatsInRoom) {
             SeatType type = seat.getSeatType();
-            if (type != null && type.getTypeName() != null) {
-                seatTypesInRoom.add(type.getTypeName().toLowerCase());
+            if (type != null && type.getSeatTypeName() != null) {
+                seatTypesInRoom.add(type.getSeatTypeName().toLowerCase());
             }
         }
         updateLegendVisibility(seatTypesInRoom);
@@ -161,7 +160,7 @@ public class SeatingLayoutController {
 
             // Rectangle là phần nền màu ghế
             Rectangle rect = new Rectangle(30, 30);
-            String seatTypeName = (seat.getSeatType() != null) ? seat.getSeatType().getTypeName() : "";
+            String seatTypeName = (seat.getSeatType() != null) ? seat.getSeatType().getSeatTypeName() : "";
             Color fillColor = getColorForSeatType(seatTypeName);
             rect.setFill(fillColor);
             rect.setStroke(Color.WHITE);

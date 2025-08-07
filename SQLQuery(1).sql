@@ -44,17 +44,27 @@ CREATE TABLE movies (
     createdAt DATETIME DEFAULT GETDATE()
 );
 
+-- ROOM TYPES
+CREATE TABLE roomTypes (
+    roomTypeId INT IDENTITY(1,1) PRIMARY KEY,
+    typeName NVARCHAR(50) UNIQUE NOT NULL,
+    description NVARCHAR(255),
+    maxRows INT CHECK (maxRows > 0),
+    maxColumns INT CHECK (maxColumns > 0),
+);
+
 -- SCREENING ROOMS
 CREATE TABLE screeningRooms (
-    roomId INT IDENTITY(1,1) PRIMARY KEY,
-    roomNumber VARCHAR(20) UNIQUE NOT NULL,
-    seatingLayout TEXT NOT NULL,
-    totalCapacity INT NOT NULL CHECK (totalCapacity > 0),
-    roomType VARCHAR(50),
-    equipment TEXT,
-    roomStatus VARCHAR(20) NOT NULL DEFAULT 'Available'
-        CHECK (roomStatus IN ('Available', 'Maintenance', 'Out of Order')),
-    createdAt DATETIME DEFAULT GETDATE()
+     roomId INT IDENTITY(1,1) PRIMARY KEY,
+     roomNumber VARCHAR(20) UNIQUE NOT NULL,
+     seatingLayout TEXT NOT NULL,
+     totalCapacity INT NOT NULL CHECK (totalCapacity > 0),
+     roomTypeId INT NOT NULL,
+     equipment TEXT,
+     roomStatus VARCHAR(20) NOT NULL DEFAULT 'Available'
+         CHECK (roomStatus IN ('Available', 'Maintenance', 'Unavailable')),
+     createdAt DATETIME DEFAULT GETDATE(),
+     FOREIGN KEY (roomTypeId) REFERENCES roomTypes(roomTypeId)
 );
 
 -- SHOWTIMES
@@ -96,15 +106,17 @@ CREATE TABLE lockers (
     createdAt DATETIME DEFAULT GETDATE()
 );
 
--- LOCKER ASSIGNMENTS
+--LOCKER ASSIGNMENTS
 CREATE TABLE lockerAssignments (
-    assignmentId INT IDENTITY(1,1) PRIMARY KEY,
+     assignmentId INT IDENTITY(1,1) PRIMARY KEY,
     lockerId INT NOT NULL,
     pinCode CHAR(4) NOT NULL,
     itemDescription NVARCHAR(255),
     assignedAt DATETIME DEFAULT GETDATE(),
     releasedAt DATETIME NULL,
-    FOREIGN KEY (lockerId) REFERENCES lockers(lockerId)
+    ticketCode VARCHAR(20),
+    FOREIGN KEY (lockerId) REFERENCES lockers(lockerId),
+    FOREIGN KEY (ticketCode) REFERENCES tickets(ticketCode)
 );
 
 -- LOCKER HISTORY
@@ -117,18 +129,20 @@ CREATE TABLE lockerHistory (
     FOREIGN KEY (lockerId) REFERENCES lockers(lockerId)
 );
 
-CREATE TABLE SeatType (
+--SEAT TYPES
+CREATE TABLE seatTypes (
     seatTypeId INT PRIMARY KEY,
     seatTypeName VARCHAR(50),
     price DECIMAL(10,2)
 );
 
-CREATE TABLE Seat (
+--SEATS
+CREATE TABLE seats (
     seatId INT PRIMARY KEY,
     roomId INT,
     seatRow CHAR(1),
     seatColumn INT,
-    seatTypeId INT, -- FK
+    seatTypeId INT,
     isActive BIT,
     FOREIGN KEY (seatTypeId) REFERENCES SeatType(seatTypeId)
 );
@@ -175,6 +189,8 @@ CREATE TABLE ticketPayments (
     paymentTime DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ticketId) REFERENCES tickets(ticketId)
 );
+
+--INVOICES
 CREATE TABLE invoices (
     invoiceId INT PRIMARY KEY IDENTITY(1,1),
     invoiceNumber VARCHAR(50) UNIQUE NOT NULL,
@@ -191,13 +207,5 @@ CREATE TABLE invoices (
     createdAt DATETIME DEFAULT GETDATE()
 );
 
-EXEC sp_help 'tickets';
-
--- Ki?m tra c?t ticketCode trong b?ng lockerAssignments
-EXEC sp_help 'lockerAssignments';
-
-ALTER TABLE lockerAssignments 
-ADD ticketCode VARCHAR(20),
-    CONSTRAINT FK_LockerAssignments_Tickets FOREIGN KEY (ticketCode) REFERENCES tickets(ticketCode);
 
 CREATE INDEX idx_locker_assignments_ticket ON lockerAssignments(ticketCode);

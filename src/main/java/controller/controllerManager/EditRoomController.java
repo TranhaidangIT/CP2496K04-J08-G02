@@ -142,7 +142,7 @@ public class EditRoomController {
 
     public void setRoomStatusCombo() {
         cbRoomStatus.setItems(FXCollections.observableArrayList(
-                "Available", "Unavailable", "Under Maintenance"
+                "Available", "Unavailable", "Maintenance"
         ));
     }
 

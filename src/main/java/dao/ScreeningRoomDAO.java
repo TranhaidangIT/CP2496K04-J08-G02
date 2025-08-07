@@ -91,36 +91,81 @@ public class ScreeningRoomDAO {
         return -1;
     }
 
+    //Delete Room
     public static boolean deleteRoomById(int roomId) {
+        String deleteTicketSeatsSQL = """
+        DELETE ts
+        FROM ticketSeats ts
+        JOIN seats s ON ts.seatId = s.seatId
+        WHERE s.roomId = ?
+    """;
+
+        String deleteTicketsSQL = """
+        DELETE t
+        FROM tickets t
+        JOIN showtimes st ON t.showtimeId = st.showtimeId
+        WHERE st.roomId = ?
+    """;
+
+        String deleteShowtimesSQL = "DELETE FROM showtimes WHERE roomId = ?";
         String deleteSeatsSQL = "DELETE FROM seats WHERE roomId = ?";
         String deleteRoomSQL = "DELETE FROM screeningRooms WHERE roomId = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
-            conn.setAutoCommit(false); // Bắt đầu transaction
+            conn.setAutoCommit(false);
+            System.out.println("Starting to delete room with roomId = " + roomId);
 
-            try (PreparedStatement deleteSeatsStmt = conn.prepareStatement(deleteSeatsSQL);
-                 PreparedStatement deleteRoomStmt = conn.prepareStatement(deleteRoomSQL)) {
+            try (
+                    PreparedStatement deleteTicketSeatsStmt = conn.prepareStatement(deleteTicketSeatsSQL);
+                    PreparedStatement deleteTicketsStmt = conn.prepareStatement(deleteTicketsSQL);
+                    PreparedStatement deleteShowtimesStmt = conn.prepareStatement(deleteShowtimesSQL);
+                    PreparedStatement deleteSeatsStmt = conn.prepareStatement(deleteSeatsSQL);
+                    PreparedStatement deleteRoomStmt = conn.prepareStatement(deleteRoomSQL)
+            ) {
+                // Step 1: Delete ticketSeats
+                deleteTicketSeatsStmt.setInt(1, roomId);
+                int deletedTicketSeats = deleteTicketSeatsStmt.executeUpdate();
+                System.out.println("Deleted " + deletedTicketSeats + " ticket seat records");
 
-                // Xoá seats trước
+                // Step 2: Delete tickets
+                deleteTicketsStmt.setInt(1, roomId);
+                int deletedTickets = deleteTicketsStmt.executeUpdate();
+                System.out.println("Deleted " + deletedTickets + " tickets");
+
+                // Step 3: Delete showtimes
+                deleteShowtimesStmt.setInt(1, roomId);
+                int deletedShowtimes = deleteShowtimesStmt.executeUpdate();
+                System.out.println("Deleted " + deletedShowtimes + " showtimes");
+
+                // Step 4: Delete seats
                 deleteSeatsStmt.setInt(1, roomId);
-                deleteSeatsStmt.executeUpdate();
+                int deletedSeats = deleteSeatsStmt.executeUpdate();
+                System.out.println("Deleted " + deletedSeats + " seats");
 
-                // Xoá phòng
+                // Step 5: Delete room
                 deleteRoomStmt.setInt(1, roomId);
-                int rowsAffected = deleteRoomStmt.executeUpdate();
+                int deletedRooms = deleteRoomStmt.executeUpdate();
+
+                if (deletedRooms > 0) {
+                    System.out.println("Room with roomId = " + roomId + " was successfully deleted");
+                } else {
+                    System.out.println("No room found with roomId = " + roomId);
+                }
 
                 conn.commit();
-                return rowsAffected > 0;
+                return deletedRooms > 0;
 
-            } catch (SQLException ex) {
+            } catch (SQLException e) {
                 conn.rollback();
-                ex.printStackTrace();
+                System.out.println("Error while deleting room: " + e.getMessage());
+                e.printStackTrace();
                 return false;
             } finally {
                 conn.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
+            System.out.println("Database connection error: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -162,7 +207,7 @@ public class ScreeningRoomDAO {
     }
 
     public static void updateRoomCapacity(int roomId, int newCapacity) {
-        String sql = "UPDATE screening_rooms SET total_capacity = ? WHERE room_id = ?";
+        String sql = "UPDATE screeningRooms SET totalCapacity = ? WHERE roomId = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

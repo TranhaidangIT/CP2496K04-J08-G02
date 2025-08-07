@@ -1,6 +1,7 @@
 package controller.controllerManager;
 
 import dao.MovieDAO;
+import dao.RoomTypeDAO;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,25 +17,29 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Movie;
+import models.ScreeningRoom;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public class MovieListController {
 
+    public TextField txtDirectedby;
     @FXML private Button btnAdd;
     @FXML private Button btnEdit;
-    @FXML private Button btnFind;
+    @FXML private TextField tfFind;
+    @FXML private AnchorPane tfFindMovie;
 
     @FXML private ComboBox<String> cbAgeRating;
     @FXML private ComboBox<String> cbGenre;
     @FXML private ComboBox<String> cbLanguage;
-
-    @FXML private DatePicker datePicker;           // release date in detail form
+    @FXML private DatePicker datePicker;
 
     @FXML private TableView<Movie> tblMovies;
     @FXML private TableColumn<Movie, Integer> colId;
@@ -47,6 +52,7 @@ public class MovieListController {
     @FXML private TextField txtDuration;
     @FXML private TextArea txtDescription;
     @FXML private ImageView posterImage;
+
 
     private ObservableList<Movie> movieList = FXCollections.observableArrayList();
 
@@ -76,7 +82,7 @@ public class MovieListController {
 
     public void loadMovieList() {
         List<Movie> movies = MovieDAO.getAllMovies();
-        System.out.println("DEBUG: Loaded movies count = " + (movies != null ? movies.size() : "null"));
+        System.out.println("DEBUG: Loaded movies count = " + movies.size());
         movieList.setAll(movies);
         tblMovies.setItems(movieList);
     }
@@ -99,10 +105,9 @@ public class MovieListController {
             stage.showAndWait();
 
             loadMovieList();
-            showInfoAlert("Success", "Movie added successfully!");
 
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println();
             showErrorAlert("Error", "Failed to load the Add Movie form.");
         }
     }
@@ -132,7 +137,6 @@ public class MovieListController {
             stage.showAndWait();
 
             loadMovieList();
-            showInfoAlert("Success", "Movie updated successfully!");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -157,18 +161,21 @@ public class MovieListController {
         datePicker.setValue(movie.getReleasedDate());
         txtDescription.setText(movie.getDescription());
 
+
         if (movie.getPoster() != null && !movie.getPoster().isEmpty()) {
-            File imageFile = new File("images/" + movie.getPoster());
-            if (imageFile.exists()) {
-                Image image = new Image(imageFile.toURI().toString());
-                posterImage.setImage(image);  // ✅ fixed
+            String posterPath = "/images" + movie.getPoster();
+            URL imageUrl = getClass().getResource(posterPath);
+            if (imageUrl != null) {
+                Image image = new Image(imageUrl.toExternalForm());
+                posterImage.setImage(image);
             } else {
-                posterImage.setImage(new Image("/assets/img/default-movie.png"));
+                posterImage.setImage(new Image(getClass().getResource("/images/default-poster.png").toExternalForm()));
             }
         } else {
-            posterImage.setImage(new Image("/assets/img/default-movie.png"));
+            posterImage.setImage(new Image(getClass().getResource("/images/default-poster.png").toExternalForm()));
         }
     }
+
 
     // ALERT HELPERS
 
@@ -199,13 +206,28 @@ public class MovieListController {
         alert.showAndWait();
     }
 
-//    public void refreshTable() {
-//        List<Movie> movies = MovieDAO.getAllMovies();
-//        tblMovies.getItems().setAll(movies);
-//    }
-
     @FXML
-    void handleFind(ActionEvent event) {
-        // Optional: implement search feature
+    void handleFindClick(MouseEvent event) {
+        String keyword = tfFind.getText().trim().toLowerCase();
+        if (keyword.isEmpty()) {
+            loadMovieList();
+            return;
+        }
+
+        ObservableList<Movie> filteredList = FXCollections.observableArrayList();
+
+        for (Movie movie : movieList) {
+            // Kiểm tra các trường có chứa keyword không
+            if (movie.getTitle().toLowerCase().contains(keyword)
+                    || movie.getGenre().toLowerCase().contains(keyword)
+                    || movie.getLanguage().toLowerCase().contains(keyword)
+                    || movie.getAgeRating().toLowerCase().contains(keyword)
+                    || movie.getDirectedBy().toLowerCase().contains(keyword)) {
+                filteredList.add(movie);
+            }
+        }
+
+        tblMovies.setItems(filteredList);
     }
+
 }

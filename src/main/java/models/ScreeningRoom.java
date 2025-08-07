@@ -13,7 +13,9 @@ public class ScreeningRoom {
     private String roomStatus;
     private LocalDateTime createdAt;
 
-    public ScreeningRoom() {}
+    public ScreeningRoom() {
+
+    }
 
     public ScreeningRoom(int roomId, String roomNumber, String seatingLayout, int totalCapacity,
                          int roomTypeId, String typeName, String equipment,
@@ -29,7 +31,6 @@ public class ScreeningRoom {
         this.createdAt = createdAt;
     }
 
-    // Getters and Setters
     public int getRoomId() {
         return roomId;
     }

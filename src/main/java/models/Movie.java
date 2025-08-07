@@ -16,17 +16,12 @@ public class Movie {
     private LocalDateTime createdAt;
     private LocalDate releaseDate;
 
-    public Movie(int movieId,
-                 String title,
-                 int duration,
-                 String genre,
-                 String description,
-                 String directedBy,
-                 String language,
-                 String poster,
-                 String ageRating,
-                 LocalDateTime createdAt,
-                 LocalDate releaseDate) {
+    public Movie() {
+
+    }
+
+    public Movie(int movieId, String title, int duration, String genre, String description,
+                 String directedBy, String language, String poster, String ageRating, LocalDateTime createdAt, LocalDate releaseDate) {
         this.movieId = movieId;
         this.title = title;
         this.duration = duration;
@@ -40,11 +35,6 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public Movie() {
-
-    }
-
-    // Getters và Setters
     public int getMovieId() {
         return movieId;
     }

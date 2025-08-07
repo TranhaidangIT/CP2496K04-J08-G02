@@ -5,10 +5,7 @@ import dao.SeatDAO;
 import dao.SeatTypeDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
@@ -22,7 +19,6 @@ import models.ScreeningRoom;
 import models.Seat;
 import models.SeatType;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,8 +81,8 @@ public class EditSeatingLayoutController {
         Set<String> seatTypesInRoom = new HashSet<>();
         for (Seat seat : seatsInRoom) {
             SeatType type = seat.getSeatType();
-            if (type != null && type.getTypeName() != null) {
-                seatTypesInRoom.add(type.getTypeName().toLowerCase());
+            if (type != null && type.getSeatTypeName() != null) {
+                seatTypesInRoom.add(type.getSeatTypeName().toLowerCase());
             }
         }
         updateLegendVisibility(seatTypesInRoom);
@@ -158,7 +154,7 @@ public class EditSeatingLayoutController {
             String seatLabel = seat.getSeatRow() + String.valueOf(seat.getSeatColumn());
 
             Rectangle rect = new Rectangle(30, 30);
-            String seatTypeName = (seat.getSeatType() != null) ? seat.getSeatType().getTypeName() : "";
+            String seatTypeName = (seat.getSeatType() != null) ? seat.getSeatType().getSeatTypeName() : "";
             Color originalColor = getColorForSeatType(seatTypeName);
 
             // Màu ban đầu

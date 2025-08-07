@@ -32,6 +32,8 @@ public class EditShowtimeController {
     private List<Showtime> showtimeGroup;
     private final int maxColumns = 10;
 
+    private Runnable refreshCallback;
+
     @FXML
     public void initialize() {
         hourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 10));
@@ -110,11 +112,31 @@ public class EditShowtimeController {
         for (int i = 0; i < addedTimeSlots.size(); i++) {
             LocalTime time = addedTimeSlots.get(i);
             Label timeLabel = new Label(time.toString());
+
             Button removeBtn = new Button("X");
             removeBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white;");
             removeBtn.setOnAction(e -> {
-                addedTimeSlots.remove(time);
-                updateTimeSlotGrid();
+                // Xác nhận khi xóa 1 khung giờ
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                confirm.setTitle("Xác nhận xóa");
+                confirm.setHeaderText("Bạn có chắc muốn xóa suất chiếu này?");
+                confirm.setContentText(time.toString());
+                Optional<ButtonType> result = confirm.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    // Xóa trong DB nếu suất này nằm trong nhóm hiện tại
+                    Showtime target = showtimeGroup.stream()
+                            .filter(st -> st.getShowTime().equals(time))
+                            .findFirst()
+                            .orElse(null);
+                    if (target != null) {
+                        ShowtimeDAO.deleteShowtimeById(target.getShowtimeId());
+                        showtimeGroup.remove(target);
+                    }
+
+                    addedTimeSlots.remove(time);
+                    updateTimeSlotGrid();
+                }
             });
 
             HBox hBox = new HBox(5, timeLabel, removeBtn);
@@ -175,16 +197,27 @@ public class EditShowtimeController {
         }
 
         showAlert("Success", "Showtimes updated.");
+        if (refreshCallback != null) refreshCallback.run();
         handleCancel(null);
     }
 
     @FXML
     void handleDelete(ActionEvent event) {
-        for (Showtime st : showtimeGroup) {
-            ShowtimeDAO.deleteShowtimeById(st.getShowtimeId());
+        // Xác nhận khi xóa cả nhóm
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Xác nhận xóa");
+        confirm.setHeaderText("Bạn có chắc muốn xóa toàn bộ suất chiếu này?");
+        confirm.setContentText("Thao tác này không thể hoàn tác.");
+        Optional<ButtonType> result = confirm.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            for (Showtime st : showtimeGroup) {
+                ShowtimeDAO.deleteShowtimeById(st.getShowtimeId());
+            }
+            showAlert("Deleted", "Showtimes deleted.");
+            if (refreshCallback != null) refreshCallback.run();
+            handleCancel(null);
         }
-        showAlert("Deleted", "Showtimes deleted.");
-        handleCancel(null);
     }
 
     @FXML
@@ -199,6 +232,10 @@ public class EditShowtimeController {
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+
+    public void setRefreshCallback(Runnable callback) {
+        this.refreshCallback = callback;
     }
 
     public void handleLoadShowtime(ActionEvent actionEvent) {

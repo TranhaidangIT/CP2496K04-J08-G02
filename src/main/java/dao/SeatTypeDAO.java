@@ -18,7 +18,7 @@ public class SeatTypeDAO {
 
             while (rs.next()) {
                 int id = rs.getInt("seatTypeId");
-                String name = rs.getString("typeName");
+                String name = rs.getString("seatTypeName");
                 double price = rs.getDouble("price");
 
                 SeatType seatType = new SeatType(id, name, price);
@@ -45,7 +45,7 @@ public class SeatTypeDAO {
             if (rs.next()) {
                 seatType = new SeatType();
                 seatType.setSeatTypeId(rs.getInt("seatTypeId"));
-                seatType.setTypeName(rs.getString("typeName"));
+                seatType.setSeatTypeName(rs.getString("seatTypeName"));
             }
 
         } catch (SQLException e) {
