@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.InvoiceHistoryController">
+    <children>
+        <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #2E86AB; -fx-background-radius: 10px;">
+                    <padding>
+                        <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                    </padding>
+                    <children>
+                        <Label text="LỊCH SỬ HÓA ĐƠN" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="refreshButton" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="🔄 Làm mới" />
+                    </children>
+                </HBox>
+
+                <!-- Search and Filter -->
+                <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #F8F9FA; -fx-background-radius: 8px;">
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                    <children>
+                        <Label text="Tìm kiếm:" textFill="#333333">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="searchField" prefWidth="200.0" promptText="Nhập mã hóa đơn hoặc mã vé..." />
+
+                        <Label text="Từ ngày:" textFill="#333333">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <DatePicker fx:id="fromDatePicker" prefWidth="130.0" />
+
+                        <Label text="Đến ngày:" textFill="#333333">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <DatePicker fx:id="toDatePicker" prefWidth="130.0" />
+
+                        <Button fx:id="searchButton" mnemonicParsing="false" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="🔍 Tìm kiếm" />
+                        <Button fx:id="clearButton" mnemonicParsing="false" style="-fx-background-color: #95A5A6; -fx-text-fill: white;" text="✖ Xóa lọc" />
+                    </children>
+                </HBox>
+
+                <!-- Invoice Table -->
+                <VBox spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 8px; -fx-background-radius: 8px;" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                    <children>
+                        <TableView fx:id="invoicesTable" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="invoiceNumberColumn" prefWidth="120.0" text="Mã hóa đơn" />
+                                <TableColumn fx:id="ticketCodeColumn" prefWidth="100.0" text="Mã vé" />
+                                <TableColumn fx:id="createdAtColumn" prefWidth="140.0" text="Ngày tạo" />
+                                <TableColumn fx:id="employeeColumn" prefWidth="120.0" text="Nhân viên" />
+                                <TableColumn fx:id="customerColumn" prefWidth="120.0" text="Khách hàng" />
+                                <TableColumn fx:id="totalAmountColumn" prefWidth="100.0" text="Tổng tiền" />
+                                <TableColumn fx:id="paymentMethodColumn" prefWidth="100.0" text="Thanh toán" />
+                                <TableColumn fx:id="statusColumn" prefWidth="80.0" text="Trạng thái" />
+                                <TableColumn fx:id="actionsColumn" prefWidth="150.0" text="Thao tác" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+
+                <!-- Summary -->
+                <HBox alignment="CENTER" spacing="30.0" style="-fx-background-color: #E8F6F3; -fx-background-radius: 8px;">
+                    <padding>
+                        <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+                    </padding>
+                    <children>
+                        <VBox alignment="CENTER" spacing="5.0">
+                            <children>
+                                <Label text="Tổng số hóa đơn" textFill="#333333">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="totalInvoicesLabel" text="0" textFill="#2E86AB">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <Separator orientation="VERTICAL" />
+
+                        <VBox alignment="CENTER" spacing="5.0">
+                            <children>
+                                <Label text="Tổng doanh thu" textFill="#333333">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="totalRevenueLabel" text="0 VNĐ" textFill="#E74C3C">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <Separator orientation="VERTICAL" />
+
+                        <VBox alignment="CENTER" spacing="5.0">
+                            <children>
+                                <Label text="Hóa đơn hôm nay" textFill="#333333">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="todayInvoicesLabel" text="0" textFill="#27AE60">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <!-- Action Buttons -->
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px;" text="← Quay lại" />
+                        <Button fx:id="viewInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="👁 Xem chi tiết" />
+                        <Button fx:id="editInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-font-size: 14px;" text="✏ Sửa hóa đơn" />
+                        <Button fx:id="deleteInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" text="🗑 Xóa hóa đơn" />
+                        <Button fx:id="exportButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #16A085; -fx-text-fill: white; -fx-font-size: 14px;" text="📊 Xuất Excel" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
