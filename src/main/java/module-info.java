@@ -11,7 +11,11 @@ module cemina_management {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.fontawesome5;
     requires org.kordamp.bootstrapfx.core;
+
+
     requires java.sql;
+    requires com.microsoft.sqlserver.jdbc;
+    requires jbcrypt;
     requires java.desktop;
 
     // Allow FXML to access internal packages
@@ -21,11 +25,11 @@ module cemina_management {
     opens controller to javafx.fxml;
     exports controller;
 
-//    opens controller.controllerAdmin to javafx.fxml;
-//    exports controller.controllerAdmin;
-//
-//    opens controller.controllerEmployees to javafx.fxml;
-//    exports controller.controllerEmployees;
+    opens controller.controllerAdmin to javafx.fxml;
+    exports controller.controllerAdmin;
+
+    opens controller.controllerEmployees to javafx.fxml;
+    exports controller.controllerEmployees;
 
     opens controller.controllerManager to javafx.fxml;
     exports controller.controllerManager;

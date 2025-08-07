@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+
+<VBox prefHeight="700.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerAdmin.TicketsHistoryController"
+      styleClass="light-gray-background">
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="70.0" prefWidth="200.0" spacing="10.0">
+            <children>
+                <Label styleClass="bold-label" text="Tickets History">
+                    <HBox.margin>
+                        <Insets left="0.0" />
+                    </HBox.margin>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Search" />
+                <TextField fx:id="historySearchField" prefWidth="250.0" promptText="Enter ticket ID or username..." />
+                <Button mnemonicParsing="false" text="Search" onAction="#handleSearchHistory" />
+            </children>
+            <VBox.margin>
+                <Insets left="20.0" right="20.0" />
+            </VBox.margin>
+        </HBox>
+
+        <TableView fx:id="ticketsHistoryTable" prefHeight="500.0" prefWidth="710.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="ticketIdCol" prefWidth="80.0" text="Ticket ID" />
+                <TableColumn fx:id="movieNameCol" prefWidth="200.0" text="Movie Name" />
+                <TableColumn fx:id="usernameCol" prefWidth="150.0" text="Customer Username" />
+                <TableColumn fx:id="seatCol" prefWidth="80.0" text="Seat" />
+                <TableColumn fx:id="showtimeCol" prefWidth="150.0" text="Showtime" />
+                <TableColumn fx:id="priceCol" prefWidth="100.0" text="Price" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <VBox.margin>
+                <Insets left="20.0" right="20.0" />
+            </VBox.margin>
+        </TableView>
+    </children>
+</VBox>

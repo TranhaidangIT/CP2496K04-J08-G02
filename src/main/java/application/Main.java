@@ -1,6 +1,5 @@
 package application;
 
-import controller.DashboardController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,13 +11,15 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Dashboard.fxml"));
-            Parent root = loader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/login.fxml"));
+            Scene scene = new Scene(root);
 
-            primaryStage.setScene(new Scene(root));
-            primaryStage.setTitle("Cinema Management System - Manager");
+            // Khóa kích thước
+            primaryStage.setResizable(false);
+
+            primaryStage.setTitle("Dashboard");
+            primaryStage.setScene(scene);
             primaryStage.show();
-
         } catch (Exception e) {
             e.printStackTrace();
         }

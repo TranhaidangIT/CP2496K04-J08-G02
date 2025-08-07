@@ -144,6 +144,7 @@ CREATE TABLE services (
     price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
     categoryId INT NOT NULL,
     createdAt DATETIME DEFAULT GETDATE(),
+    img VARCHAR(255),
     FOREIGN KEY (categoryId) REFERENCES serviceCategories(categoryId)
 );
 
@@ -157,7 +158,6 @@ CREATE TABLE lockers (
     createdAt DATETIME DEFAULT GETDATE()
 );
 
--- LOCKER ASSIGNMENTS
 CREATE TABLE lockerAssignments (
     assignmentId INT IDENTITY(1,1) PRIMARY KEY,
     lockerId INT NOT NULL,
@@ -165,9 +165,10 @@ CREATE TABLE lockerAssignments (
     itemDescription NVARCHAR(255),
     assignedAt DATETIME DEFAULT GETDATE(),
     releasedAt DATETIME NULL,
-    FOREIGN KEY (lockerId) REFERENCES lockers(lockerId)
+    ticketCode VARCHAR(20),
+    FOREIGN KEY (lockerId) REFERENCES lockers(lockerId),
+    FOREIGN KEY (ticketCode) REFERENCES tickets(ticketCode)
 );
-
 -- LOCKER HISTORY
 CREATE TABLE lockerHistory (
     historyId INT IDENTITY(1,1) PRIMARY KEY,
@@ -178,7 +179,6 @@ CREATE TABLE lockerHistory (
     FOREIGN KEY (lockerId) REFERENCES lockers(lockerId)
 );
 
--- TICKETS
 CREATE TABLE tickets (
     ticketId INT IDENTITY(1,1) PRIMARY KEY,
     ticketCode VARCHAR(20) UNIQUE NOT NULL,
@@ -222,6 +222,7 @@ CREATE TABLE ticketPayments (
     FOREIGN KEY (ticketId) REFERENCES tickets(ticketId)
 );
 
+CREATE INDEX idx_locker_assignments_ticket ON lockerAssignments(ticketCode);
 
 --Insert data--
 INSERT INTO genres (genreName) VALUES

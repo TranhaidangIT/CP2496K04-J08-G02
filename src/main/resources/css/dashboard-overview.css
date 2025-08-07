@@ -1,0 +1,68 @@
+/* ======================================= */
+/* === TẠO KIỂU CHO TRANG TỔNG QUAN DASHBOARD === */
+/* ======================================= */
+
+/* Kiểu cho nền chính của trang */
+.root {
+    -fx-background-color: #ECECEC;
+    -fx-font-family: "Arial", sans-serif;
+}
+
+/* Kiểu cho tiêu đề lớn */
+.bold-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #333333;
+}
+
+/* Kiểu cho chữ nhỏ ở dưới cùng */
+.small-text {
+    -fx-font-size: 12px;
+    -fx-fill: #666666;
+}
+
+/* Kiểu cơ bản cho các thẻ thông tin */
+.card-base {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+/* Kiểu cho tiêu đề nhỏ trong thẻ (ví dụ: "Total Users") */
+.card-title {
+    -fx-font-size: 14px;
+    -fx-fill: #666666;
+}
+
+/* Kiểu cho giá trị số lớn trong thẻ (ví dụ: "1200") */
+.card-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-fill: #C00000;
+}
+
+/* Màu sắc riêng cho từng loại thẻ */
+.tickets-card {
+    -fx-background-color: #FFFFFF;
+}
+
+.revenue-card {
+    -fx-background-color: #9C27B0; /* Màu tím */
+}
+
+/* Các thẻ có màu nền khác sẽ có chữ màu trắng */
+.revenue-card .card-value,
+.revenue-card .card-title {
+    -fx-fill: white;
+}
+
+.movies-card {
+    -fx-background-color: #536DFE; /* Màu xanh */
+}
+
+/* Các thẻ có màu nền khác sẽ có chữ màu trắng */
+.movies-card .card-value,
+.movies-card .card-title {
+    -fx-fill: white;
+}
