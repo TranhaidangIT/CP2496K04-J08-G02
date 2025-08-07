@@ -45,7 +45,7 @@ public class MovieDetailController {
             Parent seatSelectionRoot = loader.load();
             SeatSelectionController controller = loader.getController();
             if (selectedShowtime == null) {
-                System.err.println("Lỗi: selectedShowtime là null!");
+                System.err.println("Error: selectedShowtime is null!");
                 return;
             }
             controller.setData(selectedShowtime);
@@ -57,10 +57,10 @@ public class MovieDetailController {
                 AnchorPane.setLeftAnchor(seatSelectionRoot, 0.0);
                 AnchorPane.setRightAnchor(seatSelectionRoot, 0.0);
             } else {
-                System.err.println("Không tìm thấy #contentArea trong scene!");
+                System.err.println("Could not find #contentArea in the scene!");
             }
         } catch (IOException ex) {
-            System.err.println("Lỗi khi tải SeatSelection.fxml: " + ex.getMessage());
+            System.err.println("Error loading SeatSelection.fxml: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -80,10 +80,10 @@ public class MovieDetailController {
                 AnchorPane.setLeftAnchor(listMoviesRoot, 0.0);
                 AnchorPane.setRightAnchor(listMoviesRoot, 0.0);
             } else {
-                System.err.println("Không tìm thấy #contentArea trong scene!");
+                System.err.println("Could not find #contentArea in the scene!");
             }
         } catch (IOException ex) {
-            System.err.println("Lỗi khi tải ListMovies.fxml: " + ex.getMessage());
+            System.err.println("Error loading ListMovies.fxml: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -105,7 +105,7 @@ public class MovieDetailController {
             Image img = new Image(stream);
             posterImage.setImage(img);
         } else {
-            System.err.println("Không tìm thấy ảnh: " + posterFile);
+            System.err.println("Image not found: " + posterFile);
         }
 
         loadShowtimesFromDatabase(movie);
@@ -114,13 +114,13 @@ public class MovieDetailController {
     private void loadShowtimesFromDatabase(Movie movie) {
         showtimePane.getChildren().clear();
         confirmButton.setDisable(true);
-        roomLabel.setText("Chưa chọn suất chiếu"); // Đặt lại roomLabel khi tải danh sách suất chiếu
+        roomLabel.setText("No showtime selected"); // Reset roomLabel when loading showtimes
 
         try (Connection conn = DBConnection.getConnection()) {
             String query = "SELECT showtimeId, roomId, showDate, showTime, endTime FROM showtimes WHERE movieId = ? AND showDate = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, movie.getMovieId());
-            stmt.setString(2, LocalDate.now().toString()); // Lấy showtime của ngày hiện tại
+            stmt.setString(2, LocalDate.now().toString()); // Fetch showtimes for the current date
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -130,7 +130,7 @@ public class MovieDetailController {
                 String showTime = rs.getString("showTime").substring(0, 8);
                 String endTime = rs.getString("endTime").substring(0, 8);
 
-                System.out.println("Tải suất chiếu: showtimeId=" + showtimeId + ", roomId=" + roomId + ", showTime=" + showTime); // Log để kiểm tra dữ liệu
+                System.out.println("Loading showtime: showtimeId=" + showtimeId + ", roomId=" + roomId + ", showTime=" + showTime); // Log to verify data
 
                 String label = showTime + " - " + endTime;
 
@@ -149,25 +149,25 @@ public class MovieDetailController {
                     selectedShowtime.setRoomId(roomId);
                     selectedShowtime.setRoomName("Room " + roomId);
 
-                    // Cập nhật roomLabel khi chọn suất chiếu
+                    // Update roomLabel when a showtime is selected
                     roomLabel.setText("Room " + roomId);
                     confirmButton.setDisable(false);
-                    System.out.println("Đã chọn showtimeId: " + showtimeId + ", Room: " + roomId);
+                    System.out.println("Selected showtimeId: " + showtimeId + ", Room: " + roomId);
                 });
 
                 btn.setPrefWidth(140);
                 showtimePane.getChildren().add(btn);
             }
 
-            // Nếu không có suất chiếu, hiển thị thông báo
+            // If no showtimes are available, display a message
             if (showtimePane.getChildren().isEmpty()) {
-                roomLabel.setText("Không có suất chiếu");
-                System.out.println("Không tìm thấy suất chiếu cho movieId: " + movie.getMovieId());
+                roomLabel.setText("No showtimes available");
+                System.out.println("No showtimes found for movieId: " + movie.getMovieId());
             }
         } catch (SQLException ex) {
-            System.err.println("Lỗi khi tải showtimes từ CSDL: " + ex.getMessage());
+            System.err.println("Error loading showtimes from database: " + ex.getMessage());
             ex.printStackTrace();
-            roomLabel.setText("Lỗi tải dữ liệu");
+            roomLabel.setText("Error loading data");
         }
     }
 }

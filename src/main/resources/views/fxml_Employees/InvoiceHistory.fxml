@@ -18,13 +18,13 @@
                         <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
                     </padding>
                     <children>
-                        <Label text="LỊCH SỬ HÓA ĐƠN" textFill="WHITE">
+                        <Label text="INVOICE HISTORY" textFill="WHITE">
                             <font>
                                 <Font name="System Bold" size="24.0" />
                             </font>
                         </Label>
                         <Region HBox.hgrow="ALWAYS" />
-                        <Button fx:id="refreshButton" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="🔄 Làm mới" />
+                        <Button fx:id="refreshButton" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="🔄 Refresh" />
                     </children>
                 </HBox>
 
@@ -34,29 +34,29 @@
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                     </padding>
                     <children>
-                        <Label text="Tìm kiếm:" textFill="#333333">
+                        <Label text="Search:" textFill="#333333">
                             <font>
                                 <Font name="System Bold" size="14.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="searchField" prefWidth="200.0" promptText="Nhập mã hóa đơn hoặc mã vé..." />
+                        <TextField fx:id="searchField" prefWidth="200.0" promptText="Enter invoice number or ticket code..." />
 
-                        <Label text="Từ ngày:" textFill="#333333">
+                        <Label text="From Date:" textFill="#333333">
                             <font>
                                 <Font name="System Bold" size="14.0" />
                             </font>
                         </Label>
                         <DatePicker fx:id="fromDatePicker" prefWidth="130.0" />
 
-                        <Label text="Đến ngày:" textFill="#333333">
+                        <Label text="To Date:" textFill="#333333">
                             <font>
                                 <Font name="System Bold" size="14.0" />
                             </font>
                         </Label>
                         <DatePicker fx:id="toDatePicker" prefWidth="130.0" />
 
-                        <Button fx:id="searchButton" mnemonicParsing="false" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="🔍 Tìm kiếm" />
-                        <Button fx:id="clearButton" mnemonicParsing="false" style="-fx-background-color: #95A5A6; -fx-text-fill: white;" text="✖ Xóa lọc" />
+                        <Button fx:id="searchButton" mnemonicParsing="false" style="-fx-background-color: #27AE60; -fx-text-fill: white;" text="🔍 Search" />
+                        <Button fx:id="clearButton" mnemonicParsing="false" style="-fx-background-color: #95A5A6; -fx-text-fill: white;" text="✖ Clear Filters" />
                     </children>
                 </HBox>
 
@@ -68,14 +68,14 @@
                     <children>
                         <TableView fx:id="invoicesTable" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn fx:id="invoiceNumberColumn" prefWidth="120.0" text="Mã hóa đơn" />
-                                <TableColumn fx:id="ticketCodeColumn" prefWidth="100.0" text="Mã vé" />
-                                <TableColumn fx:id="createdAtColumn" prefWidth="140.0" text="Ngày tạo" />
-                                <TableColumn fx:id="employeeColumn" prefWidth="120.0" text="Nhân viên" />
-                                <TableColumn fx:id="totalAmountColumn" prefWidth="100.0" text="Tổng tiền" />
-                                <TableColumn fx:id="paymentMethodColumn" prefWidth="100.0" text="Thanh toán" />
-                                <TableColumn fx:id="statusColumn" prefWidth="80.0" text="Trạng thái" />
-                                <TableColumn fx:id="actionsColumn" prefWidth="150.0" text="Thao tác" />
+                                <TableColumn fx:id="invoiceNumberColumn" prefWidth="120.0" text="Invoice Number" />
+                                <TableColumn fx:id="ticketCodeColumn" prefWidth="100.0" text="Ticket Code" />
+                                <TableColumn fx:id="createdAtColumn" prefWidth="140.0" text="Created Date" />
+                                <TableColumn fx:id="employeeColumn" prefWidth="120.0" text="Employee" />
+                                <TableColumn fx:id="totalAmountColumn" prefWidth="100.0" text="Total Amount" />
+                                <TableColumn fx:id="paymentMethodColumn" prefWidth="100.0" text="Payment Method" />
+                                <TableColumn fx:id="statusColumn" prefWidth="80.0" text="Status" />
+                                <TableColumn fx:id="actionsColumn" prefWidth="150.0" text="Actions" />
                             </columns>
                         </TableView>
                     </children>
@@ -89,7 +89,7 @@
                     <children>
                         <VBox alignment="CENTER" spacing="5.0">
                             <children>
-                                <Label text="Tổng số hóa đơn" textFill="#333333">
+                                <Label text="Total Invoices" textFill="#333333">
                                     <font>
                                         <Font name="System Bold" size="14.0" />
                                     </font>
@@ -106,12 +106,12 @@
 
                         <VBox alignment="CENTER" spacing="5.0">
                             <children>
-                                <Label text="Tổng doanh thu" textFill="#333333">
+                                <Label text="Total Revenue" textFill="#333333">
                                     <font>
                                         <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Label>
-                                <Label fx:id="totalRevenueLabel" text="0 VNĐ" textFill="#E74C3C">
+                                <Label fx:id="totalRevenueLabel" text="0 VND" textFill="#E74C3C">
                                     <font>
                                         <Font name="System Bold" size="18.0" />
                                     </font>
@@ -123,7 +123,7 @@
 
                         <VBox alignment="CENTER" spacing="5.0">
                             <children>
-                                <Label text="Hóa đơn hôm nay" textFill="#333333">
+                                <Label text="Today's Invoices" textFill="#333333">
                                     <font>
                                         <Font name="System Bold" size="14.0" />
                                     </font>
@@ -141,11 +141,11 @@
                 <!-- Action Buttons -->
                 <HBox alignment="CENTER" spacing="20.0">
                     <children>
-                        <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px;" text="← Quay lại" />
-                        <Button fx:id="viewInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="👁 Xem chi tiết" />
-                        <Button fx:id="editInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-font-size: 14px;" text="✏ Sửa hóa đơn" />
-                        <Button fx:id="deleteInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" text="🗑 Xóa hóa đơn" />
-                        <Button fx:id="exportButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #16A085; -fx-text-fill: white; -fx-font-size: 14px;" text="📊 Xuất Excel" />
+                        <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px;" text="← Back" />
+                        <Button fx:id="viewInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="👁 View Details" />
+                        <Button fx:id="editInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-font-size: 14px;" text="✏ Edit Invoice" />
+                        <Button fx:id="deleteInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" text="🗑 Delete Invoice" />
+                        <Button fx:id="exportButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #16A085; -fx-text-fill: white; -fx-font-size: 14px;" text="📊 Export to Excel" />
                     </children>
                 </HBox>
             </children>

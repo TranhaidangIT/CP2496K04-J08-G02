@@ -3,43 +3,36 @@
          CGV Xuan Khanh Cinema      
 =====================================
 
-Invoice Number: INV1754577701658
-Date & Time: 07/08/2025 21:41:48
+Invoice Number: INV1754588208909
+Date & Time: 08/08/2025 00:36:55
 Employee: Pham The Duyet
 
 -------------------------------------
           MOVIE INFORMATION         
 -------------------------------------
 Movie: Titanic
-Showtime: 2025-08-07 17:00:00.0000000 - 19:30:00.0000000
+Showtime: 2025-08-08 08:00:00.0000000 - 11:00:00.0000000
 Room: Room R001
 
 -------------------------------------
            TICKET DETAILS           
 -------------------------------------
-Seat C2 (Standard): 0 VND
-
--------------------------------------
-         ADDITIONAL SERVICES        
--------------------------------------
-Popcorn x1: 35 VND
-Popcorn x1: 35 VND
-Popcorn x1: 35 VND
+Seat D5 (VIP): 30 VND
 
 -------------------------------------
           LOCKER INFORMATION        
 -------------------------------------
-Locker L009 - PIN: 5511
-Description: Balo
+Locker L002 - PIN: 9295
+Description: Buồi giả
 
 =====================================
-TOTAL: 105 VND
+TOTAL: 30 VND
 =====================================
 
 -------------------------------------
-         PAYMENT (TI?N M?T)               
+         PAYMENT (CASH)               
 -------------------------------------
-Amount Received: 105 VND
+Amount Received: 30 VND
 Change: 0 VND
 
 =====================================

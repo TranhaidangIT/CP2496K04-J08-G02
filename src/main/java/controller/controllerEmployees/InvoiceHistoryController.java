@@ -196,7 +196,7 @@ public class InvoiceHistoryController {
         } catch (SQLException e) {
             System.err.println("Error loading invoice data: " + e.getMessage());
             e.printStackTrace();
-            showErrorAlert("Lỗi", "Không thể tải dữ liệu hóa đơn: " + e.getMessage());
+            showErrorAlert("Error", "Unable to load invoice data: " + e.getMessage());
         }
     }
 
@@ -263,7 +263,7 @@ public class InvoiceHistoryController {
             }
         } catch (SQLException e) {
             System.err.println("Error searching invoices: " + e.getMessage());
-            showErrorAlert("Lỗi", "Không thể tìm kiếm hóa đơn: " + e.getMessage());
+            showErrorAlert("Error", "Unable to search invoices: " + e.getMessage());
         }
         updateSummary();
     }
@@ -291,7 +291,7 @@ public class InvoiceHistoryController {
                 .count();
 
         totalInvoicesLabel.setText(String.valueOf(totalInvoices));
-        totalRevenueLabel.setText(String.format("%.0f VNĐ", totalRevenue));
+        totalRevenueLabel.setText(String.format("%.0f VND", totalRevenue));
         todayInvoicesLabel.setText(String.valueOf(todayInvoices));
     }
 
@@ -335,9 +335,9 @@ public class InvoiceHistoryController {
     private void editInvoice(InvoiceRecord invoice) {
         // Implementation for editing invoice
         Alert info = new Alert(Alert.AlertType.INFORMATION);
-        info.setTitle("Thông báo");
+        info.setTitle("Information");
         info.setHeaderText(null);
-        info.setContentText("Chức năng sửa hóa đơn đang được phát triển.\nMã hóa đơn: " + invoice.getInvoiceNumber());
+        info.setContentText("Edit invoice function is under development.\nInvoice number: " + invoice.getInvoiceNumber());
         info.showAndWait();
     }
 
@@ -350,9 +350,9 @@ public class InvoiceHistoryController {
 
     private void deleteInvoice(InvoiceRecord invoice) {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Xác nhận xóa");
+        confirmation.setTitle("Confirm Deletion");
         confirmation.setHeaderText(null);
-        confirmation.setContentText("Bạn có chắc chắn muốn xóa hóa đơn: " + invoice.getInvoiceNumber() + "?");
+        confirmation.setContentText("Are you sure you want to delete invoice: " + invoice.getInvoiceNumber() + "?");
 
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -365,13 +365,13 @@ public class InvoiceHistoryController {
                 if (rowsDeleted > 0) {
                     invoicesList.remove(invoice);
                     updateSummary();
-                    showSuccessAlert("Thành công", "Đã xóa hóa đơn thành công!");
+                    showSuccessAlert("Success", "Invoice deleted successfully!");
                 } else {
-                    showErrorAlert("Lỗi", "Không thể xóa hóa đơn!");
+                    showErrorAlert("Error", "Unable to delete invoice!");
                 }
             } catch (SQLException e) {
                 System.err.println("Error deleting invoice: " + e.getMessage());
-                showErrorAlert("Lỗi", "Lỗi khi xóa hóa đơn: " + e.getMessage());
+                showErrorAlert("Error", "Error deleting invoice: " + e.getMessage());
             }
         }
     }
@@ -385,9 +385,9 @@ public class InvoiceHistoryController {
 
     private void exportToExcel() {
         Alert info = new Alert(Alert.AlertType.INFORMATION);
-        info.setTitle("Thông báo");
+        info.setTitle("Information");
         info.setHeaderText(null);
-        info.setContentText("Chức năng xuất Excel đang được phát triển.");
+        info.setContentText("Export to Excel function is under development.");
         info.showAndWait();
     }
 
@@ -411,8 +411,8 @@ public class InvoiceHistoryController {
 
             // Show content in a dialog
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Chi tiết hóa đơn");
-            alert.setHeaderText("Hóa đơn: " + invoice.getInvoiceNumber());
+            alert.setTitle("Invoice Details");
+            alert.setHeaderText("Invoice: " + invoice.getInvoiceNumber());
 
             TextArea textArea = new TextArea(invoiceContent);
             textArea.setEditable(false);
@@ -424,11 +424,11 @@ public class InvoiceHistoryController {
             alert.setResizable(true);
             alert.showAndWait();
 
-            showSuccessAlert("Thành công", "File hóa đơn đã được tạo tại: " + fileName);
+            showSuccessAlert("Success", "Invoice file generated at: " + fileName);
 
         } catch (IOException e) {
             System.err.println("Error generating invoice file: " + e.getMessage());
-            showErrorAlert("Lỗi", "Không thể tạo file hóa đơn: " + e.getMessage());
+            showErrorAlert("Error", "Unable to generate invoice file: " + e.getMessage());
         }
     }
 
@@ -459,10 +459,10 @@ public class InvoiceHistoryController {
                 showDateTime = movieRs.getString("showDate") + " " +
                         (movieRs.getString("showTime") != null ? movieRs.getString("showTime") : "") +
                         (movieRs.getString("endTime") != null ? " - " + movieRs.getString("endTime") : "");
-                roomNumber = "Phòng " + movieRs.getString("roomNumber");
+                roomNumber = "Room " + movieRs.getString("roomNumber");
             }
 
-            // Thêm phần lấy thông tin Locker
+            // Get locker information
             String lockerQuery = """
                 SELECT l.lockerNumber, la.pinCode, la.itemDescription
                 FROM tickets t
@@ -475,7 +475,7 @@ public class InvoiceHistoryController {
             lockerStmt.setString(1, invoice.getTicketCode());
             ResultSet lockerRs = lockerStmt.executeQuery();
 
-            String lockerInfo = "Không sử dụng locker";
+            String lockerInfo = "No locker used";
             if (lockerRs.next()) {
                 String lockerNumber = lockerRs.getString("lockerNumber");
                 String pinCode = lockerRs.getString("pinCode");
@@ -483,26 +483,26 @@ public class InvoiceHistoryController {
 
                 lockerInfo = String.format("Locker %s - PIN: %s", lockerNumber, pinCode);
                 if (itemDescription != null && !itemDescription.isEmpty()) {
-                    lockerInfo += String.format("\nMô tả: %s", itemDescription);
+                    lockerInfo += String.format("\nDescription: %s", itemDescription);
                 }
             }
 
             // Build invoice content
             content.append("=====================================\n");
-            content.append("          HÓA ĐƠN THANH TOÁN        \n");
-            content.append("         RẠP CHIẾU PHIM CGV Xuan Khanh         \n");
+            content.append("           PAYMENT INVOICE           \n");
+            content.append("         CGV Xuan Khanh Cinema      \n");
             content.append("=====================================\n\n");
 
-            content.append("Mã hóa đơn: ").append(invoice.getInvoiceNumber()).append("\n");
-            content.append("Ngày giờ: ").append(invoice.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))).append("\n");
-            content.append("Nhân viên: ").append(invoice.getEmployeeName() != null ? invoice.getEmployeeName() : invoice.getEmployeeId()).append("\n\n");
+            content.append("Invoice Number: ").append(invoice.getInvoiceNumber()).append("\n");
+            content.append("Date & Time: ").append(invoice.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))).append("\n");
+            content.append("Employee: ").append(invoice.getEmployeeName() != null ? invoice.getEmployeeName() : invoice.getEmployeeId()).append("\n\n");
 
             content.append("-------------------------------------\n");
-            content.append("           THÔNG TIN PHIM           \n");
+            content.append("          MOVIE INFORMATION         \n");
             content.append("-------------------------------------\n");
-            content.append("Phim: ").append(movieTitle).append("\n");
-            content.append("Suất chiếu: ").append(showDateTime).append("\n");
-            content.append("Phòng: ").append(roomNumber).append("\n\n");
+            content.append("Movie: ").append(movieTitle).append("\n");
+            content.append("Showtime: ").append(showDateTime).append("\n");
+            content.append("Room: ").append(roomNumber).append("\n\n");
 
             // Get seat information
             String seatQuery = """
@@ -519,14 +519,14 @@ public class InvoiceHistoryController {
             ResultSet seatRs = seatStmt.executeQuery();
 
             content.append("-------------------------------------\n");
-            content.append("            CHI TIẾT VÉ             \n");
+            content.append("           TICKET DETAILS           \n");
             content.append("-------------------------------------\n");
 
             while (seatRs.next()) {
                 String seatNumber = seatRs.getString("seatRow") + seatRs.getInt("seatColumn");
                 String seatType = seatRs.getString("seatTypeName");
                 double price = seatRs.getDouble("price");
-                content.append(String.format("Ghế %s (%s): %.0f VNĐ\n", seatNumber, seatType, price));
+                content.append(String.format("Seat %s (%s): %.0f VND\n", seatNumber, seatType, price));
             }
 
             // Get service information
@@ -547,7 +547,7 @@ public class InvoiceHistoryController {
             while (serviceRs.next()) {
                 if (!hasServices) {
                     servicesContent.append("\n-------------------------------------\n");
-                    servicesContent.append("          DỊCH VỤ BỔ SUNG          \n");
+                    servicesContent.append("         ADDITIONAL SERVICES        \n");
                     servicesContent.append("-------------------------------------\n");
                     hasServices = true;
                 }
@@ -556,37 +556,36 @@ public class InvoiceHistoryController {
                 int quantity = serviceRs.getInt("quantity");
                 double servicePrice = serviceRs.getDouble("servicePrice");
                 double totalPrice = servicePrice * quantity;
-                servicesContent.append(String.format("%s x%d: %.0f VNĐ\n", serviceName, quantity, totalPrice));
+                servicesContent.append(String.format("%s x%d: %.0f VND\n", serviceName, quantity, totalPrice));
             }
 
             if (hasServices) {
                 content.append(servicesContent.toString());
             }
 
-            // Thêm phần hiển thị locker vào hóa đơn
+            // Add locker information to invoice
             content.append("\n-------------------------------------\n");
-            content.append("           THÔNG TIN LOCKER          \n");
+            content.append("          LOCKER INFORMATION        \n");
             content.append("-------------------------------------\n");
             content.append(lockerInfo).append("\n");
 
             content.append("\n=====================================\n");
-            content.append(String.format("TỔNG CỘNG: %.0f VNĐ\n", invoice.getTotalAmount()));
+            content.append(String.format("TOTAL: %.0f VND\n", invoice.getTotalAmount()));
             content.append("=====================================\n\n");
 
             content.append("-------------------------------------\n");
-            content.append("         THANH TOÁN (").append(invoice.getPaymentMethod().toUpperCase()).append(")      \n");
+            content.append("         PAYMENT (%s)               \n".formatted(invoice.getPaymentMethod().toUpperCase()));
             content.append("-------------------------------------\n");
-            content.append(String.format("Số tiền nhận: %.0f VNĐ\n", invoice.getReceivedAmount()));
-            content.append(String.format("Tiền thừa: %.0f VNĐ\n\n", invoice.getChangeAmount()));
+            content.append(String.format("Amount Received: %.0f VND\n", invoice.getReceivedAmount()));
+            content.append(String.format("Change: %.0f VND\n\n", invoice.getChangeAmount()));
 
             content.append("=====================================\n");
-            content.append("     CẢM ƠN QUÝ KHÁCH ĐÃ SỬ DỤNG    \n");
-            content.append("          DỊCH VỤ CỦA CHÚNG TÔI     \n");
+            content.append("      THANK YOU FOR YOUR VISIT      \n");
             content.append("=====================================\n");
 
         } catch (SQLException e) {
             System.err.println("Error generating invoice content: " + e.getMessage());
-            content.append("Lỗi khi tạo nội dung hóa đơn: ").append(e.getMessage());
+            content.append("Error generating invoice content: ").append(e.getMessage());
         }
 
         return content.toString();
@@ -602,11 +601,11 @@ public class InvoiceHistoryController {
 
             if (contentArea == null) {
                 System.err.println("contentArea is null in InvoiceHistoryController!");
-                showErrorAlert("Lỗi", "contentArea chưa được khởi tạo!");
+                showErrorAlert("Error", "contentArea is not initialized!");
                 return;
             }
 
-            controller.setContentArea(contentArea); // Truyền contentArea cho TotalController
+            controller.setContentArea(contentArea); // Pass contentArea to TotalController
             contentArea.getChildren().setAll(totalRoot);
             AnchorPane.setTopAnchor(totalRoot, 0.0);
             AnchorPane.setBottomAnchor(totalRoot, 0.0);
@@ -616,7 +615,7 @@ public class InvoiceHistoryController {
         } catch (IOException ex) {
             System.err.println("Error loading Total.fxml: " + ex.getMessage());
             ex.printStackTrace();
-            showErrorAlert("Lỗi", "Không thể tải giao diện Total: " + ex.getMessage());
+            showErrorAlert("Error", "Unable to load Total interface: " + ex.getMessage());
         }
     }
 
@@ -661,7 +660,7 @@ public class InvoiceHistoryController {
             this.receivedAmount = new SimpleDoubleProperty(receivedAmount);
             this.changeAmount = new SimpleDoubleProperty(changeAmount);
             this.createdAt = createdAt;
-            this.status = new SimpleStringProperty("Hoàn thành");
+            this.status = new SimpleStringProperty("Completed");
         }
 
         // Getters
@@ -670,7 +669,7 @@ public class InvoiceHistoryController {
         public String getEmployeeId() { return employeeId.get(); }
         public String getEmployeeName() { return employeeName.get(); }
         public double getTotalAmount() { return totalAmount.get(); }
-        public String getTotalAmountFormatted() { return String.format("%.0f VNĐ", totalAmount.get()); }
+        public String getTotalAmountFormatted() { return String.format("%.0f VND", totalAmount.get()); }
         public String getPaymentMethod() { return paymentMethod.get(); }
         public double getReceivedAmount() { return receivedAmount.get(); }
         public double getChangeAmount() { return changeAmount.get(); }

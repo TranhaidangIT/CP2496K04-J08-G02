@@ -71,7 +71,7 @@ public class TotalController {
     private String currentTicketCode = "";
     private double totalAmount = 0.0;
 
-    // Thêm các biến để lưu thông tin booking từ Session
+    // Variables to store booking information from Session
     private Map<String, Object> bookingData;
     private List<Map<String, Object>> selectedSeats;
     private Showtime selectedShowtime;
@@ -79,7 +79,10 @@ public class TotalController {
     private List<Service> selectedAddons;
     private Locker selectedLocker;
 
-    // Thêm biến contentArea
+    private String lockerPinCode = null;
+    private String lockerItemDescription = null;
+
+    // Variable for contentArea
     private AnchorPane contentArea;
 
     @FXML
@@ -93,7 +96,7 @@ public class TotalController {
         generateInvoiceNumber();
     }
 
-    // Thêm phương thức setContentArea
+    // Method to set contentArea
     public void setContentArea(AnchorPane contentArea) {
         this.contentArea = contentArea;
         System.out.println("setContentArea called in TotalController with contentArea: " + contentArea);
@@ -133,7 +136,7 @@ public class TotalController {
         });
     }
 
-    // Sửa phương thức openInvoiceHistory để truyền contentArea
+    // Modified openInvoiceHistory to pass contentArea
     @FXML
     private void openInvoiceHistory() {
         try {
@@ -142,12 +145,12 @@ public class TotalController {
             Parent invoiceHistoryRoot = loader.load();
             InvoiceHistoryController controller = loader.getController();
 
-            // Truyền contentArea cho InvoiceHistoryController
+            // Pass contentArea to InvoiceHistoryController
             controller.setContentArea(this.contentArea);
 
             if (contentArea == null) {
-                System.err.println("contentArea chưa được khởi tạo trong TotalController!");
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "contentArea chưa được khởi tạo trong TotalController!");
+                System.err.println("contentArea has not been initialized in TotalController!");
+                showAlert(Alert.AlertType.ERROR, "Error", "contentArea has not been initialized in TotalController!");
                 return;
             }
 
@@ -159,7 +162,7 @@ public class TotalController {
         } catch (IOException ex) {
             System.err.println("Error loading InvoiceHistory.fxml: " + ex.getMessage());
             ex.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải lịch sử hóa đơn: " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load invoice history: " + ex.getMessage());
         }
     }
 
@@ -172,14 +175,22 @@ public class TotalController {
             selectedAddons = (List<Service>) bookingData.get("selectedAddons");
             selectedLocker = (Locker) bookingData.get("selectedLocker");
 
+            // QUAN TRỌNG: Lưu PIN và mô tả vào biến instance ngay khi load
+            if (selectedLocker != null) {
+                lockerPinCode = (String) bookingData.get("lockerPinCode");
+                lockerItemDescription = (String) bookingData.get("itemDescription");
+                System.out.println("DEBUG: Loaded locker PIN: " + lockerPinCode);
+                System.out.println("DEBUG: Loaded item description: " + lockerItemDescription);
+            }
+
             System.out.println("Loaded booking data from Session:");
             System.out.println("- Showtime: " + (selectedShowtime != null ? selectedShowtime.getMovieTitle() : "null"));
             System.out.println("- Seats count: " + (selectedSeats != null ? selectedSeats.size() : 0));
             System.out.println("- Addons count: " + (selectedAddons != null ? selectedAddons.size() : 0));
             System.out.println("- Locker: " + (selectedLocker != null ? selectedLocker.getLockerNumber() : "null"));
             if (selectedLocker != null) {
-                System.out.println("- Locker PinCode: " + bookingData.get("lockerPinCode"));
-                System.out.println("- Item Description: " + bookingData.get("itemDescription"));
+                System.out.println("- Locker PinCode: " + lockerPinCode);
+                System.out.println("- Item Description: " + lockerItemDescription);
             }
         }
     }
@@ -196,78 +207,85 @@ public class TotalController {
 
             StringBuilder invoice = new StringBuilder();
             invoice.append("=====================================\n");
-            invoice.append("          HÓA ĐƠN THANH TOÁN        \n");
-            invoice.append("         RẠP CHIẾU PHIM CGV Xuan Khanh         \n");
+            invoice.append("          PAYMENT INVOICE           \n");
+            invoice.append("         CGV Xuan Khanh Cinema      \n");
             invoice.append("=====================================\n\n");
 
-            invoice.append("Mã hóa đơn: ").append(invoiceNumberLabel.getText()).append("\n");
-            invoice.append("Ngày giờ: ").append(dateTimeLabel.getText()).append("\n");
-            invoice.append("Nhân viên: ").append(employeeLabel.getText()).append("\n\n");
+            invoice.append("Invoice Number: ").append(invoiceNumberLabel.getText()).append("\n");
+            invoice.append("Date & Time: ").append(dateTimeLabel.getText()).append("\n");
+            invoice.append("Employee: ").append(employeeLabel.getText()).append("\n\n");
 
             invoice.append("-------------------------------------\n");
-            invoice.append("           THÔNG TIN PHIM           \n");
+            invoice.append("           MOVIE INFORMATION        \n");
             invoice.append("-------------------------------------\n");
-            invoice.append("Phim: ").append(movieTitleLabel.getText()).append("\n");
-            invoice.append("Suất chiếu: ").append(showtimeLabel.getText()).append("\n");
-            invoice.append("Phòng: ").append(roomLabel.getText()).append("\n\n");
+            invoice.append("Movie: ").append(movieTitleLabel.getText()).append("\n");
+            invoice.append("Showtime: ").append(showtimeLabel.getText()).append("\n");
+            invoice.append("Room: ").append(roomLabel.getText()).append("\n\n");
 
             invoice.append("-------------------------------------\n");
-            invoice.append("            CHI TIẾT VÉ             \n");
+            invoice.append("            TICKET DETAILS          \n");
             invoice.append("-------------------------------------\n");
             for (TicketDetail ticket : ticketDetails) {
-                invoice.append(String.format("Ghế %s (%s): %.0f VNĐ\n",
+                invoice.append(String.format("Seat %s (%s): %.0f VND\n",
                         ticket.getSeatNumber(), ticket.getSeatType(), ticket.getPrice()));
             }
 
             if (!serviceDetails.isEmpty()) {
                 invoice.append("\n-------------------------------------\n");
-                invoice.append("          DỊCH VỤ BỔ SUNG          \n");
+                invoice.append("           ADDITIONAL SERVICES      \n");
                 invoice.append("-------------------------------------\n");
                 for (ServiceDetail service : serviceDetails) {
-                    invoice.append(String.format("%s x%d: %.0f VNĐ\n",
+                    invoice.append(String.format("%s x%d: %.0f VND\n",
                             service.getServiceName(), service.getQuantity(), service.getTotalPrice()));
                 }
             }
 
             invoice.append("\n-------------------------------------\n");
-            if (selectedLocker != null) {
-                invoice.append("Locker: ").append(lockerInfoLabel.getText()).append("\n");
-                invoice.append("Mã PIN: ").append((String) bookingData.get("lockerPinCode")).append("\n");
-                invoice.append("Mô tả đồ vật: ").append((String) bookingData.get("itemDescription")).append("\n\n");
+            invoice.append("          LOCKER INFORMATION        \n");
+            invoice.append("-------------------------------------\n");
+            if (selectedLocker != null && lockerPinCode != null) {
+                invoice.append("Locker: ").append(selectedLocker.getLockerNumber())
+                        .append(" - ").append(selectedLocker.getLocationInfo()).append("\n");
+                invoice.append("PIN: ").append(lockerPinCode).append("\n");
+                if (lockerItemDescription != null && !lockerItemDescription.isEmpty()) {
+                    invoice.append("Item Description: ").append(lockerItemDescription).append("\n");
+                }
             } else {
-                invoice.append("Locker: Không sử dụng locker\n\n");
+                invoice.append("Locker: No locker used\n");
             }
+            invoice.append("\n");
 
             invoice.append("=====================================\n");
-            invoice.append(String.format("TỔNG CỘNG: %.0f VNĐ\n", totalAmount));
+            invoice.append(String.format("TOTAL: %.0f VND\n", totalAmount));
             invoice.append("=====================================\n\n");
 
             invoice.append("-------------------------------------\n");
-            invoice.append("         THANH TOÁN (TIỀN MẶT)      \n");
+            invoice.append("         PAYMENT (CASH)            \n");
             invoice.append("-------------------------------------\n");
-            invoice.append(String.format("Số tiền nhận: %.0f VNĐ\n",
+            invoice.append(String.format("Received Amount: %.0f VND\n",
                     Double.parseDouble(receivedAmountField.getText())));
 
-            String changeText = changeLabel.getText().replace("VNĐ", "").replace(".", "").replace(",", "").trim();
+            String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
             double changeAmount = 0.0;
             try {
                 changeAmount = Double.parseDouble(changeText);
             } catch (NumberFormatException e) {
                 changeAmount = 0.0;
             }
-            invoice.append(String.format("Tiền thừa: %.0f VNĐ\n\n", changeAmount));
+            invoice.append(String.format("Change: %.0f VND\n\n", changeAmount));
 
             invoice.append("=====================================\n");
-            invoice.append("     CẢM ƠN QUÝ KHÁCH ĐÃ SỬ DỤNG    \n");
-            invoice.append("          DỊCH VỤ CỦA CHÚNG TÔI     \n");
+            invoice.append("     THANK YOU FOR YOUR PATRONAGE    \n");
             invoice.append("=====================================\n");
 
             writer.write(invoice.toString());
             writer.close();
 
+            System.out.println("DEBUG: Invoice generated with PIN: " + lockerPinCode);
+
         } catch (IOException e) {
             System.err.println("Error generating invoice file: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tạo file hóa đơn: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to create invoice file: " + e.getMessage());
         }
     }
 
@@ -285,7 +303,7 @@ public class TotalController {
             String endTime = selectedShowtime.getEndTime();
             showtimeLabel.setText(selectedShowtime.getShowDate() + " " +
                     (showTime != null ? showTime : "") + (endTime != null ? " - " + endTime : ""));
-            roomLabel.setText("Phòng " + selectedShowtime.getRoomName());
+            roomLabel.setText("Room " + selectedShowtime.getRoomName());
 
             ticketDetails.clear();
             boolean validData = true;
@@ -311,7 +329,7 @@ public class TotalController {
             }
 
             if (!validData) {
-                showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Dữ liệu ghế không hợp lệ từ Session. Tải dữ liệu từ cơ sở dữ liệu.");
+                showAlert(Alert.AlertType.WARNING, "Warning", "Invalid seat data from Session. Loading data from database.");
                 loadLatestTicketFromDatabase();
             }
         } else {
@@ -360,7 +378,7 @@ public class TotalController {
                 String endTime = rs.getString("endTime");
                 showtimeLabel.setText(rs.getString("showDate") + " " +
                         (showTime != null ? showTime : "") + (endTime != null ? " - " + endTime : ""));
-                roomLabel.setText("Phòng " + rs.getString("roomNumber"));
+                roomLabel.setText("Room " + rs.getString("roomNumber"));
 
                 do {
                     String seatNumber = rs.getString("seatRow") + rs.getInt("seatColumn");
@@ -369,13 +387,13 @@ public class TotalController {
                     ticketDetails.add(new TicketDetail(seatNumber, seatType, price));
                 } while (rs.next());
             } else {
-                movieTitleLabel.setText("Chưa chọn phim");
-                showtimeLabel.setText("Chưa chọn suất chiếu");
-                roomLabel.setText("Chưa chọn phòng");
+                movieTitleLabel.setText("No movie selected");
+                showtimeLabel.setText("No showtime selected");
+                roomLabel.setText("No room selected");
             }
         } catch (SQLException e) {
             System.err.println("Error loading ticket information: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải thông tin vé: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load ticket information: " + e.getMessage());
         }
     }
 
@@ -391,16 +409,16 @@ public class TotalController {
                 ));
             }
         } else {
-            System.out.println("Không có addon nào được chọn từ Session");
+            System.out.println("No add-ons selected from Session");
         }
     }
 
     private void loadLockerInfo() {
-        if (selectedLocker != null) {
+        if (selectedLocker != null && lockerPinCode != null) {
             lockerInfoLabel.setText("Locker " + selectedLocker.getLockerNumber() +
                     " - " + selectedLocker.getLocationInfo());
         } else {
-            lockerInfoLabel.setText("Không sử dụng locker");
+            lockerInfoLabel.setText("No locker used");
         }
     }
 
@@ -412,7 +430,7 @@ public class TotalController {
         for (ServiceDetail service : serviceDetails) {
             totalAmount += service.getTotalPrice();
         }
-        totalAmountLabel.setText(String.format("%.0f VNĐ", totalAmount));
+        totalAmountLabel.setText(String.format("%.0f VND", totalAmount));
     }
 
     private void updateDateTime() {
@@ -426,8 +444,8 @@ public class TotalController {
         if (currentUser != null) {
             employeeLabel.setText(currentUser.getFullName() + " (ID: " + currentUser.getEmployeeId() + ")");
         } else {
-            employeeLabel.setText("Nhân viên: Không xác định");
-            showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Không thể xác định thông tin nhân viên.");
+            employeeLabel.setText("Employee: Unknown");
+            showAlert(Alert.AlertType.WARNING, "Warning", "Unable to identify employee information.");
         }
     }
 
@@ -443,16 +461,16 @@ public class TotalController {
             double change = receivedAmount - totalAmount;
 
             if (change >= 0) {
-                changeLabel.setText(String.format("%.0f VNĐ", change));
+                changeLabel.setText(String.format("%.0f VND", change));
                 changeLabel.setStyle("-fx-text-fill: green;");
                 printInvoiceButton.setDisable(false);
             } else {
-                changeLabel.setText("Không đủ tiền");
+                changeLabel.setText("Insufficient amount");
                 changeLabel.setStyle("-fx-text-fill: red;");
                 printInvoiceButton.setDisable(true);
             }
         } catch (NumberFormatException e) {
-            changeLabel.setText("Số tiền không hợp lệ");
+            changeLabel.setText("Invalid amount");
             changeLabel.setStyle("-fx-text-fill: red;");
             printInvoiceButton.setDisable(true);
         }
@@ -461,79 +479,82 @@ public class TotalController {
     @FXML
     private void printInvoice() {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Xác nhận thanh toán");
+        confirmation.setTitle("Confirm Payment");
         confirmation.setHeaderText(null);
-        confirmation.setContentText("Bạn có chắc chắn muốn thanh toán và tạo vé không?");
+        confirmation.setContentText("Are you sure you want to process the payment and create the ticket?");
 
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try (Connection conn = DBConnection.getConnection()) {
-                conn.setAutoCommit(false); // Bắt đầu transaction
+                conn.setAutoCommit(false);
 
-                // Tạo vé
+                // Create ticket
                 String ticketCode = createFinalTicket();
                 if (ticketCode == null) {
                     conn.rollback();
                     resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tạo vé. Vui lòng thử lại.");
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to create ticket. Please try again.");
                     return;
                 }
 
-                // Gán tủ đồ nếu có
-                if (selectedLocker != null) {
-                    String pinCode = (String) bookingData.get("lockerPinCode");
-                    String itemDescription = (String) bookingData.get("itemDescription");
+                // Assign locker if applicable - SỬ DỤNG BIẾN INSTANCE
+                if (selectedLocker != null && lockerPinCode != null) {
                     try {
+                        System.out.println("DEBUG: Assigning locker with PIN: " + lockerPinCode);
                         LockerController.assignLockerToCustomer(
                                 conn,
                                 selectedLocker.getLockerId(),
                                 ticketCode,
-                                pinCode,
-                                itemDescription,
+                                lockerPinCode, // SỬ DỤNG BIẾN INSTANCE THAY VÌ LẤY TỪ bookingData
+                                lockerItemDescription != null ? lockerItemDescription : "",
                                 ""
                         );
-                        System.out.println("Đã gán tủ đồ: lockerId=" + selectedLocker.getLockerId() +
-                                ", ticketCode=" + ticketCode + ", pinCode=" + pinCode);
+                        System.out.println("Assigned locker: lockerId=" + selectedLocker.getLockerId() +
+                                ", ticketCode=" + ticketCode + ", pinCode=" + lockerPinCode);
                     } catch (SQLException e) {
                         conn.rollback();
                         resetLockerStatus(selectedLocker.getLockerId());
-                        System.err.println("Lỗi khi gán tủ đồ: " + e.getMessage());
-                        showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể gán tủ đồ: " + e.getMessage());
+                        System.err.println("Error assigning locker: " + e.getMessage());
+                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to assign locker: " + e.getMessage());
                         return;
                     }
                 }
 
-                // Lưu hóa đơn
+                // Save invoice
                 saveInvoiceWithTicketCode(ticketCode);
 
                 // Commit transaction
                 conn.commit();
 
-                // Tạo file hóa đơn
+                // Generate invoice file
                 generateInvoiceTxtFile();
 
-                // Thông báo thành công
+                // Show success message với PIN chính xác
                 Alert success = new Alert(Alert.AlertType.INFORMATION);
-                success.setTitle("Thanh toán thành công");
+                success.setTitle("Payment Successful");
                 success.setHeaderText(null);
-                success.setContentText("Thanh toán và tạo vé thành công!\n" +
-                        "Mã vé: " + ticketCode + "\n" +
-                        "Mã hóa đơn: " + invoiceNumberLabel.getText() +
-                        (selectedLocker != null ? "\nMã PIN tủ đồ: " + bookingData.get("lockerPinCode") : "") +
-                        "\nFile hóa đơn đã được lưu tại: invoices/" + invoiceNumberLabel.getText() + ".txt");
+                success.setContentText("Payment and ticket creation successful!\n" +
+                        "Ticket Code: " + ticketCode + "\n" +
+                        "Invoice Number: " + invoiceNumberLabel.getText() +
+                        (selectedLocker != null && lockerPinCode != null ?
+                                "\nLocker PIN: " + lockerPinCode : "") +
+                        "\nInvoice file saved at: invoices/" + invoiceNumberLabel.getText() + ".txt");
                 success.showAndWait();
 
-                // Xóa dữ liệu session và kích hoạt nút giao dịch mới
+                // Clear session data và reset biến instance
                 Session.clearBookingData();
+                lockerPinCode = null;
+                lockerItemDescription = null;
+                selectedLocker = null;
                 newTransactionButton.setDisable(false);
 
             } catch (SQLException e) {
-                System.err.println("Lỗi cơ sở dữ liệu: " + e.getMessage());
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Lỗi cơ sở dữ liệu: " + e.getMessage());
+                System.err.println("Database error: " + e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Error", "Database error: " + e.getMessage());
                 resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
             }
         } else {
-            // Hủy giao dịch, đặt lại trạng thái tủ
+            // Cancel transaction, reset locker status
             resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
         }
     }
@@ -547,33 +568,33 @@ public class TotalController {
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi đặt lại trạng thái tủ: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể đặt lại trạng thái tủ: " + e.getMessage());
+            System.err.println("Error resetting locker status: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to reset locker status: " + e.getMessage());
         }
     }
 
     private String createFinalTicket() {
         if (selectedSeats == null || selectedSeats.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không có thông tin ghế để tạo vé.");
+            showAlert(Alert.AlertType.ERROR, "Error", "No seat information available to create ticket.");
             return null;
         }
 
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
-            // Kiểm tra showtime
+            // Check showtime
             String checkShowtimeQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
             try (PreparedStatement checkShowtimeStmt = conn.prepareStatement(checkShowtimeQuery)) {
                 checkShowtimeStmt.setInt(1, selectedShowtime.getShowtimeId());
                 ResultSet checkRs = checkShowtimeStmt.executeQuery();
                 if (checkRs.next() && checkRs.getInt(1) == 0) {
                     conn.rollback();
-                    showAlert(Alert.AlertType.ERROR, "Lỗi suất chiếu", "Suất chiếu không tồn tại trong cơ sở dữ liệu.");
+                    showAlert(Alert.AlertType.ERROR, "Showtime Error", "Showtime does not exist in the database.");
                     return null;
                 }
             }
 
-            // Tạo ticketCode duy nhất
+            // Generate unique ticketCode
             String ticketCode = "TICKET_" + UUID.randomUUID().toString().substring(0, 8);
             String checkQuery = "SELECT COUNT(*) FROM tickets WHERE ticketCode = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
@@ -585,7 +606,7 @@ public class TotalController {
                 }
             }
 
-            // Chèn vé
+            // Insert ticket
             String ticketQuery = "INSERT INTO tickets (ticketCode, showtimeId, totalPrice, soldBy) OUTPUT INSERTED.ticketId VALUES (?, ?, ?, ?)";
             int ticketId = 0;
             try (PreparedStatement ticketStmt = conn.prepareStatement(ticketQuery)) {
@@ -599,7 +620,7 @@ public class TotalController {
                 }
             }
 
-            // Chèn ghế
+            // Insert seats
             String seatQuery = "INSERT INTO ticketSeats (ticketId, seatId) VALUES (?, ?)";
             try (PreparedStatement seatStmt = conn.prepareStatement(seatQuery)) {
                 for (Map<String, Object> seatInfo : selectedSeats) {
@@ -610,7 +631,7 @@ public class TotalController {
                 seatStmt.executeBatch();
             }
 
-            // Chèn dịch vụ bổ sung
+            // Insert additional services
             if (selectedAddons != null && !selectedAddons.isEmpty()) {
                 String addonQuery = "INSERT INTO ticketServices (ticketId, serviceId, quantity, servicePrice) VALUES (?, ?, ?, ?)";
                 try (PreparedStatement addonStmt = conn.prepareStatement(addonQuery)) {
@@ -626,13 +647,13 @@ public class TotalController {
             }
 
             conn.commit();
-            System.out.println("DEBUG: Đã tạo vé thành công! TicketId: " + ticketId + ", TicketCode: " + ticketCode);
+            System.out.println("DEBUG: Ticket created successfully! TicketId: " + ticketId + ", TicketCode: " + ticketCode);
             return ticketCode;
 
         } catch (SQLException ex) {
-            System.err.println("Lỗi khi tạo vé: " + ex.getMessage());
+            System.err.println("Error creating ticket: " + ex.getMessage());
             ex.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi cơ sở dữ liệu", "Không thể tạo vé: " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to create ticket: " + ex.getMessage());
             return null;
         }
     }
@@ -652,10 +673,10 @@ public class TotalController {
             stmt.setString(2, ticketCode);
             stmt.setString(3, currentUser != null ? currentUser.getEmployeeId() : "");
             stmt.setDouble(4, totalAmount);
-            stmt.setString(5, "Tiền mặt");
+            stmt.setString(5, "Cash");
             stmt.setDouble(6, Double.parseDouble(receivedAmountField.getText()));
 
-            String changeText = changeLabel.getText().replace("VNĐ", "").replace(".", "").replace(",", "").trim();
+            String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
             double changeAmount = 0.0;
             try {
                 changeAmount = Double.parseDouble(changeText);
@@ -669,7 +690,7 @@ public class TotalController {
 
         } catch (SQLException e) {
             System.err.println("Error saving invoice: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể lưu hóa đơn: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to save invoice: " + e.getMessage());
         }
     }
 
@@ -684,14 +705,14 @@ public class TotalController {
                 String lockerInfo = String.format("Locker %s - PIN: %s",
                         selectedLocker.getLockerNumber(), pinCode);
                 if (itemDescription != null && !itemDescription.isEmpty()) {
-                    lockerInfo += String.format("\nMô tả: %s", itemDescription);
+                    lockerInfo += String.format("\nDescription: %s", itemDescription);
                 }
                 lockerInfoLabel.setText(lockerInfo);
             } else {
-                lockerInfoLabel.setText("Không sử dụng locker");
+                lockerInfoLabel.setText("No locker used");
             }
         } else {
-            lockerInfoLabel.setText("Không sử dụng locker");
+            lockerInfoLabel.setText("No locker used");
         }
     }
 
@@ -705,7 +726,7 @@ public class TotalController {
                     ticketCode VARCHAR(50),
                     employeeId VARCHAR(20),
                     totalAmount DECIMAL(10,2),
-                    paymentMethod VARCHAR(50) DEFAULT 'Tiền mặt',
+                    paymentMethod VARCHAR(50) DEFAULT 'Cash',
                     receivedAmount DECIMAL(10,2),
                     changeAmount DECIMAL(10,2),
                     createdAt DATETIME DEFAULT GETDATE()
@@ -717,7 +738,7 @@ public class TotalController {
 
         } catch (SQLException e) {
             System.err.println("Error creating invoices table: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tạo bảng invoices: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to create invoices table: " + e.getMessage());
         }
     }
 
@@ -730,19 +751,26 @@ public class TotalController {
                 stmt.setInt(1, selectedLocker.getLockerId());
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                System.err.println("Lỗi khi đặt lại trạng thái tủ: " + e.getMessage());
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể đặt lại trạng thái tủ: " + e.getMessage());
+                System.err.println("Error resetting locker status: " + e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to reset locker status: " + e.getMessage());
             }
         }
 
+        // Reset tất cả biến instance
         ticketDetails.clear();
         serviceDetails.clear();
         receivedAmountField.clear();
-        changeLabel.setText("0 VNĐ");
-        movieTitleLabel.setText("Chưa chọn phim");
-        showtimeLabel.setText("Chưa chọn suất chiếu");
-        roomLabel.setText("Chưa chọn phòng");
-        lockerInfoLabel.setText("Không sử dụng locker");
+        changeLabel.setText("0 VND");
+        movieTitleLabel.setText("No movie selected");
+        showtimeLabel.setText("No showtime selected");
+        roomLabel.setText("No room selected");
+        lockerInfoLabel.setText("No locker used");
+
+        // Reset locker data
+        selectedLocker = null;
+        lockerPinCode = null;
+        lockerItemDescription = null;
+
         generateInvoiceNumber();
         updateDateTime();
         goBack();
@@ -757,8 +785,8 @@ public class TotalController {
                 stmt.setInt(1, selectedLocker.getLockerId());
                 stmt.executeUpdate();
             } catch (SQLException e) {
-                System.err.println("Lỗi khi đặt lại trạng thái tủ: " + e.getMessage());
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể đặt lại trạng thái tủ: " + e.getMessage());
+                System.err.println("Error resetting locker status: " + e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to reset locker status: " + e.getMessage());
             }
         }
 
@@ -768,8 +796,8 @@ public class TotalController {
             Parent listMoviesRoot = loader.load();
 
             if (contentArea == null) {
-                System.err.println("contentArea chưa được khởi tạo trong TotalController!");
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "contentArea chưa được khởi tạo trong TotalController!");
+                System.err.println("contentArea has not been initialized in TotalController!");
+                showAlert(Alert.AlertType.ERROR, "Error", "contentArea has not been initialized in TotalController!");
                 return;
             }
 
@@ -780,7 +808,7 @@ public class TotalController {
             AnchorPane.setRightAnchor(listMoviesRoot, 0.0);
         } catch (IOException ex) {
             System.err.println("Error loading ListMovies.fxml: " + ex.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải danh sách phim: " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load movie list: " + ex.getMessage());
         }
     }
 

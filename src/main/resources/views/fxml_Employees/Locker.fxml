@@ -13,7 +13,7 @@
 <AnchorPane prefHeight="768.0" prefWidth="1124.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.LockerController">
     <children>
         <!-- Title -->
-        <Label alignment="CENTER" layoutX="20.0" layoutY="20.0" prefHeight="40.0" prefWidth="300.0" text="CHỌN TỦ GIỮ ĐỒ">
+        <Label alignment="CENTER" layoutX="20.0" layoutY="20.0" prefHeight="40.0" prefWidth="300.0" text="SELECT LOCKER">
             <font>
                 <Font size="24.0" />
             </font>
@@ -22,15 +22,15 @@
         <!-- Booking Info Panel -->
         <VBox layoutX="700.0" layoutY="20.0" prefHeight="372.0" prefWidth="380.0" style="-fx-border-color: #ddd; -fx-border-radius: 8; -fx-background-color: #f8f9fa; -fx-padding: 15;" spacing="10">
             <children>
-                <Label style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;" text="THÔNG TIN ĐƠN HÀNG" />
+                <Label style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;" text="ORDER INFORMATION" />
                 <VBox fx:id="bookingInfoBox" prefHeight="357.0" prefWidth="348.0" spacing="8" style="-fx-font-size: 13px; -fx-text-fill: #495057;">
                     <children>
-                        <Label fx:id="movieTitleLabel" style="-fx-font-weight: bold; -fx-text-fill: #007bff;" text="Phim: Chưa có thông tin" wrapText="true" />
-                        <Label fx:id="showtimeLabel" text="Suất chiếu: Chưa có thông tin" wrapText="true" />
-                        <Label fx:id="roomLabel" text="Phòng: Chưa có thông tin" wrapText="true" />
-                        <Label fx:id="seatsLabel" text="Ghế: Chưa có thông tin" wrapText="true" />
-                        <Label fx:id="addonsLabel" text="Dịch vụ bổ sung: Chưa có" wrapText="true" />
-                        <Label fx:id="totalPriceLabel" style="-fx-font-weight: bold; -fx-text-fill: #dc3545;" text="Tổng tiền: 0 VND" wrapText="true" />
+                        <Label fx:id="movieTitleLabel" style="-fx-font-weight: bold; -fx-text-fill: #007bff;" text="Movie: No information available" wrapText="true" />
+                        <Label fx:id="showtimeLabel" text="Showtime: No information available" wrapText="true" />
+                        <Label fx:id="roomLabel" text="Room: No information available" wrapText="true" />
+                        <Label fx:id="seatsLabel" text="Seats: No information available" wrapText="true" />
+                        <Label fx:id="addonsLabel" text="Additional Services: None" wrapText="true" />
+                        <Label fx:id="totalPriceLabel" style="-fx-font-weight: bold; -fx-text-fill: #dc3545;" text="Total: 0 VND" wrapText="true" />
                     </children>
                 </VBox>
             </children>
@@ -39,7 +39,7 @@
         <!-- Available Lockers Grid -->
         <VBox layoutX="20.0" layoutY="80.0" prefWidth="650.0" spacing="10">
             <children>
-                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="TỦ GIỮ ĐỒ CÓ SẴN" />
+                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="AVAILABLE LOCKERS" />
                 <GridPane fx:id="lockerGrid" alignment="TOP_LEFT" hgap="8.0" prefHeight="350.0" prefWidth="650.0" vgap="8.0">
                     <padding>
                         <Insets bottom="10" left="10" right="10" top="10" />
@@ -51,20 +51,20 @@
         <!-- Selected Locker Info -->
         <VBox layoutX="20.0" layoutY="450.0" prefWidth="650.0" spacing="10">
             <children>
-                <Label fx:id="selectedLockerLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2196F3;" text="Chưa chọn tủ giữ đồ" />
+                <Label fx:id="selectedLockerLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2196F3;" text="No locker selected" />
 
                 <!-- Locker Assignment Box (Initially Hidden) -->
                 <VBox fx:id="lockerAssignmentBox" spacing="10" style="-fx-border-color: #28a745; -fx-border-radius: 8; -fx-background-color: #f8fff8; -fx-padding: 15;" visible="false">
                     <children>
-                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #155724;" text="THÔNG TIN GỬI ĐỒ" />
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #155724;" text="STORAGE INFORMATION" />
                         <HBox alignment="CENTER_LEFT" spacing="10">
                             <children>
-                                <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Mô tả đồ vật:" />
-                                <TextField fx:id="itemDescriptionField" prefWidth="200.0" promptText="VD: Túi xách màu đen, ví da..." style="-fx-font-size: 13px;" />
+                                <Label style="-fx-font-size: 13px; -fx-font-weight: bold;" text="Item Description:" />
+                                <TextField fx:id="itemDescriptionField" prefWidth="200.0" promptText="E.g., Black handbag, leather wallet..." style="-fx-font-size: 13px;" />
                             </children>
                         </HBox>
-                        <Label fx:id="pinCodeLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #dc3545;" text="Mã PIN: ----" />
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="* Khách hàng sẽ sử dụng mã PIN này để mở tủ" />
+                        <Label fx:id="pinCodeLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #dc3545;" text="PIN Code: ----" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="* Customers will use this PIN to unlock the locker" />
                     </children>
                 </VBox>
             </children>
@@ -73,41 +73,41 @@
         <!-- Navigation Buttons -->
         <VBox alignment="CENTER" layoutX="700.0" layoutY="410.0" prefWidth="380.0" spacing="15">
             <children>
-                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="HOÀN TẤT ĐƠN HÀNG" />
-                <Button fx:id="skipLockerButton" onAction="#handleSkipLocker" prefHeight="45.0" prefWidth="320.0" style="-fx-background-color: #fd7e14; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 6;" text="BỎ QUA - THANH TOÁN NGAY" />
-                <Button fx:id="finishWithLockerButton" onAction="#handleFinishWithLocker" prefHeight="45.0" prefWidth="320.0" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 6;" text="HOÀN TẤT VỚI TỦ GIỮ ĐỒ" />
-                <Button fx:id="backToAddonsButton" onAction="#handleBackToAddons" prefHeight="35.0" prefWidth="320.0" style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 12px; -fx-background-radius: 6;" text="← QUAY LẠI CHỌN THỨC ĂN" />
+                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="COMPLETE ORDER" />
+                <Button fx:id="skipLockerButton" onAction="#handleSkipLocker" prefHeight="45.0" prefWidth="320.0" style="-fx-background-color: #fd7e14; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 6;" text="SKIP - PROCEED TO PAYMENT" />
+                <Button fx:id="finishWithLockerButton" onAction="#handleFinishWithLocker" prefHeight="45.0" prefWidth="320.0" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 6;" text="COMPLETE WITH LOCKER" />
+                <Button fx:id="backToAddonsButton" onAction="#handleBackToAddons" prefHeight="35.0" prefWidth="320.0" style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-size: 12px; -fx-background-radius: 6;" text="← BACK TO ADD-ONS" />
             </children>
         </VBox>
 
         <!-- Locker Status Legend -->
         <VBox layoutX="20.0" layoutY="666.0" prefHeight="74.0" prefWidth="418.0" spacing="8">
             <children>
-                <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="TRẠNG THÁI TỦ:" />
+                <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="LOCKER STATUS:" />
                 <HBox spacing="20">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #4CAF50; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="Có thể chọn" />
+                                <Label style="-fx-font-size: 13px;" text="Available" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #2196F3; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="Đã chọn" />
+                                <Label style="-fx-font-size: 13px;" text="Selected" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #F44336; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="Đang sử dụng" />
+                                <Label style="-fx-font-size: 13px;" text="In Use" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #FF9800; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="Bảo trì" />
+                                <Label style="-fx-font-size: 13px;" text="Under Maintenance" />
                             </children>
                         </HBox>
                     </children>
