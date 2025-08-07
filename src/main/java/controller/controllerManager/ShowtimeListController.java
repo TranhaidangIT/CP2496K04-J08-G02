@@ -87,14 +87,17 @@ public class ShowtimeListController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Manager/Showtime/AddShowtime.fxml"));
             AnchorPane addShowtimePane = loader.load();
 
-            // Tạo Stage mới để hiển thị AddShowtime
+            //create a new stage to add showtime
             Stage stage = new Stage();
             stage.setTitle("Add New Showtime");
             stage.setScene(new Scene(addShowtimePane));
             stage.show();
 
+            //auto refresh after add showtime
+            stage.setOnHidden(e -> loadShowtimeItems());
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println();
         }
     }
 

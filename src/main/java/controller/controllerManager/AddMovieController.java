@@ -112,12 +112,13 @@ public class AddMovieController {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Movie added successfully.");
 
                 if (movieListController != null) {
-//                    movieListController.refreshTable(); // update table
+
                 }
 
                 clearForm();
                 Stage stage = (Stage) btnInsert.getScene().getWindow();
                 stage.close();
+
             } else {
                 showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to add movie to the database.");
             }

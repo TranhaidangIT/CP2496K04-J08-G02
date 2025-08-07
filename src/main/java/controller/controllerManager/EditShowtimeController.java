@@ -30,7 +30,7 @@ public class EditShowtimeController {
 
     private Showtime mainShowtime;
     private List<Showtime> showtimeGroup;
-    private final int maxColumns = 12;
+    private final int maxColumns = 10;
 
     @FXML
     public void initialize() {
@@ -68,7 +68,7 @@ public class EditShowtimeController {
         try {
             List<ScreeningRoom> rooms = ScreeningRoomDAO.getAllRooms();
             for (ScreeningRoom room : rooms) {
-                String display = "Room " + room.getRoomNumber();
+                String display = room.getRoomNumber();
                 roomComboBox.getItems().add(display);
                 roomMap.put(display, room);
             }
@@ -83,7 +83,6 @@ public class EditShowtimeController {
 
         datePicker.setValue(mainShowtime.getShowDate());
 
-        // So sánh ID thay vì tên tránh sai sót
         for (Map.Entry<String, Movie> entry : movieMap.entrySet()) {
             if (entry.getValue().getMovieId() == mainShowtime.getMovieId()) {
                 movieComboBox.setValue(entry.getKey());

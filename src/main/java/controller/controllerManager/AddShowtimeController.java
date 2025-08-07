@@ -50,7 +50,7 @@ public class AddShowtimeController {
 
     private List<LocalTime> addedTimeSlots = new ArrayList<>();
 
-    private final int maxColumns = 12;
+    private final int maxColumns = 10;
 
     // Map tên -> object để truy xuất ID khi insert
     private Map<String, Movie> movieMap = new HashMap<>();
@@ -89,7 +89,7 @@ public class AddShowtimeController {
         try {
             List<ScreeningRoom> rooms = ScreeningRoomDAO.getAllRooms();
             for (ScreeningRoom room : rooms) {
-                String display = "Room " + room.getRoomNumber();
+                String display = room.getRoomNumber();
                 roomComboBox.getItems().add(display);
                 roomMap.put(display, room);
             }
