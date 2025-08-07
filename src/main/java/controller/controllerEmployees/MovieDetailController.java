@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class MovieDetailController {
 
@@ -143,9 +144,9 @@ public class MovieDetailController {
                     selectedShowtime.setShowtimeId(showtimeId);
                     selectedShowtime.setMovieId(movie.getMovieId());
                     selectedShowtime.setMovieTitle(movie.getTitle());
-                    selectedShowtime.setShowDate(showDate);
-                    selectedShowtime.setShowTime(showTime);
-                    selectedShowtime.setEndTime(endTime);
+                    selectedShowtime.setShowDate(LocalDate.parse(showDate));
+                    selectedShowtime.setShowTime(LocalTime.parse(showTime));
+                    selectedShowtime.setEndTime(LocalTime.parse(endTime));
                     selectedShowtime.setRoomId(roomId);
                     selectedShowtime.setRoomName("Room " + roomId);
 
