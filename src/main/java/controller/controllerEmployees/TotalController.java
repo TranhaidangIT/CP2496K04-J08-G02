@@ -340,7 +340,7 @@ public class TotalController {
 
     private Double getPriceFromSeatId(int seatId) {
         try (Connection conn = DBConnection.getConnection()) {
-            String query = "SELECT st.price FROM Seat s JOIN SeatType st ON s.seatTypeId = st.seatTypeId WHERE s.seatId = ?";
+            String query = "SELECT st.price FROM seats s JOIN seatTypes st ON s.seatTypeId = st.seatTypeId WHERE s.seatId = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, seatId);
             ResultSet rs = stmt.executeQuery();
@@ -363,8 +363,8 @@ public class TotalController {
                 JOIN movies m ON s.movieId = m.movieId
                 JOIN screeningRooms sr ON s.roomId = sr.roomId
                 JOIN ticketSeats ts ON t.ticketId = ts.ticketId
-                JOIN Seat seat ON ts.seatId = seat.seatId
-                JOIN SeatType st ON seat.seatTypeId = st.seatTypeId
+                JOIN seats seat ON ts.seatId = seat.seatId
+                JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
                 ORDER BY t.ticketId DESC
                 """;
 

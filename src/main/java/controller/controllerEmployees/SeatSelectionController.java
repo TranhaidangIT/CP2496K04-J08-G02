@@ -106,7 +106,7 @@ public class SeatSelectionController {
 
     private void loadSeatTypePrices() {
         try (Connection conn = DBConnection.getConnection()) {
-            String query = "SELECT seatTypeId, price FROM SeatType";
+            String query = "SELECT seatTypeId, price FROM seatTypes";
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
