@@ -29,21 +29,23 @@ public class SeatSelectionController {
     @FXML private Label showtimeLabel;
     @FXML private GridPane seatGrid;
     @FXML private Label totalPriceLabel;
+    @FXML private Label totalSeatsLabel;
     @FXML private Button cancelButton;
     @FXML private Button confirmButton;
 
     private Showtime selectedShowtime;
     private List<Map<String, Object>> selectedSeats;
     private Map<Integer, Double> seatTypePrices;
+    private int totalSeats = 0;
 
     @FXML
     public void initialize() {
-        System.out.println("Khởi tạo SeatSelectionController");
+        System.out.println("Initializing SeatSelectionController");
         selectedSeats = new ArrayList<>();
         seatTypePrices = new HashMap<>();
         if (showtimeLabel == null || seatGrid == null || totalPriceLabel == null ||
-                cancelButton == null || confirmButton == null) {
-            System.err.println("Lỗi: Một hoặc nhiều fx:id không được khởi tạo đúng trong SeatSelection.fxml");
+                totalSeatsLabel == null || cancelButton == null || confirmButton == null) {
+            System.err.println("Error: One or more fx:id not properly initialized in SeatSelection.fxml");
         }
         updateTotalPrice();
     }
@@ -52,33 +54,32 @@ public class SeatSelectionController {
         this.selectedShowtime = showtime;
         System.out.println("setData called with showtime: " + (showtime != null ? showtime.toString() : "null"));
         if (selectedShowtime == null) {
-            System.err.println("Lỗi: Showtime là null trong SeatSelectionController!");
+            System.err.println("Error: Showtime is null in SeatSelectionController!");
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi suất chiếu");
+            alert.setTitle("Showtime Error");
             alert.setHeaderText(null);
-            alert.setContentText("Không có thông tin suất chiếu. Vui lòng chọn lại suất chiếu.");
+            alert.setContentText("No showtime information available. Please select a showtime again.");
             alert.showAndWait();
             return;
         }
         System.out.println("showtimeId: " + selectedShowtime.getShowtimeId());
 
-        // Kiểm tra showtimeId có tồn tại trong bảng showtimes
         try (Connection conn = DBConnection.getConnection()) {
             String checkQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
             checkStmt.setInt(1, selectedShowtime.getShowtimeId());
             ResultSet rs = checkStmt.executeQuery();
             if (rs.next() && rs.getInt(1) == 0) {
-                System.err.println("Lỗi: showtimeId " + selectedShowtime.getShowtimeId() + " không tồn tại trong bảng showtimes!");
+                System.err.println("Error: showtimeId " + selectedShowtime.getShowtimeId() + " does not exist in showtimes table!");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi suất chiếu");
+                alert.setTitle("Showtime Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Suất chiếu không tồn tại trong cơ sở dữ liệu. Vui lòng kiểm tra lại.");
+                alert.setContentText("The selected showtime does not exist in the database. Please try again.");
                 alert.showAndWait();
                 return;
             }
         } catch (SQLException ex) {
-            System.err.println("Lỗi khi kiểm tra showtimeId: " + ex.getMessage());
+            System.err.println("Error checking showtimeId: " + ex.getMessage());
             ex.printStackTrace();
         }
 
@@ -91,11 +92,11 @@ public class SeatSelectionController {
     }
 
     private void displayShowtimeInfo() {
-        System.out.println("Phim: " + selectedShowtime.getMovieTitle());
-        System.out.println("Phòng: " + selectedShowtime.getRoomName());
-        System.out.println("Ngày chiếu: " + selectedShowtime.getShowDate());
-        System.out.println("Giờ bắt đầu: " + selectedShowtime.getShowTime());
-        System.out.println("Giờ kết thúc: " + selectedShowtime.getEndTime());
+        System.out.println("Movie: " + selectedShowtime.getMovieTitle());
+        System.out.println("Room: " + selectedShowtime.getRoomName());
+        System.out.println("Date: " + selectedShowtime.getShowDate());
+        System.out.println("Start Time: " + selectedShowtime.getShowTime());
+        System.out.println("End Time: " + selectedShowtime.getEndTime());
 
         showtimeLabel.setText(
                 selectedShowtime.getMovieTitle() + " | " +
@@ -112,44 +113,42 @@ public class SeatSelectionController {
             while (rs.next()) {
                 seatTypePrices.put(rs.getInt("seatTypeId"), rs.getDouble("price"));
             }
-            System.out.println("Đã tải giá ghế: " + seatTypePrices);
+            System.out.println("Loaded seat prices: " + seatTypePrices);
         } catch (SQLException ex) {
-            System.err.println("Lỗi khi tải giá SeatType: " + ex.getMessage());
+            System.err.println("Error loading SeatType prices: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
 
     private void loadSeats() {
         seatGrid.getChildren().clear();
-        System.out.println("Tạo lưới ghế từ cơ sở dữ liệu");
+        System.out.println("Loading seat grid from database");
         System.out.println("roomId: " + selectedShowtime.getRoomId());
 
         try (Connection conn = DBConnection.getConnection()) {
             if (conn == null) {
-                System.err.println("Lỗi: Không thể kết nối đến cơ sở dữ liệu!");
+                System.err.println("Error: Unable to connect to the database!");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi kết nối");
+                alert.setTitle("Connection Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra lại.");
+                alert.setContentText("Cannot connect to the database. Please check the connection.");
                 alert.showAndWait();
                 return;
             }
 
-            // Kiểm tra sự tồn tại của bảng seats
             String checkTableQuery = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'dbo' AND table_name = 'Seat'";
             PreparedStatement checkStmt = conn.prepareStatement(checkTableQuery);
             ResultSet checkRs = checkStmt.executeQuery();
             if (!checkRs.next()) {
-                System.err.println("Lỗi: Bảng seats không tồn tại trong cơ sở dữ liệu!");
+                System.err.println("Error: Seats table does not exist in the database!");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi cơ sở dữ liệu");
+                alert.setTitle("Database Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Bảng seats không tồn tại. Vui lòng kiểm tra cơ sở dữ liệu.");
+                alert.setContentText("The seats table does not exist. Please check the database.");
                 alert.showAndWait();
                 return;
             }
 
-            // Lấy danh sách ghế từ bảng seats, join với SeatType
             String seatQuery = "SELECT s.seatId, s.seatRow, s.seatColumn, st.seatTypeName, s.seatTypeId, s.isActive " +
                     "FROM Seat s " +
                     "JOIN SeatType st ON s.seatTypeId = st.seatTypeId " +
@@ -158,7 +157,6 @@ public class SeatSelectionController {
             seatStmt.setInt(1, selectedShowtime.getRoomId());
             ResultSet seatRs = seatStmt.executeQuery();
 
-            // Lấy danh sách seatId đã đặt từ bảng ticketSeats
             String bookedSeatQuery = "SELECT ts.seatId FROM ticketSeats ts JOIN tickets t ON ts.ticketId = t.ticketId WHERE t.showtimeId = ?";
             PreparedStatement bookedStmt = conn.prepareStatement(bookedSeatQuery);
             bookedStmt.setInt(1, selectedShowtime.getShowtimeId());
@@ -167,7 +165,7 @@ public class SeatSelectionController {
             while (bookedRs.next()) {
                 bookedSeatIds.add(bookedRs.getInt("seatId"));
             }
-            System.out.println("Số ghế đã đặt: " + bookedSeatIds.size());
+            System.out.println("Number of booked seats: " + bookedSeatIds.size());
 
             int seatCount = 0;
             while (seatRs.next()) {
@@ -180,100 +178,157 @@ public class SeatSelectionController {
 
                 if (isActive) {
                     Button seat = new Button(seatRow + seatColumn);
-                    seat.setPrefSize(40, 40);
+                    seat.setPrefSize(45, 45);
+                    seat.setMinSize(45, 45);
+                    seat.setMaxSize(45, 45);
+                    seat.setAccessibleText("Seat " + seatRow + seatColumn + ", " + seatTypeName + ", " + (bookedSeatIds.contains(seatId) ? "Booked" : "Available"));
 
-                    // Áp dụng màu theo seatTypeName
-                    String seatColor;
-                    switch (seatTypeName.toLowerCase()) {
-                        case "standard":
-                            seatColor = "#ff9999"; // Hồng
-                            break;
-                        case "vip":
-                            seatColor = "#66ccff"; // Xanh da trời sáng
-                            break;
-                        case "sweetbox":
-                            seatColor = "#ff0000"; // Đỏ
-                            break;
-                        default:
-                            seatColor = "#ccc"; // Mặc định
-                            break;
-                    }
-
-                    // Kiểm tra ghế đã đặt
+                    SeatInfo seatInfo = getSeatInfo(seatTypeName);
                     if (bookedSeatIds.contains(seatId)) {
-                        seatColor = "#808080"; // Xám cho ghế đã đặt
-                        seat.setDisable(true); // Vô hiệu hóa ghế đã đặt
+                        seat.setStyle(getOccupiedSeatStyle());
+                        seat.setDisable(true);
+                    } else {
+                        seat.setStyle(getAvailableSeatStyle(seatInfo.color));
+                        setupSeatInteraction(seat, seatInfo, seatId, seatRow, seatColumn, seatTypeName, seatTypeId);
                     }
 
-                    seat.setStyle("-fx-background-color: " + seatColor + "; -fx-background-radius: 5px; -fx-text-fill: black;");
-                    seat.setOnAction(e -> handleSeatSelection(seat, seatId, seatRow, seatColumn, seatTypeName, seatTypeId));
-
-                    // Thêm ghế vào seatGrid
                     seatGrid.add(seat, seatColumn - 1, seatRow.charAt(0) - 'A');
                     seatCount++;
-                    System.out.println("Ghế " + seatRow + seatColumn + ": " + seatTypeName + ", color: " + seatColor);
                 }
             }
-            System.out.println("Số ghế được thêm vào seatGrid: " + seatCount);
+            totalSeats = seatCount;
+            updateSeatInfo();
+            System.out.println("Number of seats added to seatGrid: " + seatCount);
             if (seatCount == 0) {
-                System.out.println("Cảnh báo: Không có ghé nào được tải từ bảng seats cho roomId = " + selectedShowtime.getRoomId());
+                System.out.println("Warning: No seats loaded from seats table for roomId = " + selectedShowtime.getRoomId());
                 Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Không có ghế");
+                alert.setTitle("No Seats Available");
                 alert.setHeaderText(null);
-                alert.setContentText("Không tìm thấy ghế khả dụng cho phòng này. Vui lòng kiểm tra dữ liệu.");
+                alert.setContentText("No available seats found for this room. Please check the data.");
                 alert.showAndWait();
             }
 
         } catch (SQLException ex) {
-            System.err.println("Lỗi khi truy vấn ghế từ CSDL: " + ex.getMessage());
+            System.err.println("Error querying seats from database: " + ex.getMessage());
             ex.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi cơ sở dữ liệu");
+            alert.setTitle("Database Error");
             alert.setHeaderText(null);
-            alert.setContentText("Không thể tải danh sách ghế: " + ex.getMessage());
+            alert.setContentText("Unable to load seat list: " + ex.getMessage());
             alert.showAndWait();
         }
     }
 
+    private void setupSeatInteraction(Button seat, SeatInfo seatInfo, int seatId, String seatRow, int seatColumn, String seatTypeName, int seatTypeId) {
+        seat.setOnMouseEntered(e -> {
+            seat.setStyle(getHoverSeatStyle(seatInfo.color));
+            seat.setScaleX(1.1);
+            seat.setScaleY(1.1);
+        });
+        seat.setOnMouseExited(e -> {
+            Map<String, Object> selectedSeat = selectedSeats.stream()
+                    .filter(s -> (int)s.get("seatId") == seatId)
+                    .findFirst()
+                    .orElse(null);
+            seat.setStyle(selectedSeat != null ? getSelectedSeatStyle(seatInfo.color) : getAvailableSeatStyle(seatInfo.color));
+            seat.setScaleX(1.0);
+            seat.setScaleY(1.0);
+        });
+        seat.setOnAction(e -> handleSeatSelection(seat, seatId, seatRow, seatColumn, seatTypeName, seatTypeId));
+    }
+
+    private SeatInfo getSeatInfo(String seatTypeName) {
+        switch (seatTypeName.toLowerCase()) {
+            case "standard":
+                return new SeatInfo("#FF6B9D", "Standard");
+            case "vip":
+                return new SeatInfo("#3498DB", "VIP");
+            case "sweetbox":
+                return new SeatInfo("#E74C3C", "Sweet Box");
+            default:
+                return new SeatInfo("#7f8c8d", "Unknown");
+        }
+    }
+
+    private String getAvailableSeatStyle(String color) {
+        return String.format("-fx-background-color: %s; " +
+                "-fx-background-radius: 10px; " +
+                "-fx-text-fill: white; " +
+                "-fx-font-weight: bold; " +
+                "-fx-font-size: 12px; " +
+                "-fx-cursor: hand; " +
+                "-fx-border-color: #34495e; " +
+                "-fx-border-width: 2px; " +
+                "-fx-border-radius: 10px; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 3, 0, 0, 1);", color);
+    }
+
+    private String getHoverSeatStyle(String color) {
+        return String.format("-fx-background-color: derive(%s, -20%%); " +
+                "-fx-background-radius: 10px; " +
+                "-fx-text-fill: white; " +
+                "-fx-font-weight: bold; " +
+                "-fx-font-size: 12px; " +
+                "-fx-cursor: hand; " +
+                "-fx-border-color: #2c3e50; " +
+                "-fx-border-width: 2px; " +
+                "-fx-border-radius: 10px; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 2);", color);
+    }
+
+    private String getSelectedSeatStyle(String color) {
+        return String.format("-fx-background-color: derive(%s, -40%%); " +
+                "-fx-background-radius: 10px; " +
+                "-fx-text-fill: white; " +
+                "-fx-font-weight: bold; " +
+                "-fx-font-size: 12px; " +
+                "-fx-cursor: hand; " +
+                "-fx-border-color: #2c3e50; " +
+                "-fx-border-width: 2px; " +
+                "-fx-border-radius: 10px; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 2);", color);
+    }
+
+    private String getOccupiedSeatStyle() {
+        return "-fx-background-color: #7f8c8d; " +
+                "-fx-background-radius: 10px; " +
+                "-fx-text-fill: #bdc3c7; " +
+                "-fx-font-weight: bold; " +
+                "-fx-font-size: 12px; " +
+                "-fx-border-color: #95a5a6; " +
+                "-fx-border-width: 2px; " +
+                "-fx-border-radius: 10px; " +
+                "-fx-opacity: 0.6;";
+    }
+
+    private void updateSeatInfo() {
+        if (totalSeatsLabel != null) {
+            totalSeatsLabel.setText("Total Seats: " + totalSeats);
+        }
+    }
+
     private void handleSeatSelection(Button seat, int seatId, String seatRow, int seatColumn, String seatTypeName, int seatTypeId) {
-        // Kiểm tra xem ghế đã được chọn chưa
         Map<String, Object> selectedSeat = selectedSeats.stream()
                 .filter(s -> (int)s.get("seatId") == seatId)
                 .findFirst()
                 .orElse(null);
 
+        SeatInfo seatInfo = getSeatInfo(seatTypeName);
         if (selectedSeat == null) {
-            // Chọn ghế
-            seat.setStyle("-fx-background-color: #66ccff; -fx-text-fill: white; -fx-background-radius: 5px;");
-            Map<String, Object> seatInfo = new HashMap<>();
-            seatInfo.put("seatId", seatId);
-            seatInfo.put("seatRow", seatRow);
-            seatInfo.put("seatColumn", seatColumn);
-            seatInfo.put("seatTypeName", seatTypeName);
-            seatInfo.put("seatTypeId", seatTypeId);
-            seatInfo.put("button", seat);
-            selectedSeats.add(seatInfo);
-            System.out.println("Chọn ghế: " + seatRow + seatColumn + " (" + seatTypeName + ")");
+            seat.setStyle(getSelectedSeatStyle(seatInfo.color));
+            Map<String, Object> seatInfoMap = new HashMap<>();
+            seatInfoMap.put("seatId", seatId);
+            seatInfoMap.put("seatRow", seatRow);
+            seatInfoMap.put("seatColumn", seatColumn);
+            seatInfoMap.put("seatTypeName", seatTypeName);
+            seatInfoMap.put("seatTypeId", seatTypeId);
+            seatInfoMap.put("button", seat);
+            selectedSeats.add(seatInfoMap);
+            System.out.println("Selected seat: " + seatRow + seatColumn + " (" + seatTypeName + ")");
         } else {
-            // Bỏ chọn ghế
             selectedSeats.remove(selectedSeat);
-            String seatColor;
-            switch (seatTypeName.toLowerCase()) {
-                case "standard":
-                    seatColor = "#ff9999";
-                    break;
-                case "vip":
-                    seatColor = "#66ccff";
-                    break;
-                case "sweetbox":
-                    seatColor = "#ff0000";
-                    break;
-                default:
-                    seatColor = "#ccc";
-                    break;
-            }
-            seat.setStyle("-fx-background-color: " + seatColor + "; -fx-background-radius: 5px; -fx-text-fill: black;");
-            System.out.println("Bỏ chọn ghế: " + seatRow + seatColumn + " (" + seatTypeName + ")");
+            seat.setStyle(getAvailableSeatStyle(seatInfo.color));
+            System.out.println("Deselected seat: " + seatRow + seatColumn + " (" + seatTypeName + ")");
         }
         updateTotalPrice();
     }
@@ -282,43 +337,28 @@ public class SeatSelectionController {
         double totalPrice = selectedSeats.stream()
                 .mapToDouble(seat -> seatTypePrices.getOrDefault((int)seat.get("seatTypeId"), 0.0))
                 .sum();
-        totalPriceLabel.setText(String.format("Tổng tiền: %.2f", totalPrice));
+        totalPriceLabel.setText(String.format("Total Price: %.2f", totalPrice));
     }
 
     @FXML
     private void handleCancel() {
         for (Map<String, Object> seatInfo : selectedSeats) {
             Button seat = (Button) seatInfo.get("button");
-            String seatTypeName = (String) seatInfo.get("seatTypeName");
-            String seatColor;
-            switch (seatTypeName.toLowerCase()) {
-                case "standard":
-                    seatColor = "#ff9999";
-                    break;
-                case "vip":
-                    seatColor = "#66ccff";
-                    break;
-                case "sweetbox":
-                    seatColor = "#ff0000";
-                    break;
-                default:
-                    seatColor = "#ccc";
-                    break;
-            }
-            seat.setStyle("-fx-background-color: " + seatColor + "; -fx-background-radius: 5px; -fx-text-fill: black;");
+            SeatInfo seatTypeInfo = getSeatInfo((String) seatInfo.get("seatTypeName"));
+            seat.setStyle(getAvailableSeatStyle(seatTypeInfo.color));
         }
         selectedSeats.clear();
         updateTotalPrice();
-        System.out.println("Hủy tất cả ghế đã chọn");
+        System.out.println("Cancelled all selected seats");
     }
 
     @FXML
     private void handleConfirm() {
         if (selectedSeats.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Chưa chọn ghế");
+            alert.setTitle("No Seats Selected");
             alert.setHeaderText(null);
-            alert.setContentText("Vui lòng chọn ít nhất một ghế trước khi xác nhận.");
+            alert.setContentText("Please select at least one seat before confirming.");
             alert.showAndWait();
             return;
         }
@@ -326,46 +366,39 @@ public class SeatSelectionController {
         User currentUser = Session.getCurrentUser();
         if (currentUser == null || currentUser.getUserId() == 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi thông tin nhân viên");
+            alert.setTitle("User Information Error");
             alert.setHeaderText(null);
-            alert.setContentText("Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.");
+            alert.setContentText("User information not found. Please log in again.");
             alert.showAndWait();
             return;
         }
 
         if (selectedShowtime == null || selectedShowtime.getShowtimeId() <= 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi suất chiếu");
+            alert.setTitle("Showtime Error");
             alert.setHeaderText(null);
-            alert.setContentText("Suất chiếu không hợp lệ. Vui lòng chọn lại suất chiếu.");
+            alert.setContentText("Invalid showtime. Please select a showtime again.");
             alert.showAndWait();
             return;
         }
 
-        // Lưu thông tin tạm thời vào Session thay vì tạo vé ngay
         Map<String, Object> bookingData = new HashMap<>();
         bookingData.put("showtime", selectedShowtime);
         bookingData.put("selectedSeats", new ArrayList<>(selectedSeats));
         bookingData.put("seatTypePrices", new HashMap<>(seatTypePrices));
         bookingData.put("currentUser", currentUser);
 
-        // Tính tổng tiền ghế
         double seatsTotalPrice = selectedSeats.stream()
                 .mapToDouble(seat -> seatTypePrices.getOrDefault((int)seat.get("seatTypeId"), 0.0))
                 .sum();
         bookingData.put("seatsTotalPrice", seatsTotalPrice);
 
-        // Lưu vào Session
         Session.setBookingData(bookingData);
-
-        System.out.println("Đã lưu thông tin đặt ghế vào Session. Chuyển sang SellAddons...");
+        System.out.println("Saved seat selection data to Session. Navigating to SellAddons...");
 
         try {
-            // Chuyển sang trang SellAddons
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/SellAddons.fxml"));
             Parent sellAddonsRoot = loader.load();
-
-            // Lấy controller SellAddons và truyền dữ liệu
             SellAddonsController controller = loader.getController();
             controller.setBookingData(bookingData);
 
@@ -377,17 +410,27 @@ public class SeatSelectionController {
                 AnchorPane.setLeftAnchor(sellAddonsRoot, 0.0);
                 AnchorPane.setRightAnchor(sellAddonsRoot, 0.0);
             } else {
-                System.err.println("Không tìm thấy #contentArea trong scene!");
+                System.err.println("Could not find #contentArea in the scene!");
+                confirmButton.getScene().setRoot(sellAddonsRoot);
             }
-
         } catch (IOException ex) {
-            System.err.println("Lỗi khi tải SellAddons.fxml: " + ex.getMessage());
+            System.err.println("Error loading SellAddons.fxml: " + ex.getMessage());
             ex.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
+            alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("Không thể chuyển sang trang bán addon: " + ex.getMessage());
+            alert.setContentText("Unable to navigate to add-ons page: " + ex.getMessage());
             alert.showAndWait();
+        }
+    }
+
+    private static class SeatInfo {
+        final String color;
+        final String type;
+
+        SeatInfo(String color, String type) {
+            this.color = color;
+            this.type = type;
         }
     }
 }

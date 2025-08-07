@@ -72,7 +72,6 @@
                                 <TableColumn fx:id="ticketCodeColumn" prefWidth="100.0" text="Mã vé" />
                                 <TableColumn fx:id="createdAtColumn" prefWidth="140.0" text="Ngày tạo" />
                                 <TableColumn fx:id="employeeColumn" prefWidth="120.0" text="Nhân viên" />
-                                <TableColumn fx:id="customerColumn" prefWidth="120.0" text="Khách hàng" />
                                 <TableColumn fx:id="totalAmountColumn" prefWidth="100.0" text="Tổng tiền" />
                                 <TableColumn fx:id="paymentMethodColumn" prefWidth="100.0" text="Thanh toán" />
                                 <TableColumn fx:id="statusColumn" prefWidth="80.0" text="Trạng thái" />

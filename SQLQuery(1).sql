@@ -1,4 +1,4 @@
-﻿CREATE DATABASE cinema_management;
+CREATE DATABASE cinema_management;
 GO
 
 USE cinema_management;
@@ -64,6 +64,7 @@ CREATE TABLE showtimes (
     roomId INT NOT NULL,
     showDate DATE NOT NULL,
     showTime TIME NOT NULL,
+	endTime TIME,
     createdAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (movieId) REFERENCES movies(movieId),
     FOREIGN KEY (roomId) REFERENCES screeningRooms(roomId)
@@ -151,7 +152,7 @@ CREATE TABLE ticketSeats (
     ticketId INT NOT NULL,
     seatId INT NOT NULL,
     FOREIGN KEY (ticketId) REFERENCES tickets(ticketId),
-    FOREIGN KEY (seatId) REFERENCES seats(seatId)
+    FOREIGN KEY (seatId) REFERENCES Seat(seatId)
 );
 
 -- TICKET SERVICES
@@ -174,37 +175,29 @@ CREATE TABLE ticketPayments (
     paymentTime DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ticketId) REFERENCES tickets(ticketId)
 );
-INSERT INTO movies(title, duration, genre, description, directedBy, language, poster, ageRating, releaseDate)
-VALUES
-(N'Titanic', 190, 'Romantic', N'Phim tâm lý tình cảm', 'Anthony Russo, Joe Russo', 'English', 'Titanic.jpg', 'T13', '2025-07-30'),
-(N'UP', 96, 'Comedy', N'Cuộc phiêu lưu bằng bóng bay', 'Pham The Duyet', N'Tiếng Việt', 'Up.jpg', 'K', '2025-07-30'),
-(N'It', 106, 'Horror', N'Cuộc sống của lập trình viên', 'Pham The Duyet', 'English', 'It.jpg', 'T16', '2025-07-30');
+CREATE TABLE invoices (
+    invoiceId INT PRIMARY KEY IDENTITY(1,1),
+    invoiceNumber VARCHAR(50) UNIQUE NOT NULL,
+    ticketCode VARCHAR(50),
+    employeeId VARCHAR(20),
+    customerInfo VARCHAR(200),
+    subtotal DECIMAL(10,2),
+    tax DECIMAL(10,2),
+    discount DECIMAL(10,2),
+    totalAmount DECIMAL(10,2),
+    paymentMethod VARCHAR(50),
+    receivedAmount DECIMAL(10,2),
+    changeAmount DECIMAL(10,2),
+    createdAt DATETIME DEFAULT GETDATE()
+);
 
--- Cập nhật thông tin cho phim Titanic
-UPDATE movies
-SET 
-    directedBy = 'James Cameron',
-    description = N'Dựa trên thảm họa có thật xảy ra năm 1912, Titanic kể lại câu chuyện tình bi tráng giữa Jack, một chàng họa sĩ nghèo, và Rose, một cô gái thuộc tầng lớp quý tộc. Hai người gặp nhau trên con tàu Titanic – con tàu lớn nhất thế giới lúc bấy giờ, trong hành trình định mệnh vượt Đại Tây Dương. Bộ phim là sự kết hợp hoàn hảo giữa tình yêu, bi kịch, và những thước phim hoành tráng mô tả vụ đắm tàu lịch sử.',
-    ageRating = 'T18'
-WHERE title = N'Titanic';
+EXEC sp_help 'tickets';
 
--- Cập nhật thông tin cho phim UP
-UPDATE movies
-SET 
-    directedBy = 'Pete Docter',
-    description = N'UP là bộ phim hoạt hình cảm động của Pixar kể về Carl Fredricksen, một ông lão 78 tuổi, quyết tâm thực hiện ước mơ thời trẻ là đến thác Paradise. Ông buộc hàng ngàn quả bóng bay vào ngôi nhà của mình để bay đến Nam Mỹ. Không ngờ, cậu bé hướng đạo Russell lại vô tình trở thành bạn đồng hành trong cuộc hành trình đầy kỳ thú, cảm động và tràn ngập thông điệp về tình bạn, lòng dũng cảm và tình cảm gia đình.',
-    language = 'English',
-    ageRating = 'P'
-WHERE title = N'UP';
+-- Ki?m tra c?t ticketCode trong b?ng lockerAssignments
+EXEC sp_help 'lockerAssignments';
 
--- Cập nhật thông tin cho phim It
-UPDATE movies
-SET 
-    directedBy = 'Andy Muschietti',
-    description = N'Dựa trên tiểu thuyết kinh dị nổi tiếng của Stephen King, "It" xoay quanh nhóm trẻ em tại thị trấn Derry, nơi hàng loạt vụ mất tích bí ẩn xảy ra. Chúng phải đối đầu với một thực thể tà ác cổ xưa có thể biến thành nỗi sợ hãi lớn nhất của mỗi người — thường xuất hiện dưới hình dạng chú hề ma quái Pennywise. Bộ phim là hành trình trưởng thành, vượt qua nỗi sợ và tình bạn kiên cường của nhóm "Losers Club".',
-    ageRating = 'T18'
-WHERE title = N'It';
+ALTER TABLE lockerAssignments 
+ADD ticketCode VARCHAR(20),
+    CONSTRAINT FK_LockerAssignments_Tickets FOREIGN KEY (ticketCode) REFERENCES tickets(ticketCode);
 
-ALTER TABLE showtimes
-ADD endTime TIME;
-
+CREATE INDEX idx_locker_assignments_ticket ON lockerAssignments(ticketCode);

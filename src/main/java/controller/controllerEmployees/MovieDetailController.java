@@ -114,6 +114,7 @@ public class MovieDetailController {
     private void loadShowtimesFromDatabase(Movie movie) {
         showtimePane.getChildren().clear();
         confirmButton.setDisable(true);
+        roomLabel.setText("Chưa chọn suất chiếu"); // Đặt lại roomLabel khi tải danh sách suất chiếu
 
         try (Connection conn = DBConnection.getConnection()) {
             String query = "SELECT showtimeId, roomId, showDate, showTime, endTime FROM showtimes WHERE movieId = ? AND showDate = ?";
@@ -128,6 +129,8 @@ public class MovieDetailController {
                 String showDate = rs.getString("showDate");
                 String showTime = rs.getString("showTime").substring(0, 8);
                 String endTime = rs.getString("endTime").substring(0, 8);
+
+                System.out.println("Tải suất chiếu: showtimeId=" + showtimeId + ", roomId=" + roomId + ", showTime=" + showTime); // Log để kiểm tra dữ liệu
 
                 String label = showTime + " - " + endTime;
 
@@ -146,16 +149,25 @@ public class MovieDetailController {
                     selectedShowtime.setRoomId(roomId);
                     selectedShowtime.setRoomName("Room " + roomId);
 
+                    // Cập nhật roomLabel khi chọn suất chiếu
+                    roomLabel.setText("Room " + roomId);
                     confirmButton.setDisable(false);
-                    System.out.println("Đã chọn showtimeId: " + showtimeId);
+                    System.out.println("Đã chọn showtimeId: " + showtimeId + ", Room: " + roomId);
                 });
 
                 btn.setPrefWidth(140);
                 showtimePane.getChildren().add(btn);
             }
+
+            // Nếu không có suất chiếu, hiển thị thông báo
+            if (showtimePane.getChildren().isEmpty()) {
+                roomLabel.setText("Không có suất chiếu");
+                System.out.println("Không tìm thấy suất chiếu cho movieId: " + movie.getMovieId());
+            }
         } catch (SQLException ex) {
             System.err.println("Lỗi khi tải showtimes từ CSDL: " + ex.getMessage());
             ex.printStackTrace();
+            roomLabel.setText("Lỗi tải dữ liệu");
         }
     }
 }

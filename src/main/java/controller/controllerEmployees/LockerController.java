@@ -13,10 +13,7 @@ import models.*;
 import utils.Session;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -500,16 +497,32 @@ public class LockerController {
         }
     }
 
+    // Cập nhật phương thức navigateToTotal để truyền ticketCode
     private void navigateToTotal(boolean hasLocker) {
         try {
             if (hasLocker) {
-                updateLockerStatus(selectedLocker.getLockerId(), "Occupied");
+                if (selectedLocker == null) {
+                    showAlert("Chưa chọn locker", "Vui lòng chọn một locker trước khi tiếp tục.", Alert.AlertType.WARNING);
+                    return;
+                }
+                String itemDescription = itemDescriptionField.getText().trim();
+                if (itemDescription.isEmpty()) {
+                    showAlert("Thiếu thông tin", "Vui lòng mô tả đồ vật cần gửi.", Alert.AlertType.WARNING);
+                    return;
+                }
+
+                // Lưu thông tin locker vào bookingData
+                bookingData.put("selectedLocker", selectedLocker);
+                bookingData.put("lockerPinCode", generatedPinCode);
+                bookingData.put("itemDescription", itemDescription);
                 Session.setBookingData(bookingData);
             }
 
+            // Chuyển đến trang Total.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/Total.fxml"));
             Parent totalRoot = loader.load();
-
+            TotalController controller = loader.getController();
+            controller.setContentArea((AnchorPane) lockerGrid.getScene().lookup("#contentArea"));
             navigateToPage(totalRoot);
 
         } catch (IOException ex) {
@@ -540,43 +553,52 @@ public class LockerController {
         }
     }
 
-    public static void assignLockerToCustomer(int lockerId, String pinCode, String itemDescription, String customerName) {
-        try (Connection conn = DBConnection.getConnection()) {
-            conn.setAutoCommit(false);
+    // Cập nhật phương thức assignLockerToCustomer trong LockerController
+    public static void assignLockerToCustomer(Connection conn, int lockerId, String ticketCode, String pinCode, String itemDescription, String customerName) throws SQLException {
+        // Kiểm tra ticketCode tồn tại
+        String checkQuery = "SELECT COUNT(*) FROM tickets WHERE ticketCode = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+            checkStmt.setString(1, ticketCode);
+            ResultSet rs = checkStmt.executeQuery();
+            rs.next();
+            if (rs.getInt(1) == 0) {
+                throw new SQLException("TicketCode " + ticketCode + " không tồn tại trong bảng tickets.");
+            }
+        }
 
-            String insertQuery = "INSERT INTO lockerAssignments (lockerId, pinCode, itemDescription, assignedAt) VALUES (?, ?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(insertQuery);
+        // Chèn vào lockerAssignments
+        String insertQuery = "INSERT INTO lockerAssignments (lockerId, pinCode, itemDescription, ticketCode, assignedAt) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
             stmt.setInt(1, lockerId);
             stmt.setString(2, pinCode);
             stmt.setString(3, itemDescription);
-            stmt.setObject(4, LocalDateTime.now());
+            stmt.setString(4, ticketCode);
+            stmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             stmt.executeUpdate();
-
-            String updateQuery = "UPDATE lockers SET status = 'Occupied' WHERE lockerId = ?";
-            PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
-            updateStmt.setInt(1, lockerId);
-            updateStmt.executeUpdate();
-
-            logLockerHistory(conn, lockerId, "Assigned to customer", customerName);
-
-            conn.commit();
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi gán locker cho khách hàng: " + e.getMessage());
         }
+
+        // Cập nhật trạng thái tủ
+        String updateQuery = "UPDATE lockers SET status = 'Occupied' WHERE lockerId = ? AND status = 'Available'";
+        try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+            updateStmt.setInt(1, lockerId);
+            int rowsAffected = updateStmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Không thể cập nhật trạng thái tủ: Tủ không tồn tại hoặc không ở trạng thái Available.");
+            }
+        }
+
+        // Ghi lịch sử
+        logLockerHistory(conn, lockerId, "Assigned to customer", "Customer: " + customerName + ", Ticket: " + ticketCode);
     }
 
-    private static void logLockerHistory(Connection conn, int lockerId, String action, String userInfo) {
-        try {
-            String insertQuery = "INSERT INTO lockerHistory (lockerId, userAction, actionTime, userInfo) VALUES (?, ?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(insertQuery);
+    private static void logLockerHistory(Connection conn, int lockerId, String action, String userInfo) throws SQLException {
+        String insertQuery = "INSERT INTO lockerHistory (lockerId, userAction, actionTime, userInfo) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
             stmt.setInt(1, lockerId);
             stmt.setString(2, action);
-            stmt.setObject(3, LocalDateTime.now());
+            stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setString(4, userInfo);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi ghi lịch sử locker: " + e.getMessage());
         }
     }
 

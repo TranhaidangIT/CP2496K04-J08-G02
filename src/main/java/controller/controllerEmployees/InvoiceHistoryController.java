@@ -38,7 +38,6 @@ public class InvoiceHistoryController {
     @FXML private TableColumn<InvoiceRecord, String> ticketCodeColumn;
     @FXML private TableColumn<InvoiceRecord, String> createdAtColumn;
     @FXML private TableColumn<InvoiceRecord, String> employeeColumn;
-    @FXML private TableColumn<InvoiceRecord, String> customerColumn;
     @FXML private TableColumn<InvoiceRecord, String> totalAmountColumn;
     @FXML private TableColumn<InvoiceRecord, String> paymentMethodColumn;
     @FXML private TableColumn<InvoiceRecord, String> statusColumn;
@@ -59,6 +58,7 @@ public class InvoiceHistoryController {
 
     @FXML
     public void initialize() {
+        System.out.println("InvoiceHistoryController initialized. contentArea: " + contentArea);
         setupTable();
         setupEventHandlers();
         loadInvoiceData();
@@ -67,14 +67,14 @@ public class InvoiceHistoryController {
 
     public void setContentArea(AnchorPane contentArea) {
         this.contentArea = contentArea;
+        System.out.println("setContentArea called in InvoiceHistoryController with contentArea: " + contentArea);
     }
 
     private void setupTable() {
         invoiceNumberColumn.setCellValueFactory(new PropertyValueFactory<>("invoiceNumber"));
         ticketCodeColumn.setCellValueFactory(new PropertyValueFactory<>("ticketCode"));
-        createdAtColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-        employeeColumn.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
-        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customerInfo"));
+        createdAtColumn.setCellValueFactory(new PropertyValueFactory<>("createdAtFormatted"));
+        employeeColumn.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
         totalAmountColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmountFormatted"));
         paymentMethodColumn.setCellValueFactory(new PropertyValueFactory<>("paymentMethod"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -168,7 +168,7 @@ public class InvoiceHistoryController {
         invoicesList.clear();
         try (Connection conn = DBConnection.getConnection()) {
             String query = """
-                SELECT i.invoiceNumber, i.ticketCode, i.employeeId, i.customerInfo,
+                SELECT i.invoiceNumber, i.ticketCode, i.employeeId,
                        i.totalAmount, i.paymentMethod, i.receivedAmount, i.changeAmount,
                        i.createdAt, u.fullName as employeeName
                 FROM invoices i
@@ -185,7 +185,6 @@ public class InvoiceHistoryController {
                         rs.getString("ticketCode"),
                         rs.getString("employeeId"),
                         rs.getString("employeeName"),
-                        rs.getString("customerInfo"),
                         rs.getDouble("totalAmount"),
                         rs.getString("paymentMethod"),
                         rs.getDouble("receivedAmount"),
@@ -214,7 +213,7 @@ public class InvoiceHistoryController {
         invoicesList.clear();
         try (Connection conn = DBConnection.getConnection()) {
             StringBuilder queryBuilder = new StringBuilder("""
-                SELECT i.invoiceNumber, i.ticketCode, i.employeeId, i.customerInfo,
+                SELECT i.invoiceNumber, i.ticketCode, i.employeeId,
                        i.totalAmount, i.paymentMethod, i.receivedAmount, i.changeAmount,
                        i.createdAt, u.fullName as employeeName
                 FROM invoices i
@@ -254,7 +253,6 @@ public class InvoiceHistoryController {
                         rs.getString("ticketCode"),
                         rs.getString("employeeId"),
                         rs.getString("employeeName"),
-                        rs.getString("customerInfo"),
                         rs.getDouble("totalAmount"),
                         rs.getString("paymentMethod"),
                         rs.getDouble("receivedAmount"),
@@ -459,21 +457,45 @@ public class InvoiceHistoryController {
             if (movieRs.next()) {
                 movieTitle = movieRs.getString("title");
                 showDateTime = movieRs.getString("showDate") + " " +
-                        movieRs.getString("showTime") + " - " +
-                        movieRs.getString("endTime");
+                        (movieRs.getString("showTime") != null ? movieRs.getString("showTime") : "") +
+                        (movieRs.getString("endTime") != null ? " - " + movieRs.getString("endTime") : "");
                 roomNumber = "Phòng " + movieRs.getString("roomNumber");
+            }
+
+            // Thêm phần lấy thông tin Locker
+            String lockerQuery = """
+                SELECT l.lockerNumber, la.pinCode, la.itemDescription
+                FROM tickets t
+                JOIN lockerAssignments la ON t.ticketCode = ? 
+                JOIN lockers l ON la.lockerId = l.lockerId
+                WHERE la.releasedAt IS NULL
+                """;
+
+            PreparedStatement lockerStmt = conn.prepareStatement(lockerQuery);
+            lockerStmt.setString(1, invoice.getTicketCode());
+            ResultSet lockerRs = lockerStmt.executeQuery();
+
+            String lockerInfo = "Không sử dụng locker";
+            if (lockerRs.next()) {
+                String lockerNumber = lockerRs.getString("lockerNumber");
+                String pinCode = lockerRs.getString("pinCode");
+                String itemDescription = lockerRs.getString("itemDescription");
+
+                lockerInfo = String.format("Locker %s - PIN: %s", lockerNumber, pinCode);
+                if (itemDescription != null && !itemDescription.isEmpty()) {
+                    lockerInfo += String.format("\nMô tả: %s", itemDescription);
+                }
             }
 
             // Build invoice content
             content.append("=====================================\n");
             content.append("          HÓA ĐƠN THANH TOÁN        \n");
-            content.append("         RạP CHIẾU PHIM XYZ         \n");
+            content.append("         RẠP CHIẾU PHIM CGV Xuan Khanh         \n");
             content.append("=====================================\n\n");
 
             content.append("Mã hóa đơn: ").append(invoice.getInvoiceNumber()).append("\n");
             content.append("Ngày giờ: ").append(invoice.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))).append("\n");
-            content.append("Nhân viên: ").append(invoice.getEmployeeName() != null ? invoice.getEmployeeName() : invoice.getEmployeeId()).append("\n");
-            content.append("Khách hàng: ").append(invoice.getCustomerInfo()).append("\n\n");
+            content.append("Nhân viên: ").append(invoice.getEmployeeName() != null ? invoice.getEmployeeName() : invoice.getEmployeeId()).append("\n\n");
 
             content.append("-------------------------------------\n");
             content.append("           THÔNG TIN PHIM           \n");
@@ -541,6 +563,12 @@ public class InvoiceHistoryController {
                 content.append(servicesContent.toString());
             }
 
+            // Thêm phần hiển thị locker vào hóa đơn
+            content.append("\n-------------------------------------\n");
+            content.append("           THÔNG TIN LOCKER          \n");
+            content.append("-------------------------------------\n");
+            content.append(lockerInfo).append("\n");
+
             content.append("\n=====================================\n");
             content.append(String.format("TỔNG CỘNG: %.0f VNĐ\n", invoice.getTotalAmount()));
             content.append("=====================================\n\n");
@@ -552,7 +580,7 @@ public class InvoiceHistoryController {
             content.append(String.format("Tiền thừa: %.0f VNĐ\n\n", invoice.getChangeAmount()));
 
             content.append("=====================================\n");
-            content.append("     CẢM ơN QUÝ KHÁCH ĐÃ SỬ DỤNG    \n");
+            content.append("     CẢM ƠN QUÝ KHÁCH ĐÃ SỬ DỤNG    \n");
             content.append("          DỊCH VỤ CỦA CHÚNG TÔI     \n");
             content.append("=====================================\n");
 
@@ -566,21 +594,29 @@ public class InvoiceHistoryController {
 
     @FXML
     private void goBack() {
+        System.out.println("goBack called in InvoiceHistoryController. contentArea: " + contentArea);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/Total.fxml"));
             Parent totalRoot = loader.load();
             TotalController controller = loader.getController();
 
-            if (contentArea != null) {
-                contentArea.getChildren().setAll(totalRoot);
-                AnchorPane.setTopAnchor(totalRoot, 0.0);
-                AnchorPane.setBottomAnchor(totalRoot, 0.0);
-                AnchorPane.setLeftAnchor(totalRoot, 0.0);
-                AnchorPane.setRightAnchor(totalRoot, 0.0);
+            if (contentArea == null) {
+                System.err.println("contentArea is null in InvoiceHistoryController!");
+                showErrorAlert("Lỗi", "contentArea chưa được khởi tạo!");
+                return;
             }
+
+            controller.setContentArea(contentArea); // Truyền contentArea cho TotalController
+            contentArea.getChildren().setAll(totalRoot);
+            AnchorPane.setTopAnchor(totalRoot, 0.0);
+            AnchorPane.setBottomAnchor(totalRoot, 0.0);
+            AnchorPane.setLeftAnchor(totalRoot, 0.0);
+            AnchorPane.setRightAnchor(totalRoot, 0.0);
+            System.out.println("Successfully switched to Total.fxml");
         } catch (IOException ex) {
             System.err.println("Error loading Total.fxml: " + ex.getMessage());
             ex.printStackTrace();
+            showErrorAlert("Lỗi", "Không thể tải giao diện Total: " + ex.getMessage());
         }
     }
 
@@ -606,7 +642,6 @@ public class InvoiceHistoryController {
         private final StringProperty ticketCode;
         private final StringProperty employeeId;
         private final StringProperty employeeName;
-        private final StringProperty customerInfo;
         private final DoubleProperty totalAmount;
         private final StringProperty paymentMethod;
         private final DoubleProperty receivedAmount;
@@ -615,13 +650,12 @@ public class InvoiceHistoryController {
         private final StringProperty status;
 
         public InvoiceRecord(String invoiceNumber, String ticketCode, String employeeId, String employeeName,
-                             String customerInfo, double totalAmount, String paymentMethod,
+                             double totalAmount, String paymentMethod,
                              double receivedAmount, double changeAmount, LocalDateTime createdAt) {
             this.invoiceNumber = new SimpleStringProperty(invoiceNumber);
             this.ticketCode = new SimpleStringProperty(ticketCode);
             this.employeeId = new SimpleStringProperty(employeeId);
             this.employeeName = new SimpleStringProperty(employeeName);
-            this.customerInfo = new SimpleStringProperty(customerInfo);
             this.totalAmount = new SimpleDoubleProperty(totalAmount);
             this.paymentMethod = new SimpleStringProperty(paymentMethod);
             this.receivedAmount = new SimpleDoubleProperty(receivedAmount);
@@ -635,7 +669,6 @@ public class InvoiceHistoryController {
         public String getTicketCode() { return ticketCode.get(); }
         public String getEmployeeId() { return employeeId.get(); }
         public String getEmployeeName() { return employeeName.get(); }
-        public String getCustomerInfo() { return customerInfo.get(); }
         public double getTotalAmount() { return totalAmount.get(); }
         public String getTotalAmountFormatted() { return String.format("%.0f VNĐ", totalAmount.get()); }
         public String getPaymentMethod() { return paymentMethod.get(); }
@@ -651,7 +684,7 @@ public class InvoiceHistoryController {
         public StringProperty invoiceNumberProperty() { return invoiceNumber; }
         public StringProperty ticketCodeProperty() { return ticketCode; }
         public StringProperty employeeIdProperty() { return employeeId; }
-        public StringProperty customerInfoProperty() { return customerInfo; }
+        public StringProperty employeeNameProperty() { return employeeName; }
         public StringProperty paymentMethodProperty() { return paymentMethod; }
         public StringProperty statusProperty() { return status; }
     }
