@@ -3,8 +3,8 @@
          CGV Xuan Khanh Cinema      
 =====================================
 
-Invoice Number: INV1754577701658
-Date & Time: 07/08/2025 21:41:48
+Invoice Number: INV1754585284872
+Date & Time: 07/08/2025 23:48:15
 Employee: Pham The Duyet
 
 -------------------------------------
@@ -17,7 +17,7 @@ Room: Room R001
 -------------------------------------
            TICKET DETAILS           
 -------------------------------------
-Seat C2 (Standard): 0 VND
+Seat A4 (Standard): 0 VND
 
 -------------------------------------
          ADDITIONAL SERVICES        
@@ -37,7 +37,7 @@ TOTAL: 105 VND
 =====================================
 
 -------------------------------------
-         PAYMENT (TI?N M?T)               
+         PAYMENT (CASH)               
 -------------------------------------
 Amount Received: 105 VND
 Change: 0 VND

@@ -24,7 +24,7 @@ public class LockerController {
 
     @FXML private GridPane lockerGrid;
     @FXML private Label selectedLockerLabel;
-    @FXML private VBox bookingInfoBox; // Thêm để tham chiếu đến VBox mới
+    @FXML private VBox bookingInfoBox; // Added to reference the new VBox
     @FXML private Label movieTitleLabel;
     @FXML private Label showtimeLabel;
     @FXML private Label roomLabel;
@@ -68,12 +68,12 @@ public class LockerController {
             }
         }
         if (movieTitleLabel != null) {
-            movieTitleLabel.setText("Không có thông tin đặt vé.");
+            movieTitleLabel.setText("No booking information.");
             showtimeLabel.setText("");
             roomLabel.setText("");
             seatsLabel.setText("");
             addonsLabel.setText("");
-            totalPriceLabel.setText("Vui lòng quay lại chọn vé.");
+            totalPriceLabel.setText("Please go back to select a ticket.");
         }
         return false;
     }
@@ -100,17 +100,17 @@ public class LockerController {
         List<Service> selectedAddons = (List<Service>) bookingData.get("selectedAddons");
 
         if (showtime != null && seats != null) {
-            // Cập nhật tiêu đề phim
-            movieTitleLabel.setText("Phim: " + showtime.getMovieTitle());
+            // Update movie title
+            movieTitleLabel.setText("Movie: " + showtime.getMovieTitle());
 
-            // Cập nhật suất chiếu
-            showtimeLabel.setText("Suất chiếu: " + showtime.getShowDate() + " " + showtime.getShowTime());
+            // Update showtime
+            showtimeLabel.setText("Showtime: " + showtime.getShowDate() + " " + showtime.getShowTime());
 
-            // Cập nhật phòng chiếu
-            roomLabel.setText("Phòng: " + showtime.getRoomName());
+            // Update room
+            roomLabel.setText("Room: " + showtime.getRoomName());
 
-            // Cập nhật danh sách ghế
-            StringBuilder seatsInfo = new StringBuilder("Ghế: ");
+            // Update seat list
+            StringBuilder seatsInfo = new StringBuilder("Seats: ");
             for (int i = 0; i < seats.size(); i++) {
                 Map<String, Object> seat = seats.get(i);
                 seatsInfo.append(seat.get("seatRow")).append(seat.get("seatColumn"));
@@ -118,8 +118,8 @@ public class LockerController {
             }
             seatsLabel.setText(seatsInfo.toString());
 
-            // Cập nhật dịch vụ bổ sung
-            StringBuilder addonsInfo = new StringBuilder("Dịch vụ bổ sung: ");
+            // Update add-ons
+            StringBuilder addonsInfo = new StringBuilder("Add-ons: ");
             if (selectedAddons != null && !selectedAddons.isEmpty()) {
                 for (int i = 0; i < selectedAddons.size(); i++) {
                     Service addon = selectedAddons.get(i);
@@ -127,20 +127,20 @@ public class LockerController {
                     if (i < selectedAddons.size() - 1) addonsInfo.append(", ");
                 }
             } else {
-                addonsInfo.append("Không có");
+                addonsInfo.append("None");
             }
             addonsLabel.setText(addonsInfo.toString());
 
-            // Cập nhật tổng tiền
+            // Update total price
             double totalPrice = (seatsTotal != null ? seatsTotal : 0) + (addonsTotal != null ? addonsTotal : 0);
-            totalPriceLabel.setText("Tổng tiền: " + String.format("%.0f VND", totalPrice));
+            totalPriceLabel.setText("Total: " + String.format("%.0f VND", totalPrice));
         } else {
-            movieTitleLabel.setText("Không có thông tin đặt vé.");
+            movieTitleLabel.setText("No booking information.");
             showtimeLabel.setText("");
             roomLabel.setText("");
             seatsLabel.setText("");
             addonsLabel.setText("");
-            totalPriceLabel.setText("Vui lòng quay lại chọn vé.");
+            totalPriceLabel.setText("Please go back to select a ticket.");
         }
     }
 
@@ -161,7 +161,7 @@ public class LockerController {
                 availableLockers.add(locker);
             }
         } catch (SQLException e) {
-            showAlert("Lỗi cơ sở dữ liệu", "Không thể tải danh sách locker: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Database Error", "Failed to load lockers: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -205,9 +205,9 @@ public class LockerController {
     private void handleAvailableLockerClick(Locker locker) {
         if (!hasBookingData) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Cần thông tin đặt vé");
-            alert.setHeaderText("Để chọn tủ giữ đồ mới");
-            alert.setContentText("Bạn cần có thông tin đặt vé để chọn tủ giữ đồ.\nHệ thống sẽ chuyển bạn về trang chọn phim.");
+            alert.setTitle("Booking Information Required");
+            alert.setHeaderText("To select a new locker");
+            alert.setContentText("You need booking information to select a locker.\nThe system will redirect you to the movie selection page.");
 
             alert.setOnHidden(e -> {
                 try {
@@ -215,7 +215,7 @@ public class LockerController {
                     Parent movieRoot = loader.load();
                     navigateToPage(movieRoot);
                 } catch (IOException ex) {
-                    System.err.println("Lỗi khi chuyển về trang chọn phim: " + ex.getMessage());
+                    System.err.println("Error redirecting to movie selection page: " + ex.getMessage());
                 }
             });
             alert.showAndWait();
@@ -231,16 +231,16 @@ public class LockerController {
 
     private void showRetrieveItemDialog(Locker locker) {
         Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Lấy đồ từ tủ " + locker.getLockerNumber());
-        dialog.setHeaderText("Nhập mã PIN để lấy đồ");
+        dialog.setTitle("Retrieve Item from Locker " + locker.getLockerNumber());
+        dialog.setHeaderText("Enter PIN to retrieve item");
 
         VBox content = new VBox(15);
         content.setPadding(new Insets(20));
-        Label infoLabel = new Label("Tủ: " + locker.getLockerNumber() + " - " + locker.getLocationInfo());
+        Label infoLabel = new Label("Locker: " + locker.getLockerNumber() + " - " + locker.getLocationInfo());
         infoLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-        Label pinLabel = new Label("Mã PIN (4 số):");
+        Label pinLabel = new Label("PIN (4 digits):");
         TextField pinField = new TextField();
-        pinField.setPromptText("Nhập mã PIN...");
+        pinField.setPromptText("Enter PIN...");
         pinField.setPrefWidth(200);
 
         pinField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -255,8 +255,8 @@ public class LockerController {
         content.getChildren().addAll(infoLabel, pinLabel, pinField);
         dialog.getDialogPane().setContent(content);
 
-        ButtonType retrieveButtonType = new ButtonType("Lấy đồ", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType retrieveButtonType = new ButtonType("Retrieve Item", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(retrieveButtonType, cancelButtonType);
 
         dialog.setResultConverter(dialogButton -> {
@@ -270,7 +270,7 @@ public class LockerController {
             if (pin != null && pin.length() == 4) {
                 processRetrieveItem(locker, pin);
             } else {
-                showAlert("Lỗi", "Mã PIN phải có đúng 4 chữ số!", Alert.AlertType.ERROR);
+                showAlert("Error", "PIN must be exactly 4 digits!", Alert.AlertType.ERROR);
             }
         });
     }
@@ -301,9 +301,9 @@ public class LockerController {
                         releaseLocker(conn, locker.getLockerId(), assignmentId);
 
                         Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                        successAlert.setTitle("Lấy đồ thành công");
-                        successAlert.setHeaderText("Tủ " + locker.getLockerNumber() + " đã được mở");
-                        successAlert.setContentText("Đồ vật: " + itemDescription + "\n\nVui lòng lấy đồ và đóng tủ lại.");
+                        successAlert.setTitle("Item Retrieved Successfully");
+                        successAlert.setHeaderText("Locker " + locker.getLockerNumber() + " has been opened");
+                        successAlert.setContentText("Item: " + itemDescription + "\n\nPlease retrieve your item and close the locker.");
                         successAlert.showAndWait();
 
                         loadAllLockers();
@@ -313,14 +313,14 @@ public class LockerController {
 
                     } catch (SQLException e) {
                         System.err.println("DEBUG: Error releasing locker: " + e.getMessage());
-                        showAlert("Lỗi", "Không thể cập nhật trạng thái tủ: " + e.getMessage(), Alert.AlertType.ERROR);
+                        showAlert("Error", "Failed to update locker status: " + e.getMessage(), Alert.AlertType.ERROR);
                     }
 
                 } else {
                     System.out.println("DEBUG: PIN mismatch. Expected: '" + correctPin + "', Entered: '" + enteredPin + "'");
-                    showAlert("Mã PIN không đúng",
-                            "Mã PIN không khớp.\nMã đã nhập: " + enteredPin +
-                                    "\nVui lòng kiểm tra lại mã PIN trên vé của bạn.",
+                    showAlert("Incorrect PIN",
+                            "The PIN does not match.\nEntered PIN: " + enteredPin +
+                                    "\nPlease check the PIN on your ticket.",
                             Alert.AlertType.ERROR);
                 }
             } else {
@@ -332,16 +332,16 @@ public class LockerController {
                 ResultSet allRs = checkAllStmt.executeQuery();
 
                 if (allRs.next() && allRs.getInt("total") > 0) {
-                    showAlert("Lỗi", "Tủ này đã được lấy đồ rồi hoặc không có đồ gửi.", Alert.AlertType.ERROR);
+                    showAlert("Error", "This locker has already been retrieved or has no stored items.", Alert.AlertType.ERROR);
                 } else {
-                    showAlert("Lỗi", "Không tìm thấy thông tin gửi đồ cho tủ này.", Alert.AlertType.ERROR);
+                    showAlert("Error", "No storage information found for this locker.", Alert.AlertType.ERROR);
                 }
             }
 
         } catch (SQLException e) {
             System.err.println("DEBUG: Database error: " + e.getMessage());
             e.printStackTrace();
-            showAlert("Lỗi cơ sở dữ liệu", "Không thể kiểm tra thông tin tủ: " + e.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Database Error", "Failed to check locker information: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -398,21 +398,21 @@ public class LockerController {
         String message;
         switch (locker.getStatus().toLowerCase()) {
             case "occupied":
-                message = "Tủ " + locker.getLockerNumber() + " đang được sử dụng.\n" +
-                        "Nhấp vào tủ và nhập mã PIN để lấy đồ.";
+                message = "Locker " + locker.getLockerNumber() + " is currently in use.\n" +
+                        "Click the locker and enter the PIN to retrieve the item.";
                 break;
             case "maintenance":
-                message = "Tủ " + locker.getLockerNumber() + " đang bảo trì.\n" +
-                        "Vui lòng chọn tủ khác hoặc liên hệ nhân viên.";
+                message = "Locker " + locker.getLockerNumber() + " is under maintenance.\n" +
+                        "Please select another locker or contact staff.";
                 break;
             default:
-                message = "Tủ " + locker.getLockerNumber() + " không khả dụng.";
+                message = "Locker " + locker.getLockerNumber() + " is not available.";
                 break;
         }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Thông tin tủ giữ đồ");
-        alert.setHeaderText("Tủ " + locker.getLockerNumber());
+        alert.setTitle("Locker Information");
+        alert.setHeaderText("Locker " + locker.getLockerNumber());
         alert.setContentText(message);
         alert.showAndWait();
     }
@@ -420,14 +420,16 @@ public class LockerController {
     private void selectLocker(Locker locker) {
         this.selectedLocker = locker;
 
-        selectedLockerLabel.setText("Đã chọn: Locker " + locker.getLockerNumber() +
+        selectedLockerLabel.setText("Selected: Locker " + locker.getLockerNumber() +
                 " - " + locker.getLocationInfo());
 
+        // Tạo PIN mới mỗi lần chọn locker
         generatedPinCode = generatePinCode();
+        System.out.println("DEBUG: Generated new PIN for locker " + locker.getLockerNumber() + ": " + generatedPinCode);
 
         if (lockerAssignmentBox != null) {
             lockerAssignmentBox.setVisible(true);
-            pinCodeLabel.setText("Mã PIN: " + generatedPinCode);
+            pinCodeLabel.setText("PIN: " + generatedPinCode);
         }
 
         refreshLockerDisplay();
@@ -465,13 +467,13 @@ public class LockerController {
     @FXML
     private void handleFinishWithLocker() {
         if (selectedLocker == null) {
-            showAlert("Chưa chọn locker", "Vui lòng chọn một locker trước khi tiếp tục.", Alert.AlertType.WARNING);
+            showAlert("No Locker Selected", "Please select a locker before proceeding.", Alert.AlertType.WARNING);
             return;
         }
 
         String itemDescription = itemDescriptionField.getText().trim();
         if (itemDescription.isEmpty()) {
-            showAlert("Thiếu thông tin", "Vui lòng mô tả đồ vật cần gửi.", Alert.AlertType.WARNING);
+            showAlert("Missing Information", "Please describe the item to be stored.", Alert.AlertType.WARNING);
             return;
         }
 
@@ -493,32 +495,43 @@ public class LockerController {
 
             navigateToPage(addonsRoot);
         } catch (IOException ex) {
-            showAlert("Lỗi", "Không thể quay lại trang addons: " + ex.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Error", "Failed to return to add-ons page: " + ex.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
-    // Cập nhật phương thức navigateToTotal để truyền ticketCode
     private void navigateToTotal(boolean hasLocker) {
         try {
             if (hasLocker) {
                 if (selectedLocker == null) {
-                    showAlert("Chưa chọn locker", "Vui lòng chọn một locker trước khi tiếp tục.", Alert.AlertType.WARNING);
+                    showAlert("No Locker Selected", "Please select a locker before proceeding.", Alert.AlertType.WARNING);
                     return;
                 }
                 String itemDescription = itemDescriptionField.getText().trim();
                 if (itemDescription.isEmpty()) {
-                    showAlert("Thiếu thông tin", "Vui lòng mô tả đồ vật cần gửi.", Alert.AlertType.WARNING);
+                    showAlert("Missing Information", "Please describe the item to be stored.", Alert.AlertType.WARNING);
                     return;
                 }
 
-                // Lưu thông tin locker vào bookingData
+                // Store locker information in bookingData
                 bookingData.put("selectedLocker", selectedLocker);
                 bookingData.put("lockerPinCode", generatedPinCode);
                 bookingData.put("itemDescription", itemDescription);
+
+                // DEBUG: In ra thông tin để kiểm tra
+                System.out.println("DEBUG: Storing locker data:");
+                System.out.println("- Locker: " + selectedLocker.getLockerNumber());
+                System.out.println("- PIN: " + generatedPinCode);
+                System.out.println("- Description: " + itemDescription);
+
                 Session.setBookingData(bookingData);
+
+                // Verify data was stored correctly
+                Map<String, Object> verifyData = Session.getBookingData();
+                System.out.println("DEBUG: Verified stored data:");
+                System.out.println("- PIN from Session: " + verifyData.get("lockerPinCode"));
             }
 
-            // Chuyển đến trang Total.fxml
+            // Navigate to Total.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/Total.fxml"));
             Parent totalRoot = loader.load();
             TotalController controller = loader.getController();
@@ -526,7 +539,7 @@ public class LockerController {
             navigateToPage(totalRoot);
 
         } catch (IOException ex) {
-            showAlert("Lỗi", "Không thể chuyển đến trang thanh toán: " + ex.getMessage(), Alert.AlertType.ERROR);
+            showAlert("Error", "Failed to navigate to payment page: " + ex.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -549,24 +562,24 @@ public class LockerController {
             stmt.setInt(2, lockerId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Lỗi khi cập nhật trạng thái locker: " + e.getMessage());
+            System.err.println("Error updating locker status: " + e.getMessage());
         }
     }
 
-    // Cập nhật phương thức assignLockerToCustomer trong LockerController
+    // Updated assignLockerToCustomer method in LockerController
     public static void assignLockerToCustomer(Connection conn, int lockerId, String ticketCode, String pinCode, String itemDescription, String customerName) throws SQLException {
-        // Kiểm tra ticketCode tồn tại
+        // Check if ticketCode exists
         String checkQuery = "SELECT COUNT(*) FROM tickets WHERE ticketCode = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
             checkStmt.setString(1, ticketCode);
             ResultSet rs = checkStmt.executeQuery();
             rs.next();
             if (rs.getInt(1) == 0) {
-                throw new SQLException("TicketCode " + ticketCode + " không tồn tại trong bảng tickets.");
+                throw new SQLException("TicketCode " + ticketCode + " does not exist in the tickets table.");
             }
         }
 
-        // Chèn vào lockerAssignments
+        // Insert into lockerAssignments
         String insertQuery = "INSERT INTO lockerAssignments (lockerId, pinCode, itemDescription, ticketCode, assignedAt) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
             stmt.setInt(1, lockerId);
@@ -577,17 +590,17 @@ public class LockerController {
             stmt.executeUpdate();
         }
 
-        // Cập nhật trạng thái tủ
+        // Update locker status
         String updateQuery = "UPDATE lockers SET status = 'Occupied' WHERE lockerId = ? AND status = 'Available'";
         try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
             updateStmt.setInt(1, lockerId);
             int rowsAffected = updateStmt.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("Không thể cập nhật trạng thái tủ: Tủ không tồn tại hoặc không ở trạng thái Available.");
+                throw new SQLException("Failed to update locker status: Locker does not exist or is not in Available status.");
             }
         }
 
-        // Ghi lịch sử
+        // Log history
         logLockerHistory(conn, lockerId, "Assigned to customer", "Customer: " + customerName + ", Ticket: " + ticketCode);
     }
 

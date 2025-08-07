@@ -195,18 +195,18 @@ public class SeatDemoController {
 
     private void showSeatSelectionAlert(String seatNumber, String seatType) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Chưa chọn suất chiếu");
-        alert.setHeaderText("Không thể chọn ghế");
-        alert.setContentText(String.format("Bạn đã chọn ghế %s (%s).\nVui lòng chọn phim và suất chiếu trước khi chọn ghế.",
+        alert.setTitle("No Showtime Selected");
+        alert.setHeaderText("Cannot Select Seat");
+        alert.setContentText(String.format("You have selected seat %s (%s).\nPlease select a movie and showtime before choosing a seat.",
                 seatNumber, seatType));
 
-        // Tùy chỉnh DialogPane để hiển thị toàn bộ nội dung
+        // Customize DialogPane to display full content
         alert.getDialogPane().setStyle("-fx-font-family: Arial; -fx-font-size: 14px;");
-        alert.getDialogPane().setMinWidth(400); // Tăng chiều rộng tối thiểu
-        alert.getDialogPane().setMinHeight(150); // Tăng chiều cao tối thiểu
-        alert.getDialogPane().setPadding(new Insets(15)); // Thêm padding
-        alert.getDialogPane().setExpandableContent(null); // Vô hiệu hóa nội dung mở rộng
-        alert.getDialogPane().setExpanded(false); // Đảm bảo không thu gọn
+        alert.getDialogPane().setMinWidth(400); // Increase minimum width
+        alert.getDialogPane().setMinHeight(150); // Increase minimum height
+        alert.getDialogPane().setPadding(new Insets(15)); // Add padding
+        alert.getDialogPane().setExpandableContent(null); // Disable expandable content
+        alert.getDialogPane().setExpanded(false); // Ensure not collapsed
 
         alert.showAndWait().ifPresent(response -> handleBack());
     }

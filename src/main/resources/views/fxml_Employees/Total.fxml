@@ -22,7 +22,7 @@
                             <children>
                                 <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Label text="HÓA ĐƠN THANH TOÁN" textFill="WHITE">
+                                        <Label text="PAYMENT INVOICE" textFill="WHITE">
                                             <font>
                                                 <Font name="System Bold" size="24.0" />
                                             </font>
@@ -41,7 +41,7 @@
                                                 <Font size="12.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="employeeLabel" text="Nguyễn Văn A (ID: EMP001)" textFill="WHITE">
+                                        <Label fx:id="employeeLabel" text="John Doe (ID: EMP001)" textFill="WHITE">
                                             <font>
                                                 <Font size="12.0" />
                                             </font>
@@ -57,7 +57,7 @@
                                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                             </padding>
                             <children>
-                                <Label text="THÔNG TIN PHIM" textFill="#2E86AB">
+                                <Label text="MOVIE INFORMATION" textFill="#2E86AB">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
@@ -68,32 +68,32 @@
                                         <ColumnConstraints hgrow="ALWAYS" />
                                     </columnConstraints>
                                     <children>
-                                        <Label text="Phim:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Label text="Movie:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                             <font>
                                                 <Font name="System Bold" size="14.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="movieTitleLabel" text="Chưa chọn phim" textFill="#666666" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Label fx:id="movieTitleLabel" text="No movie selected" textFill="#666666" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                             <font>
                                                 <Font size="14.0" />
                                             </font>
                                         </Label>
-                                        <Label text="Suất chiếu:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                        <Label text="Showtime:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                             <font>
                                                 <Font name="System Bold" size="14.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="showtimeLabel" text="Chưa chọn suất chiếu" textFill="#666666" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <Label fx:id="showtimeLabel" text="No showtime selected" textFill="#666666" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                             <font>
                                                 <Font size="14.0" />
                                             </font>
                                         </Label>
-                                        <Label text="Phòng:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                        <Label text="Room:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="2">
                                             <font>
                                                 <Font name="System Bold" size="14.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="roomLabel" text="Chưa chọn phòng" textFill="#666666" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                        <Label fx:id="roomLabel" text="No room selected" textFill="#666666" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                             <font>
                                                 <Font size="14.0" />
                                             </font>
@@ -109,16 +109,16 @@
                                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                             </padding>
                             <children>
-                                <Label text="CHI TIẾT VÉ" textFill="#2E86AB">
+                                <Label text="TICKET DETAILS" textFill="#2E86AB">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
                                 </Label>
                                 <TableView fx:id="ticketsTable" prefHeight="150.0">
                                     <columns>
-                                        <TableColumn fx:id="seatColumn" prefWidth="100.0" text="Ghế" />
-                                        <TableColumn fx:id="seatTypeColumn" prefWidth="120.0" text="Loại ghế" />
-                                        <TableColumn fx:id="ticketPriceColumn" prefWidth="120.0" text="Giá tiền" />
+                                        <TableColumn fx:id="seatColumn" prefWidth="100.0" text="Seat" />
+                                        <TableColumn fx:id="seatTypeColumn" prefWidth="120.0" text="Seat Type" />
+                                        <TableColumn fx:id="ticketPriceColumn" prefWidth="120.0" text="Price" />
                                     </columns>
                                 </TableView>
                             </children>
@@ -130,17 +130,17 @@
                                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                             </padding>
                             <children>
-                                <Label text="DỊCH VỤ BỔ SUNG" textFill="#2E86AB">
+                                <Label text="ADDITIONAL SERVICES" textFill="#2E86AB">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
                                 </Label>
                                 <TableView fx:id="servicesTable" prefHeight="120.0">
                                     <columns>
-                                        <TableColumn fx:id="serviceNameColumn" prefWidth="200.0" text="Tên dịch vụ" />
-                                        <TableColumn fx:id="quantityColumn" prefWidth="80.0" text="SL" />
-                                        <TableColumn fx:id="unitPriceColumn" prefWidth="100.0" text="Đơn giá" />
-                                        <TableColumn fx:id="totalPriceColumn" prefWidth="120.0" text="Thành tiền" />
+                                        <TableColumn fx:id="serviceNameColumn" prefWidth="200.0" text="Service Name" />
+                                        <TableColumn fx:id="quantityColumn" prefWidth="80.0" text="Qty" />
+                                        <TableColumn fx:id="unitPriceColumn" prefWidth="100.0" text="Unit Price" />
+                                        <TableColumn fx:id="totalPriceColumn" prefWidth="120.0" text="Total" />
                                     </columns>
                                 </TableView>
                             </children>
@@ -157,7 +157,7 @@
                                         <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Label>
-                                <Label fx:id="lockerInfoLabel" text="Không sử dụng locker" textFill="#856404">
+                                <Label fx:id="lockerInfoLabel" text="No locker used" textFill="#856404">
                                     <font>
                                         <Font size="14.0" />
                                     </font>
@@ -165,13 +165,13 @@
                             </children>
                         </HBox>
 
-                        <!-- Total Calculation (Simplified) -->
+                        <!-- Total Calculation -->
                         <VBox spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 8px; -fx-background-radius: 8px;">
                             <padding>
                                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                             </padding>
                             <children>
-                                <Label text="TỔNG KẾT" textFill="#2E86AB">
+                                <Label text="SUMMARY" textFill="#2E86AB">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
@@ -182,12 +182,12 @@
                                         <ColumnConstraints hgrow="ALWAYS" />
                                     </columnConstraints>
                                     <children>
-                                        <Label text="TỔNG CỘNG:" textFill="#2E86AB" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Label text="TOTAL:" textFill="#2E86AB" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                             <font>
                                                 <Font name="System Bold" size="18.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="totalAmountLabel" text="0 VNĐ" textFill="#E74C3C" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Label fx:id="totalAmountLabel" text="0 VND" textFill="#E74C3C" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                             <font>
                                                 <Font name="System Bold" size="18.0" />
                                             </font>
@@ -197,13 +197,13 @@
                             </children>
                         </VBox>
 
-                        <!-- Payment Section (Simplified) -->
+                        <!-- Payment Section -->
                         <VBox spacing="15.0" style="-fx-background-color: #E8F6F3; -fx-border-color: #A3E4D7; -fx-border-radius: 8px; -fx-background-radius: 8px;">
                             <padding>
                                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                             </padding>
                             <children>
-                                <Label text="THANH TOÁN (TIỀN MẶT)" textFill="#16A085">
+                                <Label text="PAYMENT (CASH)" textFill="#16A085">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
@@ -215,20 +215,20 @@
                                         <ColumnConstraints hgrow="NEVER" minWidth="100.0" />
                                     </columnConstraints>
                                     <children>
-                                        <Label text="Số tiền nhận:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Label text="Amount Received:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                             <font>
                                                 <Font name="System Bold" size="14.0" />
                                             </font>
                                         </Label>
-                                        <TextField fx:id="receivedAmountField" promptText="Nhập số tiền khách đưa" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                                        <Button fx:id="calculateChangeButton" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Tính tiền" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                                        <TextField fx:id="receivedAmountField" promptText="Enter amount received" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                        <Button fx:id="calculateChangeButton" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Calculate" GridPane.columnIndex="2" GridPane.rowIndex="0" />
 
-                                        <Label text="Tiền thừa:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                        <Label text="Change:" textFill="#333333" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                             <font>
                                                 <Font name="System Bold" size="14.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="changeLabel" text="0 VNĐ" textFill="#27AE60" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <Label fx:id="changeLabel" text="0 VND" textFill="#27AE60" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                             <font>
                                                 <Font name="System Bold" size="14.0" />
                                             </font>
@@ -241,10 +241,10 @@
                         <!-- Action Buttons -->
                         <HBox alignment="CENTER" spacing="20.0">
                             <children>
-                                <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px;" text="← Quay lại" />
-                                <Button fx:id="invoiceHistoryButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="📋 Lịch sử hóa đơn" />
-                                <Button fx:id="printInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-size: 14px;" text="🖨 In hóa đơn" />
-                                <Button fx:id="newTransactionButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" text="🔄 Giao dịch mới" />
+                                <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px;" text="← Back" />
+                                <Button fx:id="invoiceHistoryButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="📋 Invoice History" />
+                                <Button fx:id="printInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-size: 14px;" text="🖨 Print Invoice" />
+                                <Button fx:id="newTransactionButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" text="🔄 New Transaction" />
                             </children>
                         </HBox>
                     </children>
