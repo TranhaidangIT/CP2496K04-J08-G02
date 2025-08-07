@@ -1,74 +1,96 @@
 package models;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * Đại diện cho một đối tượng Dịch vụ với các thuộc tính phù hợp để liên kết dữ liệu JavaFX.
- */
 public class Service {
     private final StringProperty id;
     private final StringProperty serviceName;
     private final DoubleProperty price;
-    private final IntegerProperty quantity;
-    private final DoubleProperty total; // Thuộc tính này sẽ được tính toán
     private final StringProperty category;
+    private final StringProperty img;
+    private int quantity;
 
-    /**
-     * Xây dựng một đối tượng Dịch vụ mới.
-     * @param id ID duy nhất của dịch vụ.
-     * @param serviceName Tên của dịch vụ.
-     * @param price Giá của một đơn vị dịch vụ.
-     * @param quantity Số lượng dịch vụ.
-     * @param category Danh mục của dịch vụ.
-     */
-    public Service(String id, String serviceName, double price, int quantity, String category) {
+    public Service(String id, String serviceName, double price, int quantity, String category, String img) {
         this.id = new SimpleStringProperty(id);
         this.serviceName = new SimpleStringProperty(serviceName);
         this.price = new SimpleDoubleProperty(price);
-        this.quantity = new SimpleIntegerProperty(quantity);
+        this.quantity = quantity;
         this.category = new SimpleStringProperty(category);
-        this.total = new SimpleDoubleProperty(price * quantity); // Tính toán tổng ngay khi khởi tạo
+        this.img = new SimpleStringProperty(img);
     }
 
-    // --- Getter thuộc tính cho liên kết dữ liệu JavaFX ---
+    public String getId() {
+        return id.get();
+    }
 
-    public StringProperty idProperty() { return id; }
-    public StringProperty serviceNameProperty() { return serviceName; }
-    public DoubleProperty priceProperty() { return price; }
-    public IntegerProperty quantityProperty() { return quantity; }
-    public DoubleProperty totalProperty() { return total; }
-    public StringProperty categoryProperty() { return category; }
+    public StringProperty idProperty() {
+        return id;
+    }
 
-    // --- Standard Getters for Property Values ---
+    public void setId(String id) {
+        this.id.set(id);
+    }
 
-    public String getId() { return id.get(); }
-    public String getServiceName() { return serviceName.get(); }
-    public double getPrice() { return price.get(); }
-    public int getQuantity() { return quantity.get(); }
-    public double getTotal() { return total.get(); }
-    public String getCategory() { return category.get(); }
+    public String getServiceName() {
+        return serviceName.get();
+    }
 
-    // --- Standard Setters for Property Values ---
+    public StringProperty serviceNameProperty() {
+        return serviceName;
+    }
 
-    public void setId(String id) { this.id.set(id); }
-    public void setServiceName(String serviceName) { this.serviceName.set(serviceName); }
+    public void setServiceName(String serviceName) {
+        this.serviceName.set(serviceName);
+    }
+
+    public double getPrice() {
+        return price.get();
+    }
+
+    public DoubleProperty priceProperty() {
+        return price;
+    }
+
     public void setPrice(double price) {
         this.price.set(price);
-        updateTotal(); // Cập nhật tổng khi giá thay đổi
     }
-    public void setQuantity(int quantity) {
-        this.quantity.set(quantity);
-        updateTotal(); // Cập nhật tổng khi số lượng thay đổi
-    }
-    public void setCategory(String category) { this.category.set(category); }
 
-    // Phương thức trợ giúp để cập nhật tổng
-    private void updateTotal() {
-        this.total.set(this.price.get() * this.quantity.get());
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getCategory() {
+        return category.get();
+    }
+
+    public StringProperty categoryProperty() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category.set(category);
+    }
+
+    public String getImg() {
+        return img.get();
+    }
+
+    public StringProperty imgProperty() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img.set(img);
+    }
+
+    public double getTotal() {
+        return price.get() * quantity;
     }
 }

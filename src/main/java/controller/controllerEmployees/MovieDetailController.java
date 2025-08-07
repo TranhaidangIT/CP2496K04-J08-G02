@@ -12,11 +12,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import models.Movie;
 import models.Showtime;
+import configs.DBConnection;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class MovieDetailController {
 
@@ -105,68 +108,54 @@ public class MovieDetailController {
             System.err.println("Không tìm thấy ảnh: " + posterFile);
         }
 
-        generateMockShowtimes(movie);
+        loadShowtimesFromDatabase(movie);
     }
 
-    private void generateMockShowtimes(Movie movie) {
+    private void loadShowtimesFromDatabase(Movie movie) {
         showtimePane.getChildren().clear();
         confirmButton.setDisable(true);
 
-        LocalTime firstSlot = LocalTime.of(8, 0);
-        LocalTime lastSlot = LocalTime.of(22, 0);
-        Duration duration = Duration.ofMinutes(movie.getDuration());
+        try (Connection conn = DBConnection.getConnection()) {
+            String query = "SELECT showtimeId, roomId, showDate, showTime, endTime FROM showtimes WHERE movieId = ? AND showDate = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, movie.getMovieId());
+            stmt.setString(2, LocalDate.now().toString()); // Lấy showtime của ngày hiện tại
+            ResultSet rs = stmt.executeQuery();
 
-        int room = movie.getMovieId() % 10 + 1;
-        roomLabel.setText("Room " + room);
+            while (rs.next()) {
+                int showtimeId = rs.getInt("showtimeId");
+                int roomId = rs.getInt("roomId");
+                String showDate = rs.getString("showDate");
+                String showTime = rs.getString("showTime").substring(0, 8);
+                String endTime = rs.getString("endTime").substring(0, 8);
 
-        LocalTime current = firstSlot;
-        while (true) {
-            LocalTime rawEnd = current.plus(duration);
-            LocalTime roundedEnd = roundUpToNearestQuarterHour(rawEnd);
-            if (roundedEnd.isAfter(lastSlot)) break;
+                String label = showTime + " - " + endTime;
 
-            String label = current + " - " + roundedEnd;
+                Button btn = new Button(label);
+                btn.setOnAction(e -> {
+                    showtimePane.getChildren().forEach(node -> node.setStyle(""));
+                    btn.setStyle("-fx-background-color: #66ccff; -fx-text-fill: white;");
 
-            LocalTime finalCurrent = current;
-            LocalTime finalEnd = roundedEnd;
-            int finalRoom = room;
+                    selectedShowtime = new Showtime();
+                    selectedShowtime.setShowtimeId(showtimeId);
+                    selectedShowtime.setMovieId(movie.getMovieId());
+                    selectedShowtime.setMovieTitle(movie.getTitle());
+                    selectedShowtime.setShowDate(showDate);
+                    selectedShowtime.setShowTime(showTime);
+                    selectedShowtime.setEndTime(endTime);
+                    selectedShowtime.setRoomId(roomId);
+                    selectedShowtime.setRoomName("Room " + roomId);
 
-            Button btn = new Button(label);
-            btn.setOnAction(e -> {
-                showtimePane.getChildren().forEach(node -> node.setStyle(""));
-                btn.setStyle("-fx-background-color: #66ccff; -fx-text-fill: white;");
+                    confirmButton.setDisable(false);
+                    System.out.println("Đã chọn showtimeId: " + showtimeId);
+                });
 
-                selectedShowtime = new Showtime();
-                selectedShowtime.setMovieId(movie.getMovieId());
-                selectedShowtime.setMovieTitle(movie.getTitle());
-                selectedShowtime.setShowDate(LocalDate.now().toString());
-                selectedShowtime.setShowTime(finalCurrent.toString());
-                selectedShowtime.setEndTime(finalEnd.toString());
-                selectedShowtime.setRoomId(finalRoom);
-                selectedShowtime.setRoomName("Room " + finalRoom);
-
-                confirmButton.setDisable(false);
-            });
-
-            btn.setPrefWidth(140);
-            showtimePane.getChildren().add(btn);
-            current = roundedEnd.plusMinutes(15);
+                btn.setPrefWidth(140);
+                showtimePane.getChildren().add(btn);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Lỗi khi tải showtimes từ CSDL: " + ex.getMessage());
+            ex.printStackTrace();
         }
-    }
-
-    private LocalTime roundUpToNearestQuarterHour(LocalTime time) {
-        int minute = time.getMinute();
-        int add = 0;
-
-        if (minute > 0 && minute <= 15) {
-            add = 15 - minute;
-        } else if (minute > 15 && minute <= 30) {
-            add = 30 - minute;
-        } else if (minute > 30 && minute <= 45) {
-            add = 45 - minute;
-        } else if (minute > 45) {
-            add = 60 - minute;
-        }
-        return time.plusMinutes(add);
     }
 }

@@ -40,7 +40,7 @@ public class ScreeningRoomDAO {
     }
 
     public static boolean isRoomNumberExists(String roomNumber) {
-        String sql = "SELECT 1 FROM screening_rooms WHERE LOWER(roomNumber) = LOWER(?)";
+        String sql = "SELECT 1 FROM screeningRooms WHERE LOWER(roomNumber) = LOWER(?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -54,7 +54,7 @@ public class ScreeningRoomDAO {
     }
 
     public static boolean insertRoom(ScreeningRoom room) {
-        String sql = "INSERT INTO screening_rooms (roomNumber, roomType, roomStatus, seatLayout, totalCapacity, equipment, createdAt) " +
+        String sql = "INSERT INTO screeningRooms (roomNumber, roomType, roomStatus, seatLayout, totalCapacity, equipment, createdAt) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
@@ -144,8 +144,4 @@ public class ScreeningRoomDAO {
 
         return null;
     }
-
-
-
-
 }
