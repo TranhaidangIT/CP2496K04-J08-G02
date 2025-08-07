@@ -6,11 +6,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 import models.*;
 import utils.Session;
 
@@ -31,7 +29,6 @@ public class TotalController {
     @FXML private Label invoiceNumberLabel;
     @FXML private Label employeeLabel;
     @FXML private Label dateTimeLabel;
-    @FXML private Label customerInfoLabel;
 
     // Movie Information
     @FXML private Label movieTitleLabel;
@@ -82,6 +79,9 @@ public class TotalController {
     private List<Service> selectedAddons;
     private Locker selectedLocker;
 
+    // Thêm biến contentArea
+    private AnchorPane contentArea;
+
     @FXML
     public void initialize() {
         setupTables();
@@ -91,6 +91,12 @@ public class TotalController {
         updateDateTime();
         setEmployeeInfo();
         generateInvoiceNumber();
+    }
+
+    // Thêm phương thức setContentArea
+    public void setContentArea(AnchorPane contentArea) {
+        this.contentArea = contentArea;
+        System.out.println("setContentArea called in TotalController with contentArea: " + contentArea);
     }
 
     private void setupTables() {
@@ -113,7 +119,7 @@ public class TotalController {
         printInvoiceButton.setOnAction(e -> printInvoice());
         newTransactionButton.setOnAction(e -> startNewTransaction());
         backButton.setOnAction(e -> goBack());
-        invoiceHistoryButton.setOnAction(e -> showInvoiceHistory());
+        invoiceHistoryButton.setOnAction(e -> openInvoiceHistory());
 
         receivedAmountField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.isEmpty()) {
@@ -125,6 +131,36 @@ public class TotalController {
                 }
             }
         });
+    }
+
+    // Sửa phương thức openInvoiceHistory để truyền contentArea
+    @FXML
+    private void openInvoiceHistory() {
+        try {
+            System.out.println("openInvoiceHistory called. contentArea: " + contentArea);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/InvoiceHistory.fxml"));
+            Parent invoiceHistoryRoot = loader.load();
+            InvoiceHistoryController controller = loader.getController();
+
+            // Truyền contentArea cho InvoiceHistoryController
+            controller.setContentArea(this.contentArea);
+
+            if (contentArea == null) {
+                System.err.println("contentArea chưa được khởi tạo trong TotalController!");
+                showAlert(Alert.AlertType.ERROR, "Lỗi", "contentArea chưa được khởi tạo trong TotalController!");
+                return;
+            }
+
+            contentArea.getChildren().setAll(invoiceHistoryRoot);
+            AnchorPane.setTopAnchor(invoiceHistoryRoot, 0.0);
+            AnchorPane.setBottomAnchor(invoiceHistoryRoot, 0.0);
+            AnchorPane.setLeftAnchor(invoiceHistoryRoot, 0.0);
+            AnchorPane.setRightAnchor(invoiceHistoryRoot, 0.0);
+        } catch (IOException ex) {
+            System.err.println("Error loading InvoiceHistory.fxml: " + ex.getMessage());
+            ex.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải lịch sử hóa đơn: " + ex.getMessage());
+        }
     }
 
     private void loadBookingDataFromSession() {
@@ -166,8 +202,7 @@ public class TotalController {
 
             invoice.append("Mã hóa đơn: ").append(invoiceNumberLabel.getText()).append("\n");
             invoice.append("Ngày giờ: ").append(dateTimeLabel.getText()).append("\n");
-            invoice.append("Nhân viên: ").append(employeeLabel.getText()).append("\n");
-            invoice.append("Khách hàng: ").append(customerInfoLabel.getText()).append("\n\n");
+            invoice.append("Nhân viên: ").append(employeeLabel.getText()).append("\n\n");
 
             invoice.append("-------------------------------------\n");
             invoice.append("           THÔNG TIN PHIM           \n");
@@ -236,30 +271,6 @@ public class TotalController {
         }
     }
 
-    private void showInvoiceHistory() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/InvoiceHistory.fxml"));
-            Parent invoiceHistoryRoot = loader.load();
-            AnchorPane parent = (AnchorPane) invoiceHistoryButton.getScene().lookup("#contentArea");
-
-            if (parent != null) {
-                parent.getChildren().setAll(invoiceHistoryRoot);
-                AnchorPane.setTopAnchor(invoiceHistoryRoot, 0.0);
-                AnchorPane.setBottomAnchor(invoiceHistoryRoot, 0.0);
-                AnchorPane.setLeftAnchor(invoiceHistoryRoot, 0.0);
-                AnchorPane.setRightAnchor(invoiceHistoryRoot, 0.0);
-            } else {
-                Stage stage = new Stage();
-                stage.setScene(new Scene(invoiceHistoryRoot));
-                stage.setTitle("Lịch sử hóa đơn");
-                stage.show();
-            }
-        } catch (IOException ex) {
-            System.err.println("Error loading InvoiceHistory.fxml: " + ex.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải lịch sử hóa đơn: " + ex.getMessage());
-        }
-    }
-
     private void loadCurrentTransaction() {
         loadLatestTicket();
         loadSampleServices();
@@ -270,8 +281,8 @@ public class TotalController {
     private void loadLatestTicket() {
         if (selectedShowtime != null && selectedSeats != null && !selectedSeats.isEmpty()) {
             movieTitleLabel.setText(selectedShowtime.getMovieTitle());
-            String showTime = String.valueOf(selectedShowtime.getShowTime());
-            String endTime = String.valueOf(selectedShowtime.getEndTime());
+            String showTime = selectedShowtime.getShowTime();
+            String endTime = selectedShowtime.getEndTime();
             showtimeLabel.setText(selectedShowtime.getShowDate() + " " +
                     (showTime != null ? showTime : "") + (endTime != null ? " - " + endTime : ""));
             roomLabel.setText("Phòng " + selectedShowtime.getRoomName());
@@ -311,7 +322,7 @@ public class TotalController {
 
     private Double getPriceFromSeatId(int seatId) {
         try (Connection conn = DBConnection.getConnection()) {
-            String query = "SELECT st.price FROM seats s JOIN seatTypes st ON s.seatTypeId = st.seatTypeId WHERE s.seatId = ?";
+            String query = "SELECT st.price FROM Seat s JOIN SeatType st ON s.seatTypeId = st.seatTypeId WHERE s.seatId = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, seatId);
             ResultSet rs = stmt.executeQuery();
@@ -334,8 +345,8 @@ public class TotalController {
                 JOIN movies m ON s.movieId = m.movieId
                 JOIN screeningRooms sr ON s.roomId = sr.roomId
                 JOIN ticketSeats ts ON t.ticketId = ts.ticketId
-                JOIN seats seat ON ts.seatId = seat.seatId
-                JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
+                JOIN Seat seat ON ts.seatId = seat.seatId
+                JOIN SeatType st ON seat.seatTypeId = st.seatTypeId
                 ORDER BY t.ticketId DESC
                 """;
 
@@ -456,42 +467,52 @@ public class TotalController {
 
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            String ticketCode = createFinalTicket();
+            try (Connection conn = DBConnection.getConnection()) {
+                conn.setAutoCommit(false); // Bắt đầu transaction
 
-            if (ticketCode != null) {
-                // Lưu thông tin tủ đồ vào cơ sở dữ liệu nếu có
+                // Tạo vé
+                String ticketCode = createFinalTicket();
+                if (ticketCode == null) {
+                    conn.rollback();
+                    resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tạo vé. Vui lòng thử lại.");
+                    return;
+                }
+
+                // Gán tủ đồ nếu có
                 if (selectedLocker != null) {
                     String pinCode = (String) bookingData.get("lockerPinCode");
                     String itemDescription = (String) bookingData.get("itemDescription");
-                    String customerName = customerInfoLabel.getText();
                     try {
                         LockerController.assignLockerToCustomer(
+                                conn,
                                 selectedLocker.getLockerId(),
+                                ticketCode,
                                 pinCode,
                                 itemDescription,
-                                customerName
+                                ""
                         );
-                        System.out.println("Đã lưu thông tin tủ đồ vào cơ sở dữ liệu: lockerId=" + selectedLocker.getLockerId() +
-                                ", pinCode=" + pinCode + ", itemDescription=" + itemDescription);
-                    } catch (Exception e) {
-                        System.err.println("Lỗi khi lưu thông tin tủ đồ: " + e.getMessage());
-                        showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể lưu thông tin tủ đồ: " + e.getMessage());
-                        // Rollback trạng thái tủ nếu lưu thất bại
-                        try (Connection conn = DBConnection.getConnection()) {
-                            String updateQuery = "UPDATE lockers SET status = 'Available' WHERE lockerId = ?";
-                            PreparedStatement stmt = conn.prepareStatement(updateQuery);
-                            stmt.setInt(1, selectedLocker.getLockerId());
-                            stmt.executeUpdate();
-                        } catch (SQLException ex) {
-                            System.err.println("Lỗi khi đặt lại trạng thái tủ: " + ex.getMessage());
-                        }
+                        System.out.println("Đã gán tủ đồ: lockerId=" + selectedLocker.getLockerId() +
+                                ", ticketCode=" + ticketCode + ", pinCode=" + pinCode);
+                    } catch (SQLException e) {
+                        conn.rollback();
+                        resetLockerStatus(selectedLocker.getLockerId());
+                        System.err.println("Lỗi khi gán tủ đồ: " + e.getMessage());
+                        showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể gán tủ đồ: " + e.getMessage());
                         return;
                     }
                 }
 
+                // Lưu hóa đơn
                 saveInvoiceWithTicketCode(ticketCode);
+
+                // Commit transaction
+                conn.commit();
+
+                // Tạo file hóa đơn
                 generateInvoiceTxtFile();
 
+                // Thông báo thành công
                 Alert success = new Alert(Alert.AlertType.INFORMATION);
                 success.setTitle("Thanh toán thành công");
                 success.setHeaderText(null);
@@ -502,36 +523,32 @@ public class TotalController {
                         "\nFile hóa đơn đã được lưu tại: invoices/" + invoiceNumberLabel.getText() + ".txt");
                 success.showAndWait();
 
+                // Xóa dữ liệu session và kích hoạt nút giao dịch mới
                 Session.clearBookingData();
                 newTransactionButton.setDisable(false);
-            } else {
-                // Rollback trạng thái tủ nếu tạo vé thất bại
-                if (selectedLocker != null) {
-                    try (Connection conn = DBConnection.getConnection()) {
-                        String updateQuery = "UPDATE lockers SET status = 'Available' WHERE lockerId = ?";
-                        PreparedStatement stmt = conn.prepareStatement(updateQuery);
-                        stmt.setInt(1, selectedLocker.getLockerId());
-                        stmt.executeUpdate();
-                    } catch (SQLException e) {
-                        System.err.println("Lỗi khi đặt lại trạng thái tủ: " + e.getMessage());
-                        showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể đặt lại trạng thái tủ: " + e.getMessage());
-                    }
-                }
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tạo vé. Vui lòng thử lại.");
+
+            } catch (SQLException e) {
+                System.err.println("Lỗi cơ sở dữ liệu: " + e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Lỗi", "Lỗi cơ sở dữ liệu: " + e.getMessage());
+                resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
             }
         } else {
-            // Rollback trạng thái tủ nếu hủy thanh toán
-            if (selectedLocker != null) {
-                try (Connection conn = DBConnection.getConnection()) {
-                    String updateQuery = "UPDATE lockers SET status = 'Available' WHERE lockerId = ?";
-                    PreparedStatement stmt = conn.prepareStatement(updateQuery);
-                    stmt.setInt(1, selectedLocker.getLockerId());
-                    stmt.executeUpdate();
-                } catch (SQLException e) {
-                    System.err.println("Lỗi khi đặt lại trạng thái tủ: " + e.getMessage());
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể đặt lại trạng thái tủ: " + e.getMessage());
-                }
+            // Hủy giao dịch, đặt lại trạng thái tủ
+            resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
+        }
+    }
+
+    private void resetLockerStatus(int lockerId) {
+        if (lockerId == 0) return;
+        try (Connection conn = DBConnection.getConnection()) {
+            String updateQuery = "UPDATE lockers SET status = 'Available' WHERE lockerId = ? AND status = 'Occupied'";
+            try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                stmt.setInt(1, lockerId);
+                stmt.executeUpdate();
             }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi đặt lại trạng thái tủ: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể đặt lại trạng thái tủ: " + e.getMessage());
         }
     }
 
@@ -544,61 +561,72 @@ public class TotalController {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
+            // Kiểm tra showtime
             String checkShowtimeQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
-            PreparedStatement checkShowtimeStmt = conn.prepareStatement(checkShowtimeQuery);
-            checkShowtimeStmt.setInt(1, selectedShowtime.getShowtimeId());
-            ResultSet checkRs = checkShowtimeStmt.executeQuery();
-            if (checkRs.next() && checkRs.getInt(1) == 0) {
-                showAlert(Alert.AlertType.ERROR, "Lỗi suất chiếu", "Suất chiếu không tồn tại trong cơ sở dữ liệu.");
-                return null;
+            try (PreparedStatement checkShowtimeStmt = conn.prepareStatement(checkShowtimeQuery)) {
+                checkShowtimeStmt.setInt(1, selectedShowtime.getShowtimeId());
+                ResultSet checkRs = checkShowtimeStmt.executeQuery();
+                if (checkRs.next() && checkRs.getInt(1) == 0) {
+                    conn.rollback();
+                    showAlert(Alert.AlertType.ERROR, "Lỗi suất chiếu", "Suất chiếu không tồn tại trong cơ sở dữ liệu.");
+                    return null;
+                }
             }
 
+            // Tạo ticketCode duy nhất
             String ticketCode = "TICKET_" + UUID.randomUUID().toString().substring(0, 8);
             String checkQuery = "SELECT COUNT(*) FROM tickets WHERE ticketCode = ?";
-            PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
-            checkStmt.setString(1, ticketCode);
-            ResultSet checkTicketRs = checkStmt.executeQuery();
-            checkTicketRs.next();
-            if (checkTicketRs.getInt(1) > 0) {
-                ticketCode = "TICKET_" + UUID.randomUUID().toString().substring(0, 8);
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                checkStmt.setString(1, ticketCode);
+                ResultSet checkTicketRs = checkStmt.executeQuery();
+                checkTicketRs.next();
+                if (checkTicketRs.getInt(1) > 0) {
+                    ticketCode = "TICKET_" + UUID.randomUUID().toString().substring(0, 8);
+                }
             }
 
+            // Chèn vé
             String ticketQuery = "INSERT INTO tickets (ticketCode, showtimeId, totalPrice, soldBy) OUTPUT INSERTED.ticketId VALUES (?, ?, ?, ?)";
-            PreparedStatement ticketStmt = conn.prepareStatement(ticketQuery);
-            ticketStmt.setString(1, ticketCode);
-            ticketStmt.setInt(2, selectedShowtime.getShowtimeId());
-            ticketStmt.setDouble(3, totalAmount);
-            ticketStmt.setInt(4, currentUser.getUserId());
-            ResultSet ticketRs = ticketStmt.executeQuery();
             int ticketId = 0;
-            if (ticketRs.next()) {
-                ticketId = ticketRs.getInt("ticketId");
+            try (PreparedStatement ticketStmt = conn.prepareStatement(ticketQuery)) {
+                ticketStmt.setString(1, ticketCode);
+                ticketStmt.setInt(2, selectedShowtime.getShowtimeId());
+                ticketStmt.setDouble(3, totalAmount);
+                ticketStmt.setInt(4, currentUser.getUserId());
+                ResultSet ticketRs = ticketStmt.executeQuery();
+                if (ticketRs.next()) {
+                    ticketId = ticketRs.getInt("ticketId");
+                }
             }
 
+            // Chèn ghế
             String seatQuery = "INSERT INTO ticketSeats (ticketId, seatId) VALUES (?, ?)";
-            PreparedStatement seatStmt = conn.prepareStatement(seatQuery);
-            for (Map<String, Object> seatInfo : selectedSeats) {
-                seatStmt.setInt(1, ticketId);
-                seatStmt.setInt(2, (int) seatInfo.get("seatId"));
-                seatStmt.addBatch();
+            try (PreparedStatement seatStmt = conn.prepareStatement(seatQuery)) {
+                for (Map<String, Object> seatInfo : selectedSeats) {
+                    seatStmt.setInt(1, ticketId);
+                    seatStmt.setInt(2, (Integer) seatInfo.get("seatId"));
+                    seatStmt.addBatch();
+                }
+                seatStmt.executeBatch();
             }
-            seatStmt.executeBatch();
 
+            // Chèn dịch vụ bổ sung
             if (selectedAddons != null && !selectedAddons.isEmpty()) {
                 String addonQuery = "INSERT INTO ticketServices (ticketId, serviceId, quantity, servicePrice) VALUES (?, ?, ?, ?)";
-                PreparedStatement addonStmt = conn.prepareStatement(addonQuery);
-                for (Service addon : selectedAddons) {
-                    addonStmt.setInt(1, ticketId);
-                    addonStmt.setInt(2, Integer.parseInt(addon.getId()));
-                    addonStmt.setInt(3, 1);
-                    addonStmt.setDouble(4, addon.getPrice());
-                    addonStmt.addBatch();
+                try (PreparedStatement addonStmt = conn.prepareStatement(addonQuery)) {
+                    for (Service addon : selectedAddons) {
+                        addonStmt.setInt(1, ticketId);
+                        addonStmt.setInt(2, Integer.parseInt(addon.getId()));
+                        addonStmt.setInt(3, 1);
+                        addonStmt.setDouble(4, addon.getPrice());
+                        addonStmt.addBatch();
+                    }
+                    addonStmt.executeBatch();
                 }
-                addonStmt.executeBatch();
             }
 
             conn.commit();
-            System.out.println("Đã tạo vé thành công! TicketId: " + ticketId + ", TicketCode: " + ticketCode);
+            System.out.println("DEBUG: Đã tạo vé thành công! TicketId: " + ticketId + ", TicketCode: " + ticketCode);
             return ticketCode;
 
         } catch (SQLException ex) {
@@ -614,19 +642,18 @@ public class TotalController {
 
         try (Connection conn = DBConnection.getConnection()) {
             String insertInvoice = """
-                INSERT INTO invoices (invoiceNumber, ticketCode, employeeId, customerInfo, 
+                INSERT INTO invoices (invoiceNumber, ticketCode, employeeId, 
                                     totalAmount, paymentMethod, receivedAmount, changeAmount, createdAt)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
             PreparedStatement stmt = conn.prepareStatement(insertInvoice);
             stmt.setString(1, invoiceNumberLabel.getText());
             stmt.setString(2, ticketCode);
             stmt.setString(3, currentUser != null ? currentUser.getEmployeeId() : "");
-            stmt.setString(4, customerInfoLabel.getText());
-            stmt.setDouble(5, totalAmount);
-            stmt.setString(6, "Tiền mặt");
-            stmt.setDouble(7, Double.parseDouble(receivedAmountField.getText()));
+            stmt.setDouble(4, totalAmount);
+            stmt.setString(5, "Tiền mặt");
+            stmt.setDouble(6, Double.parseDouble(receivedAmountField.getText()));
 
             String changeText = changeLabel.getText().replace("VNĐ", "").replace(".", "").replace(",", "").trim();
             double changeAmount = 0.0;
@@ -635,14 +662,36 @@ public class TotalController {
             } catch (NumberFormatException e) {
                 changeAmount = 0.0;
             }
-            stmt.setDouble(8, changeAmount);
-            stmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setDouble(7, changeAmount);
+            stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
             System.err.println("Error saving invoice: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể lưu hóa đơn: " + e.getMessage());
+        }
+    }
+
+    private void updateLockerInfo() {
+        Map<String, Object> bookingData = Session.getBookingData();
+        if (bookingData != null) {
+            Locker selectedLocker = (Locker) bookingData.get("selectedLocker");
+            String pinCode = (String) bookingData.get("lockerPinCode");
+            String itemDescription = (String) bookingData.get("itemDescription");
+
+            if (selectedLocker != null && pinCode != null) {
+                String lockerInfo = String.format("Locker %s - PIN: %s",
+                        selectedLocker.getLockerNumber(), pinCode);
+                if (itemDescription != null && !itemDescription.isEmpty()) {
+                    lockerInfo += String.format("\nMô tả: %s", itemDescription);
+                }
+                lockerInfoLabel.setText(lockerInfo);
+            } else {
+                lockerInfoLabel.setText("Không sử dụng locker");
+            }
+        } else {
+            lockerInfoLabel.setText("Không sử dụng locker");
         }
     }
 
@@ -655,7 +704,6 @@ public class TotalController {
                     invoiceNumber VARCHAR(50) UNIQUE NOT NULL,
                     ticketCode VARCHAR(50),
                     employeeId VARCHAR(20),
-                    customerInfo NVARCHAR(200),
                     totalAmount DECIMAL(10,2),
                     paymentMethod VARCHAR(50) DEFAULT 'Tiền mặt',
                     receivedAmount DECIMAL(10,2),
@@ -715,22 +763,21 @@ public class TotalController {
         }
 
         try {
+            System.out.println("goBack called in TotalController. contentArea: " + contentArea);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/ListMovies.fxml"));
             Parent listMoviesRoot = loader.load();
-            AnchorPane parent = (AnchorPane) backButton.getScene().lookup("#contentArea");
 
-            if (parent != null) {
-                parent.getChildren().setAll(listMoviesRoot);
-                AnchorPane.setTopAnchor(listMoviesRoot, 0.0);
-                AnchorPane.setBottomAnchor(listMoviesRoot, 0.0);
-                AnchorPane.setLeftAnchor(listMoviesRoot, 0.0);
-                AnchorPane.setRightAnchor(listMoviesRoot, 0.0);
-            } else {
-                Stage stage = new Stage();
-                stage.setScene(new Scene(listMoviesRoot));
-                stage.setTitle("Danh sách phim");
-                stage.show();
+            if (contentArea == null) {
+                System.err.println("contentArea chưa được khởi tạo trong TotalController!");
+                showAlert(Alert.AlertType.ERROR, "Lỗi", "contentArea chưa được khởi tạo trong TotalController!");
+                return;
             }
+
+            contentArea.getChildren().setAll(listMoviesRoot);
+            AnchorPane.setTopAnchor(listMoviesRoot, 0.0);
+            AnchorPane.setBottomAnchor(listMoviesRoot, 0.0);
+            AnchorPane.setLeftAnchor(listMoviesRoot, 0.0);
+            AnchorPane.setRightAnchor(listMoviesRoot, 0.0);
         } catch (IOException ex) {
             System.err.println("Error loading ListMovies.fxml: " + ex.getMessage());
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải danh sách phim: " + ex.getMessage());

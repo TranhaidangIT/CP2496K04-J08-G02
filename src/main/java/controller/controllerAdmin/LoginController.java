@@ -52,8 +52,8 @@ public class LoginController {
                 case "admin":
                     loadScene("/views/AdminDashboard.fxml", event);
                     break;
-                case "manager":
-                    loadScene("/views/Dashboard.fxml", event);
+                case "manage":
+                    loadScene("/views/fxml_Manage/Dashboard.fxml", event);
                     break;
                 case "employee":
                     loadScene("/views/EmployeeSidebar.fxml", event);

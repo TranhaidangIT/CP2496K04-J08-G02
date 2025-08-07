@@ -51,25 +51,6 @@
                             </children>
                         </HBox>
 
-                        <!-- Customer Info -->
-                        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #F4F4F4; -fx-background-radius: 8px;">
-                            <padding>
-                                <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
-                            </padding>
-                            <children>
-                                <Label text="Khách hàng:" textFill="#333333">
-                                    <font>
-                                        <Font name="System Bold" size="14.0" />
-                                    </font>
-                                </Label>
-                                <Label fx:id="customerInfoLabel" text="Khách hàng lẻ" textFill="#666666">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Label>
-                            </children>
-                        </HBox>
-
                         <!-- Movie Information -->
                         <VBox spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 8px; -fx-background-radius: 8px;">
                             <padding>

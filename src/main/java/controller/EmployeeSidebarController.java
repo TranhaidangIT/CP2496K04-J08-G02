@@ -7,6 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import controller.controllerEmployees.ListMoviesController;
+import controller.controllerEmployees.TotalController;
+import controller.controllerEmployees.InvoiceHistoryController;
 import java.io.IOException;
 import java.net.URL;
 
@@ -31,11 +33,17 @@ public class EmployeeSidebarController {
             AnchorPane.setLeftAnchor(fxml, 0.0);
             AnchorPane.setRightAnchor(fxml, 0.0);
 
-            // Truyền contentArea cho ListMoviesController nếu tải ListMovies.fxml
-            if (fxmlFile.equals("ListMovies.fxml")) {
-                ListMoviesController controller = loader.getController();
-                controller.setContentArea(contentArea);
+            // Truyền contentArea cho các controller cần thiết
+            Object controller = loader.getController();
+
+            if (controller instanceof ListMoviesController) {
+                ((ListMoviesController) controller).setContentArea(contentArea);
+            } else if (controller instanceof TotalController) {
+                ((TotalController) controller).setContentArea(contentArea);
+            } else if (controller instanceof InvoiceHistoryController) {
+                ((InvoiceHistoryController) controller).setContentArea(contentArea);
             }
+
         } catch (IOException e) {
             System.err.println("Lỗi khi tải " + fxmlFile + ": " + e.getMessage());
             e.printStackTrace();
