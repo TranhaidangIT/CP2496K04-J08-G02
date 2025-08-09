@@ -70,6 +70,14 @@
                     </graphic>
                 </Button>
 
+                <Button fx:id="btnLocker" onAction="#onLockerClicked" prefHeight="60.0" prefWidth="316.0" styleClass="btnSelect" text="Locker">
+                    <graphic>
+                        <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
+                            <image><Image url="@../icon/popcorn.png" /></image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
                 <AnchorPane prefHeight="156.0" prefWidth="316.0">
                     <children>
                         <Button fx:id="btnLogout" layoutY="99.0" onAction="#onLogoutClicked" prefHeight="50.0" prefWidth="150.0" styleClass="btnLogout" text="Logout">

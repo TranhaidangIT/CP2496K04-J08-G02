@@ -4,18 +4,25 @@ import dao.ServiceDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import models.Service;
 import models.ServiceCategory;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.List;
+import javafx.scene.image.Image;
 
 public class EditServiceController {
 
     @FXML private TextField txtServiceName;
     @FXML private TextField txtPrice;
     @FXML private ComboBox<ServiceCategory> cbCategory;
+    @FXML private TextField txtImagePath;
+    @FXML private ImageView imgService;
+    @FXML private Button btnChooseImage;
     @FXML private Button btnUpdate;
     @FXML private Button btnDelete;
     @FXML private Button btnCancel;
@@ -40,6 +47,19 @@ public class EditServiceController {
 
         txtServiceName.setText(service.getServiceName());
         txtPrice.setText(service.getPrice().toString());
+        txtImagePath.setText(service.getImg() != null ? service.getImg() : "");
+
+        // Load image if path exists and file is valid
+        if (service.getImg() != null && !service.getImg().isEmpty()) {
+            File file = new File(service.getImg());
+            if (file.exists()) {
+                imgService.setImage(new Image(file.toURI().toString()));
+            } else {
+                imgService.setImage(null);
+            }
+        } else {
+            imgService.setImage(null);
+        }
 
         // Set selected category
         for (ServiceCategory category : cbCategory.getItems()) {
@@ -51,9 +71,24 @@ public class EditServiceController {
     }
 
     @FXML
+    private void handleChooseImage(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Image File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        File selectedFile = fileChooser.showOpenDialog(btnChooseImage.getScene().getWindow());
+        if (selectedFile != null) {
+            txtImagePath.setText(selectedFile.getAbsolutePath());
+            imgService.setImage(new Image(selectedFile.toURI().toString()));
+        }
+    }
+
+    @FXML
     private void handleUpdate(ActionEvent event) {
         String serviceName = txtServiceName.getText().trim();
         String priceStr = txtPrice.getText().trim();
+        String imagePath = txtImagePath.getText().trim();
         ServiceCategory selectedCategory = cbCategory.getValue();
 
         // Validation
@@ -69,6 +104,11 @@ public class EditServiceController {
 
         if (selectedCategory == null) {
             showAlert(Alert.AlertType.WARNING, "Missing Field", "Please select a category.");
+            return;
+        }
+
+        if (imagePath.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Missing Field", "Please select an image.");
             return;
         }
 
@@ -90,6 +130,7 @@ public class EditServiceController {
             service.setServiceName(serviceName);
             service.setPrice(price);
             service.setCategoryId(selectedCategory.getCategoryId());
+            service.setImg(imagePath);
 
             boolean updated = ServiceDAO.updateService(service);
             if (updated) {

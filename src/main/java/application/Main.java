@@ -11,7 +11,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/views/Dasboard.fxml"));
             Scene scene = new Scene(root);
 
             // Khóa kích thước

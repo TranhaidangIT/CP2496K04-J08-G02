@@ -1,89 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- JavaFX Imports -->
 <?import java.net.URL?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1124.0" stylesheets="@../../../css/manager.css"
-            xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.controllerManager.ServiceListController">
+<AnchorPane prefHeight="768.0" prefWidth="1124.0" stylesheets="@../../../css/manager.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.ServiceListController">
 
     <!-- ========================= LEFT PANEL: Service Details Form ========================= -->
-    <AnchorPane layoutX="14.0" layoutY="9.0" prefHeight="749.0" prefWidth="626.0" styleClass="bg-white">
+    <AnchorPane layoutX="14.0" layoutY="9.0" prefHeight="750.0" prefWidth="614.0" styleClass="bg-white">
 
-        <!-- Service Icon -->
+        <!-- Service Image -->
         <AnchorPane layoutX="19.0" layoutY="34.0" prefHeight="200.0" prefWidth="194.0">
-            <ImageView fitHeight="150.0" fitWidth="150.0" layoutX="22.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgService" fitHeight="200.0" fitWidth="150.0" layoutX="22.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true">
                 <image>
-                    <Image url="@../../../icon/default_poster.jpg"/>
+                    <Image url="@../../../icon/default_poster.jpg" />
                 </image>
             </ImageView>
         </AnchorPane>
 
         <!-- Edit Button -->
-        <Button fx:id="btnEdit" layoutX="516.0" layoutY="689.0" onAction="#openEditServiceForm"
-                prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit"
-                stylesheets="@../../../css/app-style.css" text="Edit"/>
+        <Button fx:id="btnEdit" layoutX="503.0" layoutY="689.0" onAction="#openEditServiceForm" prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Edit" />
 
         <!-- Service Detail Fields (Read-only) -->
         <AnchorPane layoutX="221.0" layoutY="34.0" prefHeight="200.0" prefWidth="394.0" stylesheets="@../../../css/app-style.css">
             <children>
                 <!-- Service Name -->
                 <Label layoutX="35.0" layoutY="29.0" text="Service Name:">
-                    <font><Font size="16.0"/></font>
+                    <font><Font size="16.0" /></font>
                 </Label>
-                <TextField fx:id="txtServiceName" layoutX="140.0" layoutY="16.0"
-                           prefHeight="26.0" prefWidth="250.0" styleClass="textField"
-                           editable="false"/>
+                <TextField fx:id="txtServiceName" editable="false" layoutX="140.0" layoutY="16.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
 
                 <!-- Price -->
                 <Label layoutX="35.0" layoutY="89.0" text="Price:">
-                    <font><Font size="16.0"/></font>
+                    <font><Font size="16.0" /></font>
                 </Label>
-                <TextField fx:id="txtPrice" layoutX="140.0" layoutY="76.0"
-                           prefHeight="26.0" prefWidth="250.0" styleClass="textField"
-                           editable="false"/>
+                <TextField fx:id="txtPrice" editable="false" layoutX="140.0" layoutY="76.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
 
                 <!-- Category -->
                 <Label layoutX="35.0" layoutY="141.0" text="Category:">
-                    <font><Font size="16.0"/></font>
+                    <font><Font size="16.0" /></font>
                 </Label>
-                <ComboBox fx:id="cbCategory" layoutX="140.0" layoutY="128.0"
-                          prefHeight="40.0" prefWidth="250.0" styleClass="comboBox"
-                          disable="true"/>
+                <ComboBox fx:id="cbCategory" disable="true" layoutX="140.0" layoutY="128.0" prefHeight="40.0" prefWidth="250.0" styleClass="comboBox" />
+
+                <!-- Image Path -->
+                <Label layoutX="35.0" layoutY="193.0" text="Image Path:">
+                    <font><Font size="16.0" /></font>
+                </Label>
+                <TextField fx:id="txtImagePath" editable="false" layoutX="140.0" layoutY="180.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
             </children>
         </AnchorPane>
 
         <!-- Service Description/Info Area -->
-        <AnchorPane layoutX="10.0" layoutY="250.0" prefHeight="420.0" prefWidth="606.0"
-                    stylesheets="@../../../css/app-style.css">
+        <AnchorPane layoutX="10.0" layoutY="250.0" prefHeight="340.0" prefWidth="606.0" stylesheets="@../../../css/app-style.css">
             <children>
-                <Label layoutY="6.0" styleClass="labelCaption" text="Service Information:">
-                    <font><Font size="18.0"/></font>
+                <Label layoutX="28.0" layoutY="78.0" styleClass="labelCaption" text="Service Information:">
+                    <font><Font size="18.0" /></font>
                 </Label>
 
                 <!-- Info Display Area -->
-                <AnchorPane layoutY="40.0" prefHeight="370.0" prefWidth="606.0" styleClass="info-panel">
-                    <Label layoutX="20.0" layoutY="20.0" text="✓ Available for purchase with movie tickets" styleClass="info-text">
-                        <font><Font size="14.0"/></font>
+                <AnchorPane layoutY="104.0" prefHeight="302.0" prefWidth="606.0" styleClass="info-panel">
+                    <Label layoutX="20.0" layoutY="20.0" styleClass="info-text" text="✓ Available for purchase with movie tickets">
+                        <font><Font size="14.0" /></font>
                     </Label>
-                    <Label layoutX="20.0" layoutY="50.0" text="✓ Fresh and high-quality ingredients" styleClass="info-text">
-                        <font><Font size="14.0"/></font>
+                    <Label layoutX="20.0" layoutY="50.0" styleClass="info-text" text="✓ Fresh and high-quality ingredients">
+                        <font><Font size="14.0" /></font>
                     </Label>
-                    <Label layoutX="20.0" layoutY="80.0" text="✓ Served at optimal temperature" styleClass="info-text">
-                        <font><Font size="14.0"/></font>
+                    <Label layoutX="20.0" layoutY="80.0" styleClass="info-text" text="✓ Served at optimal temperature">
+                        <font><Font size="14.0" /></font>
                     </Label>
-                    <Label layoutX="20.0" layoutY="110.0" text="✓ Multiple size options available" styleClass="info-text">
-                        <font><Font size="14.0"/></font>
+                    <Label layoutX="20.0" layoutY="110.0" styleClass="info-text" text="✓ Multiple size options available">
+                        <font><Font size="14.0" /></font>
                     </Label>
 
-                    <!-- Category specific info will be shown here based on selection -->
-                    <Label layoutX="20.0" layoutY="160.0" text="Select a service from the table to view details" styleClass="placeholder-text">
+                    <!-- Category-specific info will be shown here based on selection -->
+                    <Label layoutX="20.0" layoutY="160.0" styleClass="placeholder-text" text="Select a service from the table to view details">
                         <font><Font size="14.0" /></font>
                     </Label>
                 </AnchorPane>
@@ -94,14 +92,12 @@
     <!-- ========================= RIGHT PANEL ========================= -->
 
     <!-- Add New Service Button -->
-    <Button fx:id="btnAdd" layoutX="651.0" layoutY="9.0" onAction="#handleAddNewService"
-            prefHeight="63.0" prefWidth="458.0" styleClass="bg-white" text="Add New Service"
-            textFill="GREEN">
-        <font><Font name="System Bold" size="16.0"/></font>
+    <Button fx:id="btnAdd" layoutX="651.0" layoutY="9.0" onAction="#handleAddNewService" prefHeight="63.0" prefWidth="458.0" styleClass="bg-white" text="Add New Service" textFill="GREEN">
+        <font><Font name="System Bold" size="16.0" /></font>
         <graphic>
             <ImageView fitHeight="35.0" fitWidth="31.0" preserveRatio="true">
                 <image>
-                    <Image url="@../../../icon/add_to_queue.png"/>
+                    <Image url="@../../../icon/add_to_queue.png" />
                 </image>
             </ImageView>
         </graphic>
@@ -114,40 +110,39 @@
         <AnchorPane layoutY="14.0" prefHeight="60.0" prefWidth="458.0">
 
             <!-- Category Filter -->
-            <Label layoutX="10.0" layoutY="8.0" text="Category:" styleClass="filter-label">
-                <font><Font size="14.0"/></font>
+            <Label layoutX="10.0" layoutY="8.0" styleClass="filter-label" text="Category:">
+                <font><Font size="14.0" /></font>
             </Label>
-            <ComboBox fx:id="cbCategoryFilter" layoutX="70.0" layoutY="5.0" prefHeight="26.0" prefWidth="120.0" styleClass="comboBox" />
+            <ComboBox fx:id="cbCategoryFilter" layoutX="70.0" layoutY="5.0" prefHeight="26.0" prefWidth="109.0" styleClass="comboBox" />
 
             <!-- Search Text Field -->
-            <TextField fx:id="txtSearch" layoutX="200.0" layoutY="5.0" prefHeight="26.0" prefWidth="150.0"
-                       promptText="Search services..." styleClass="search-field"/>
+            <TextField fx:id="txtSearch" layoutX="191.0" layoutY="5.0" prefHeight="26.0" prefWidth="150.0" promptText="Search services..." styleClass="search-field" />
 
             <!-- Search Button -->
-            <Button fx:id="btnFind" layoutX="360.0" layoutY="5.0" onAction="#handleFind" prefHeight="26.0" prefWidth="60.0"
-                    styleClass="btnFind" text="Find">
+            <Button fx:id="btnFind" layoutX="352.0" layoutY="5.0" onAction="#handleFind" prefHeight="20.0" prefWidth="75.0" styleClass="btnFind" text="Find">
                 <stylesheets>
-                    <URL value="@../../../css/manager.css"/>
-                    <URL value="@../../../css/app-style.css"/>
+                    <URL value="@../../../css/manager.css" />
+                    <URL value="@../../../css/app-style.css" />
                 </stylesheets>
-            </Button>
-
-            <!-- Clear Filter Button -->
-            <Button layoutX="360.0" layoutY="35.0" onAction="#handleClearFilter" prefHeight="22.0" prefWidth="60.0"
-                    styleClass="btnClear" text="Clear" textFill="#666">
-                <font><Font size="11.0"/></font>
             </Button>
         </AnchorPane>
 
         <!-- TableView of Services -->
-        <TableView fx:id="tblServices" layoutY="84.0" onMouseClicked="#handleTableClick"
-                   prefHeight="585.0" prefWidth="458.0">
+        <TableView fx:id="tblServices" layoutY="100.0" onMouseClicked="#handleTableClick" prefHeight="585.0" prefWidth="458.0">
             <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
-                <TableColumn fx:id="colName" text="Service Name" prefWidth="150.0"/>
-                <TableColumn fx:id="colCategory" text="Category" prefWidth="100.0"/>
-                <TableColumn fx:id="colPrice" text="Price" prefWidth="80.0"/>
+                <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+                <TableColumn fx:id="colName" prefWidth="130.0" text="Service Name" />
+                <TableColumn fx:id="colCategory" prefWidth="100.0" text="Category" />
+                <TableColumn fx:id="colPrice" prefWidth="80.0" text="Price" />
+                <TableColumn fx:id="colImage" prefWidth="98.0" text="Image" />
             </columns>
         </TableView>
+
+        <!-- Clear Filter Button -->
+        <Button layoutX="361.0" layoutY="74.0" onAction="#handleClearFilter" prefHeight="22.0" prefWidth="60.0" styleClass="btnClear" text="Clear" textFill="#666">
+            <font>
+                <Font size="11.0" />
+            </font>
+        </Button>
     </AnchorPane>
 </AnchorPane>

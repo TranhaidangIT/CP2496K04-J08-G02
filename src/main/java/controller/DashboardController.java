@@ -1,7 +1,9 @@
 package controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 
@@ -62,8 +64,16 @@ public class DashboardController {
     }
 
     @FXML
-    private void onLogoutClicked() {
-        System.out.println("User clicked logout.");
-        // TODO: Thêm logic logout nếu cần
+    private void onLockerClicked() { loadUI("/views/fxml_Manager/Locker/LockerList.fxml");}
+
+    @FXML
+    private void onLogoutClicked(ActionEvent event) {
+        try {
+            Node source = (Node) event.getSource();
+            Parent root = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/login.fxml"));
+            source.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

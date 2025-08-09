@@ -10,12 +10,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Service;
 import models.ServiceCategory;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,9 +37,12 @@ public class ServiceListController {
     @FXML private TableColumn<Service, String> colName;
     @FXML private TableColumn<Service, String> colCategory;
     @FXML private TableColumn<Service, BigDecimal> colPrice;
+    @FXML private TableColumn<Service, String> colImage;
 
     @FXML private TextField txtServiceName;
     @FXML private TextField txtPrice;
+    @FXML private TextField txtImagePath;
+    @FXML private ImageView imgService;
     @FXML private ComboBox<ServiceCategory> cbCategory;
 
     private ObservableList<Service> serviceList = FXCollections.observableArrayList();
@@ -54,6 +60,7 @@ public class ServiceListController {
         colName.setCellValueFactory(new PropertyValueFactory<>("serviceName"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        colImage.setCellValueFactory(new PropertyValueFactory<>("img"));
 
         // Format price column to show currency
         colPrice.setCellFactory(column -> new TableCell<Service, BigDecimal>() {
@@ -159,6 +166,19 @@ public class ServiceListController {
     private void showServiceDetails(Service service) {
         txtServiceName.setText(service.getServiceName());
         txtPrice.setText(String.format("$%.2f", service.getPrice()));
+        txtImagePath.setText(service.getImg() != null ? service.getImg() : "");
+
+        // Load image if path exists and file is valid
+        if (service.getImg() != null && !service.getImg().isEmpty()) {
+            File file = new File(service.getImg());
+            if (file.exists()) {
+                imgService.setImage(new Image(file.toURI().toString()));
+            } else {
+                imgService.setImage(null);
+            }
+        } else {
+            imgService.setImage(null);
+        }
 
         // Set category
         for (ServiceCategory category : cbCategory.getItems()) {

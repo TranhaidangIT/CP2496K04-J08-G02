@@ -157,7 +157,7 @@ public class TotalController {
 
     private void generateInvoiceTxtFile() {
         try {
-            String invoicesDir = "invoices";
+            String invoicesDir = "D:/invoices";
             if (!Files.exists(Paths.get(invoicesDir))) {
                 Files.createDirectories(Paths.get(invoicesDir));
             }
