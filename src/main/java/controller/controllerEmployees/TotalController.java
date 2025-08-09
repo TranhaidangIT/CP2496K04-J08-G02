@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.math.BigDecimal;
 
 public class TotalController {
 
@@ -39,22 +42,22 @@ public class TotalController {
     @FXML private TableView<TicketDetail> ticketsTable;
     @FXML private TableColumn<TicketDetail, String> seatColumn;
     @FXML private TableColumn<TicketDetail, String> seatTypeColumn;
-    @FXML private TableColumn<TicketDetail, Double> ticketPriceColumn;
+    @FXML private TableColumn<TicketDetail, String> ticketPriceColumn;
 
     // Services Table
     @FXML private TableView<ServiceDetail> servicesTable;
     @FXML private TableColumn<ServiceDetail, String> serviceNameColumn;
     @FXML private TableColumn<ServiceDetail, Integer> quantityColumn;
-    @FXML private TableColumn<ServiceDetail, Double> unitPriceColumn;
-    @FXML private TableColumn<ServiceDetail, Double> totalPriceColumn;
+    @FXML private TableColumn<ServiceDetail, String> unitPriceColumn;
+    @FXML private TableColumn<ServiceDetail, String> totalPriceColumn;
 
     // Locker Information
     @FXML private Label lockerInfoLabel;
 
-    // Total Information (Simplified)
+    // Total Information
     @FXML private Label totalAmountLabel;
 
-    // Payment (Simplified - Cash only)
+    // Payment (Cash only)
     @FXML private TextField receivedAmountField;
     @FXML private Label changeLabel;
 
@@ -69,7 +72,7 @@ public class TotalController {
     private ObservableList<ServiceDetail> serviceDetails = FXCollections.observableArrayList();
 
     private String currentTicketCode = "";
-    private double totalAmount = 0.0;
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
     // Variables to store booking information from Session
     private Map<String, Object> bookingData;
@@ -82,7 +85,6 @@ public class TotalController {
     private String lockerPinCode = null;
     private String lockerItemDescription = null;
 
-    // Variable for contentArea
     private AnchorPane contentArea;
 
     @FXML
@@ -96,7 +98,6 @@ public class TotalController {
         generateInvoiceNumber();
     }
 
-    // Method to set contentArea
     public void setContentArea(AnchorPane contentArea) {
         this.contentArea = contentArea;
         System.out.println("setContentArea called in TotalController with contentArea: " + contentArea);
@@ -127,43 +128,13 @@ public class TotalController {
         receivedAmountField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal.isEmpty()) {
                 try {
-                    Double.parseDouble(newVal);
+                    new BigDecimal(newVal);
                     calculateChange();
                 } catch (NumberFormatException ex) {
                     // Invalid input, don't calculate
                 }
             }
         });
-    }
-
-    // Modified openInvoiceHistory to pass contentArea
-    @FXML
-    private void openInvoiceHistory() {
-        try {
-            System.out.println("openInvoiceHistory called. contentArea: " + contentArea);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/InvoiceHistory.fxml"));
-            Parent invoiceHistoryRoot = loader.load();
-            InvoiceHistoryController controller = loader.getController();
-
-            // Pass contentArea to InvoiceHistoryController
-            controller.setContentArea(this.contentArea);
-
-            if (contentArea == null) {
-                System.err.println("contentArea has not been initialized in TotalController!");
-                showAlert(Alert.AlertType.ERROR, "Error", "contentArea has not been initialized in TotalController!");
-                return;
-            }
-
-            contentArea.getChildren().setAll(invoiceHistoryRoot);
-            AnchorPane.setTopAnchor(invoiceHistoryRoot, 0.0);
-            AnchorPane.setBottomAnchor(invoiceHistoryRoot, 0.0);
-            AnchorPane.setLeftAnchor(invoiceHistoryRoot, 0.0);
-            AnchorPane.setRightAnchor(invoiceHistoryRoot, 0.0);
-        } catch (IOException ex) {
-            System.err.println("Error loading InvoiceHistory.fxml: " + ex.getMessage());
-            ex.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load invoice history: " + ex.getMessage());
-        }
     }
 
     private void loadBookingDataFromSession() {
@@ -175,22 +146,11 @@ public class TotalController {
             selectedAddons = (List<Service>) bookingData.get("selectedAddons");
             selectedLocker = (Locker) bookingData.get("selectedLocker");
 
-            // QUAN TRỌNG: Lưu PIN và mô tả vào biến instance ngay khi load
             if (selectedLocker != null) {
                 lockerPinCode = (String) bookingData.get("lockerPinCode");
                 lockerItemDescription = (String) bookingData.get("itemDescription");
                 System.out.println("DEBUG: Loaded locker PIN: " + lockerPinCode);
                 System.out.println("DEBUG: Loaded item description: " + lockerItemDescription);
-            }
-
-            System.out.println("Loaded booking data from Session:");
-            System.out.println("- Showtime: " + (selectedShowtime != null ? selectedShowtime.getMovieTitle() : "null"));
-            System.out.println("- Seats count: " + (selectedSeats != null ? selectedSeats.size() : 0));
-            System.out.println("- Addons count: " + (selectedAddons != null ? selectedAddons.size() : 0));
-            System.out.println("- Locker: " + (selectedLocker != null ? selectedLocker.getLockerNumber() : "null"));
-            if (selectedLocker != null) {
-                System.out.println("- Locker PinCode: " + lockerPinCode);
-                System.out.println("- Item Description: " + lockerItemDescription);
             }
         }
     }
@@ -207,75 +167,80 @@ public class TotalController {
 
             StringBuilder invoice = new StringBuilder();
             invoice.append("=====================================\n");
-            invoice.append("          PAYMENT INVOICE           \n");
-            invoice.append("         CGV Xuan Khanh Cinema      \n");
+            invoice.append("          PAYMENT INVOICE       \n");
+            invoice.append("         Xuan Khanh CGV   \n");
             invoice.append("=====================================\n\n");
 
-            invoice.append("Invoice Number: ").append(invoiceNumberLabel.getText()).append("\n");
+            invoice.append("Invoice number: ").append(invoiceNumberLabel.getText()).append("\n");
             invoice.append("Date & Time: ").append(dateTimeLabel.getText()).append("\n");
-            invoice.append("Employee: ").append(employeeLabel.getText()).append("\n\n");
+            invoice.append("Staff: ").append(employeeLabel.getText()).append("\n\n");
 
             invoice.append("-------------------------------------\n");
-            invoice.append("           MOVIE INFORMATION        \n");
+            invoice.append("        MOVIE INFORMATION            \n");
             invoice.append("-------------------------------------\n");
             invoice.append("Movie: ").append(movieTitleLabel.getText()).append("\n");
             invoice.append("Showtime: ").append(showtimeLabel.getText()).append("\n");
             invoice.append("Room: ").append(roomLabel.getText()).append("\n\n");
 
             invoice.append("-------------------------------------\n");
-            invoice.append("            TICKET DETAILS          \n");
+            invoice.append("        TICKET DETAILS              \n");
             invoice.append("-------------------------------------\n");
             for (TicketDetail ticket : ticketDetails) {
-                invoice.append(String.format("Seat %s (%s): %.0f VND\n",
+                invoice.append(String.format("Seat %s (%s): %s\n",
                         ticket.getSeatNumber(), ticket.getSeatType(), ticket.getPrice()));
             }
 
             if (!serviceDetails.isEmpty()) {
                 invoice.append("\n-------------------------------------\n");
-                invoice.append("           ADDITIONAL SERVICES      \n");
+                invoice.append("        ADDITIONAL SERVICES         \n");
                 invoice.append("-------------------------------------\n");
                 for (ServiceDetail service : serviceDetails) {
-                    invoice.append(String.format("%s x%d: %.0f VND\n",
+                    invoice.append(String.format("%s x%d: %s\n",
                             service.getServiceName(), service.getQuantity(), service.getTotalPrice()));
                 }
             }
 
             invoice.append("\n-------------------------------------\n");
-            invoice.append("          LOCKER INFORMATION        \n");
+            invoice.append("        LOCKER INFORMATION         \n");
             invoice.append("-------------------------------------\n");
             if (selectedLocker != null && lockerPinCode != null) {
                 invoice.append("Locker: ").append(selectedLocker.getLockerNumber())
                         .append(" - ").append(selectedLocker.getLocationInfo()).append("\n");
-                invoice.append("PIN: ").append(lockerPinCode).append("\n");
+                invoice.append("PIN Code: ").append(lockerPinCode).append("\n");
                 if (lockerItemDescription != null && !lockerItemDescription.isEmpty()) {
-                    invoice.append("Item Description: ").append(lockerItemDescription).append("\n");
+                    invoice.append("Description of the item: ").append(lockerItemDescription).append("\n");
                 }
             } else {
-                invoice.append("Locker: No locker used\n");
+                invoice.append("Locker: Not used\n");
             }
             invoice.append("\n");
 
             invoice.append("=====================================\n");
-            invoice.append(String.format("TOTAL: %.0f VND\n", totalAmount));
+            invoice.append(String.format("Total: %s\n", formatVND(totalAmount)));
             invoice.append("=====================================\n\n");
 
             invoice.append("-------------------------------------\n");
-            invoice.append("         PAYMENT (CASH)            \n");
+            invoice.append("        PAYMENT (CASH)      \n");
             invoice.append("-------------------------------------\n");
-            invoice.append(String.format("Received Amount: %.0f VND\n",
-                    Double.parseDouble(receivedAmountField.getText())));
-
-            String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
-            double changeAmount = 0.0;
+            BigDecimal receivedAmount;
             try {
-                changeAmount = Double.parseDouble(changeText);
+                receivedAmount = new BigDecimal(receivedAmountField.getText().trim());
+                invoice.append(String.format("Amount received: %s\n", formatVND(receivedAmount)));
             } catch (NumberFormatException e) {
-                changeAmount = 0.0;
+                invoice.append("Amount received: Invalid\n");
             }
-            invoice.append(String.format("Change: %.0f VND\n\n", changeAmount));
+
+            BigDecimal changeAmount = BigDecimal.ZERO;
+            String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
+            try {
+                changeAmount = new BigDecimal(changeText);
+            } catch (NumberFormatException e) {
+                changeAmount = BigDecimal.ZERO;
+            }
+            invoice.append(String.format("Change: %s\n\n", formatVND(changeAmount)));
 
             invoice.append("=====================================\n");
-            invoice.append("     THANK YOU FOR YOUR PATRONAGE    \n");
+            invoice.append("     THANK YOU FOR YOUR SUPPORT    \n");
             invoice.append("=====================================\n");
 
             writer.write(invoice.toString());
@@ -340,7 +305,7 @@ public class TotalController {
 
     private Double getPriceFromSeatId(int seatId) {
         try (Connection conn = DBConnection.getConnection()) {
-            String query = "SELECT st.price FROM Seat s JOIN SeatType st ON s.seatTypeId = st.seatTypeId WHERE s.seatId = ?";
+            String query = "SELECT st.price FROM seats s JOIN seatTypes st ON s.seatTypeId = st.seatTypeId WHERE s.seatId = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, seatId);
             ResultSet rs = stmt.executeQuery();
@@ -363,8 +328,8 @@ public class TotalController {
                 JOIN movies m ON s.movieId = m.movieId
                 JOIN screeningRooms sr ON s.roomId = sr.roomId
                 JOIN ticketSeats ts ON t.ticketId = ts.ticketId
-                JOIN Seat seat ON ts.seatId = seat.seatId
-                JOIN SeatType st ON seat.seatTypeId = st.seatTypeId
+                JOIN seats seat ON ts.seatId = seat.seatId
+                JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
                 ORDER BY t.ticketId DESC
                 """;
 
@@ -401,11 +366,12 @@ public class TotalController {
         serviceDetails.clear();
         if (selectedAddons != null && !selectedAddons.isEmpty()) {
             for (Service addon : selectedAddons) {
+                BigDecimal price = addon.getPrice() != null ? addon.getPrice() : BigDecimal.ZERO;
                 serviceDetails.add(new ServiceDetail(
                         addon.getServiceName(),
                         1,
-                        addon.getPrice(),
-                        addon.getPrice()
+                        price,
+                        price
                 ));
             }
         } else {
@@ -423,14 +389,14 @@ public class TotalController {
     }
 
     private void calculateTotal() {
-        totalAmount = 0.0;
+        totalAmount = BigDecimal.ZERO;
         for (TicketDetail ticket : ticketDetails) {
-            totalAmount += ticket.getPrice();
+            totalAmount = totalAmount.add(BigDecimal.valueOf(ticket.getPriceRaw()));
         }
         for (ServiceDetail service : serviceDetails) {
-            totalAmount += service.getTotalPrice();
+            totalAmount = totalAmount.add(service.getTotalPriceRaw());
         }
-        totalAmountLabel.setText(String.format("%.0f VND", totalAmount));
+        totalAmountLabel.setText(formatVND(totalAmount));
     }
 
     private void updateDateTime() {
@@ -454,23 +420,35 @@ public class TotalController {
         invoiceNumberLabel.setText(invoiceNumber);
     }
 
+    private String formatVND(BigDecimal amount) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return formatter.format(amount).replace("₫", "VND").trim();
+    }
+
     @FXML
     private void calculateChange() {
         try {
-            double receivedAmount = Double.parseDouble(receivedAmountField.getText().trim());
-            double change = receivedAmount - totalAmount;
+            String input = receivedAmountField.getText().trim();
+            if (input.isEmpty()) {
+                changeLabel.setText("Số tiền không hợp lệ");
+                changeLabel.setStyle("-fx-text-fill: red;");
+                printInvoiceButton.setDisable(true);
+                return;
+            }
+            BigDecimal receivedAmount = new BigDecimal(input);
+            BigDecimal change = receivedAmount.subtract(totalAmount);
 
-            if (change >= 0) {
-                changeLabel.setText(String.format("%.0f VND", change));
+            if (change.compareTo(BigDecimal.ZERO) >= 0) {
+                changeLabel.setText(formatVND(change));
                 changeLabel.setStyle("-fx-text-fill: green;");
                 printInvoiceButton.setDisable(false);
             } else {
-                changeLabel.setText("Insufficient amount");
+                changeLabel.setText("Số tiền không đủ");
                 changeLabel.setStyle("-fx-text-fill: red;");
                 printInvoiceButton.setDisable(true);
             }
         } catch (NumberFormatException e) {
-            changeLabel.setText("Invalid amount");
+            changeLabel.setText("Số tiền không hợp lệ");
             changeLabel.setStyle("-fx-text-fill: red;");
             printInvoiceButton.setDisable(true);
         }
@@ -488,7 +466,6 @@ public class TotalController {
             try (Connection conn = DBConnection.getConnection()) {
                 conn.setAutoCommit(false);
 
-                // Create ticket
                 String ticketCode = createFinalTicket();
                 if (ticketCode == null) {
                     conn.rollback();
@@ -497,7 +474,6 @@ public class TotalController {
                     return;
                 }
 
-                // Assign locker if applicable - SỬ DỤNG BIẾN INSTANCE
                 if (selectedLocker != null && lockerPinCode != null) {
                     try {
                         System.out.println("DEBUG: Assigning locker with PIN: " + lockerPinCode);
@@ -505,12 +481,10 @@ public class TotalController {
                                 conn,
                                 selectedLocker.getLockerId(),
                                 ticketCode,
-                                lockerPinCode, // SỬ DỤNG BIẾN INSTANCE THAY VÌ LẤY TỪ bookingData
+                                lockerPinCode,
                                 lockerItemDescription != null ? lockerItemDescription : "",
                                 ""
                         );
-                        System.out.println("Assigned locker: lockerId=" + selectedLocker.getLockerId() +
-                                ", ticketCode=" + ticketCode + ", pinCode=" + lockerPinCode);
                     } catch (SQLException e) {
                         conn.rollback();
                         resetLockerStatus(selectedLocker.getLockerId());
@@ -520,16 +494,10 @@ public class TotalController {
                     }
                 }
 
-                // Save invoice
                 saveInvoiceWithTicketCode(ticketCode);
-
-                // Commit transaction
                 conn.commit();
-
-                // Generate invoice file
                 generateInvoiceTxtFile();
 
-                // Show success message với PIN chính xác
                 Alert success = new Alert(Alert.AlertType.INFORMATION);
                 success.setTitle("Payment Successful");
                 success.setHeaderText(null);
@@ -541,7 +509,6 @@ public class TotalController {
                         "\nInvoice file saved at: invoices/" + invoiceNumberLabel.getText() + ".txt");
                 success.showAndWait();
 
-                // Clear session data và reset biến instance
                 Session.clearBookingData();
                 lockerPinCode = null;
                 lockerItemDescription = null;
@@ -554,7 +521,6 @@ public class TotalController {
                 resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
             }
         } else {
-            // Cancel transaction, reset locker status
             resetLockerStatus(selectedLocker != null ? selectedLocker.getLockerId() : 0);
         }
     }
@@ -582,7 +548,6 @@ public class TotalController {
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
 
-            // Check showtime
             String checkShowtimeQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
             try (PreparedStatement checkShowtimeStmt = conn.prepareStatement(checkShowtimeQuery)) {
                 checkShowtimeStmt.setInt(1, selectedShowtime.getShowtimeId());
@@ -594,7 +559,6 @@ public class TotalController {
                 }
             }
 
-            // Generate unique ticketCode
             String ticketCode = "TICKET_" + UUID.randomUUID().toString().substring(0, 8);
             String checkQuery = "SELECT COUNT(*) FROM tickets WHERE ticketCode = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
@@ -606,13 +570,12 @@ public class TotalController {
                 }
             }
 
-            // Insert ticket
             String ticketQuery = "INSERT INTO tickets (ticketCode, showtimeId, totalPrice, soldBy) OUTPUT INSERTED.ticketId VALUES (?, ?, ?, ?)";
             int ticketId = 0;
             try (PreparedStatement ticketStmt = conn.prepareStatement(ticketQuery)) {
                 ticketStmt.setString(1, ticketCode);
                 ticketStmt.setInt(2, selectedShowtime.getShowtimeId());
-                ticketStmt.setDouble(3, totalAmount);
+                ticketStmt.setBigDecimal(3, totalAmount);
                 ticketStmt.setInt(4, currentUser.getUserId());
                 ResultSet ticketRs = ticketStmt.executeQuery();
                 if (ticketRs.next()) {
@@ -620,7 +583,6 @@ public class TotalController {
                 }
             }
 
-            // Insert seats
             String seatQuery = "INSERT INTO ticketSeats (ticketId, seatId) VALUES (?, ?)";
             try (PreparedStatement seatStmt = conn.prepareStatement(seatQuery)) {
                 for (Map<String, Object> seatInfo : selectedSeats) {
@@ -631,15 +593,14 @@ public class TotalController {
                 seatStmt.executeBatch();
             }
 
-            // Insert additional services
             if (selectedAddons != null && !selectedAddons.isEmpty()) {
                 String addonQuery = "INSERT INTO ticketServices (ticketId, serviceId, quantity, servicePrice) VALUES (?, ?, ?, ?)";
                 try (PreparedStatement addonStmt = conn.prepareStatement(addonQuery)) {
                     for (Service addon : selectedAddons) {
                         addonStmt.setInt(1, ticketId);
-                        addonStmt.setInt(2, Integer.parseInt(addon.getId()));
+                        addonStmt.setInt(2, addon.getServiceId());
                         addonStmt.setInt(3, 1);
-                        addonStmt.setDouble(4, addon.getPrice());
+                        addonStmt.setBigDecimal(4, addon.getPrice() != null ? addon.getPrice() : BigDecimal.ZERO);
                         addonStmt.addBatch();
                     }
                     addonStmt.executeBatch();
@@ -663,27 +624,33 @@ public class TotalController {
 
         try (Connection conn = DBConnection.getConnection()) {
             String insertInvoice = """
-                INSERT INTO invoices (invoiceNumber, ticketCode, employeeId, 
-                                    totalAmount, paymentMethod, receivedAmount, changeAmount, createdAt)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+            INSERT INTO invoices (invoiceNumber, ticketCode, employeeId, 
+                                totalAmount, paymentMethod, receivedAmount, changeAmount, createdAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """;
 
             PreparedStatement stmt = conn.prepareStatement(insertInvoice);
             stmt.setString(1, invoiceNumberLabel.getText());
             stmt.setString(2, ticketCode);
             stmt.setString(3, currentUser != null ? currentUser.getEmployeeId() : "");
-            stmt.setDouble(4, totalAmount);
+            stmt.setBigDecimal(4, totalAmount);
             stmt.setString(5, "Cash");
-            stmt.setDouble(6, Double.parseDouble(receivedAmountField.getText()));
-
-            String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
-            double changeAmount = 0.0;
+            BigDecimal receivedAmount;
             try {
-                changeAmount = Double.parseDouble(changeText);
+                receivedAmount = new BigDecimal(receivedAmountField.getText().trim());
             } catch (NumberFormatException e) {
-                changeAmount = 0.0;
+                receivedAmount = BigDecimal.ZERO;
             }
-            stmt.setDouble(7, changeAmount);
+            stmt.setBigDecimal(6, receivedAmount);
+
+            BigDecimal changeAmount = BigDecimal.ZERO;
+            String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
+            try {
+                changeAmount = new BigDecimal(changeText);
+            } catch (NumberFormatException e) {
+                changeAmount = BigDecimal.ZERO;
+            }
+            stmt.setBigDecimal(7, changeAmount);
             stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
 
             stmt.executeUpdate();
@@ -691,28 +658,6 @@ public class TotalController {
         } catch (SQLException e) {
             System.err.println("Error saving invoice: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to save invoice: " + e.getMessage());
-        }
-    }
-
-    private void updateLockerInfo() {
-        Map<String, Object> bookingData = Session.getBookingData();
-        if (bookingData != null) {
-            Locker selectedLocker = (Locker) bookingData.get("selectedLocker");
-            String pinCode = (String) bookingData.get("lockerPinCode");
-            String itemDescription = (String) bookingData.get("itemDescription");
-
-            if (selectedLocker != null && pinCode != null) {
-                String lockerInfo = String.format("Locker %s - PIN: %s",
-                        selectedLocker.getLockerNumber(), pinCode);
-                if (itemDescription != null && !itemDescription.isEmpty()) {
-                    lockerInfo += String.format("\nDescription: %s", itemDescription);
-                }
-                lockerInfoLabel.setText(lockerInfo);
-            } else {
-                lockerInfoLabel.setText("No locker used");
-            }
-        } else {
-            lockerInfoLabel.setText("No locker used");
         }
     }
 
@@ -743,6 +688,104 @@ public class TotalController {
     }
 
     @FXML
+    private void openInvoiceHistory() {
+        try {
+            // Create a simple dialog to show invoice history
+            Dialog<Void> dialog = new Dialog<>();
+            dialog.setTitle("Invoice History");
+            dialog.setHeaderText("Recent Invoices");
+
+            // Create table to show invoices
+            TableView<InvoiceRecord> invoiceTable = new TableView<>();
+
+            // Define columns
+            TableColumn<InvoiceRecord, String> invoiceNumberCol = new TableColumn<>("Invoice Number");
+            invoiceNumberCol.setCellValueFactory(new PropertyValueFactory<>("invoiceNumber"));
+            invoiceNumberCol.setPrefWidth(120);
+
+            TableColumn<InvoiceRecord, String> ticketCodeCol = new TableColumn<>("Ticket Code");
+            ticketCodeCol.setCellValueFactory(new PropertyValueFactory<>("ticketCode"));
+            ticketCodeCol.setPrefWidth(120);
+
+            TableColumn<InvoiceRecord, String> employeeCol = new TableColumn<>("Employee");
+            employeeCol.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
+            employeeCol.setPrefWidth(100);
+
+            TableColumn<InvoiceRecord, String> totalCol = new TableColumn<>("Total Amount");
+            totalCol.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
+            totalCol.setPrefWidth(120);
+
+            TableColumn<InvoiceRecord, String> dateCol = new TableColumn<>("Date");
+            dateCol.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+            dateCol.setPrefWidth(150);
+
+            invoiceTable.getColumns().addAll(invoiceNumberCol, ticketCodeCol, employeeCol, totalCol, dateCol);
+
+            // Load invoice data
+            ObservableList<InvoiceRecord> invoiceData = loadInvoiceHistory();
+            invoiceTable.setItems(invoiceData);
+
+            // Set table size
+            invoiceTable.setPrefWidth(620);
+            invoiceTable.setPrefHeight(400);
+
+            dialog.getDialogPane().setContent(invoiceTable);
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+            dialog.showAndWait();
+
+        } catch (Exception e) {
+            System.err.println("Error opening invoice history: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open invoice history: " + e.getMessage());
+        }
+    }
+
+    private ObservableList<InvoiceRecord> loadInvoiceHistory() {
+        ObservableList<InvoiceRecord> invoices = FXCollections.observableArrayList();
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String query = """
+                SELECT TOP 50 invoiceNumber, ticketCode, employeeId, totalAmount, createdAt 
+                FROM invoices 
+                ORDER BY createdAt DESC
+                """;
+
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+            while (rs.next()) {
+                String invoiceNumber = rs.getString("invoiceNumber");
+                String ticketCode = rs.getString("ticketCode");
+                String employeeId = rs.getString("employeeId");
+                BigDecimal totalAmount = rs.getBigDecimal("totalAmount");
+                Timestamp createdAt = rs.getTimestamp("createdAt");
+
+                String formattedDate = createdAt != null ?
+                        createdAt.toLocalDateTime().format(formatter) : "N/A";
+                String formattedTotal = totalAmount != null ?
+                        formatVND(totalAmount) : "0 VND";
+
+                invoices.add(new InvoiceRecord(
+                        invoiceNumber != null ? invoiceNumber : "N/A",
+                        ticketCode != null ? ticketCode : "N/A",
+                        employeeId != null ? employeeId : "N/A",
+                        formattedTotal,
+                        formattedDate
+                ));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error loading invoice history: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Database Error",
+                    "Failed to load invoice history: " + e.getMessage());
+        }
+
+        return invoices;
+    }
+
+    @FXML
     private void startNewTransaction() {
         if (selectedLocker != null) {
             try (Connection conn = DBConnection.getConnection()) {
@@ -756,7 +799,6 @@ public class TotalController {
             }
         }
 
-        // Reset tất cả biến instance
         ticketDetails.clear();
         serviceDetails.clear();
         receivedAmountField.clear();
@@ -766,7 +808,6 @@ public class TotalController {
         roomLabel.setText("No room selected");
         lockerInfoLabel.setText("No locker used");
 
-        // Reset locker data
         selectedLocker = null;
         lockerPinCode = null;
         lockerItemDescription = null;
@@ -792,7 +833,7 @@ public class TotalController {
 
         try {
             System.out.println("goBack called in TotalController. contentArea: " + contentArea);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/ListMovies.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/Locker.fxml"));
             Parent listMoviesRoot = loader.load();
 
             if (contentArea == null) {
@@ -820,7 +861,34 @@ public class TotalController {
         alert.showAndWait();
     }
 
+    // Inner class for Invoice History records
+    public static class InvoiceRecord {
+        private String invoiceNumber;
+        private String ticketCode;
+        private String employeeId;
+        private String totalAmount;
+        private String createdAt;
+
+        public InvoiceRecord(String invoiceNumber, String ticketCode, String employeeId,
+                             String totalAmount, String createdAt) {
+            this.invoiceNumber = invoiceNumber;
+            this.ticketCode = ticketCode;
+            this.employeeId = employeeId;
+            this.totalAmount = totalAmount;
+            this.createdAt = createdAt;
+        }
+
+        // Getters for PropertyValueFactory
+        public String getInvoiceNumber() { return invoiceNumber; }
+        public String getTicketCode() { return ticketCode; }
+        public String getEmployeeId() { return employeeId; }
+        public String getTotalAmount() { return totalAmount; }
+        public String getCreatedAt() { return createdAt; }
+    }
+
+    // Modified TicketDetail to handle double (unchanged from original)
     public static class TicketDetail {
+        private static final NumberFormat VND_FORMATTER = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         private String seatNumber;
         private String seatType;
         private double price;
@@ -833,25 +901,42 @@ public class TotalController {
 
         public String getSeatNumber() { return seatNumber; }
         public String getSeatType() { return seatType; }
-        public double getPrice() { return price; }
+        public String getPrice() {
+            return VND_FORMATTER.format(price).replace("₫", "VND").trim();
+        }
+        public double getPriceRaw() {
+            return price;
+        }
     }
 
+    // Modified ServiceDetail to use BigDecimal
     public static class ServiceDetail {
+        private static final NumberFormat VND_FORMATTER = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         private String serviceName;
         private int quantity;
-        private double unitPrice;
-        private double totalPrice;
+        private BigDecimal unitPrice;
+        private BigDecimal totalPrice;
 
-        public ServiceDetail(String serviceName, int quantity, double unitPrice, double totalPrice) {
+        public ServiceDetail(String serviceName, int quantity, BigDecimal unitPrice, BigDecimal totalPrice) {
             this.serviceName = serviceName;
             this.quantity = quantity;
-            this.unitPrice = unitPrice;
-            this.totalPrice = totalPrice;
+            this.unitPrice = unitPrice != null ? unitPrice : BigDecimal.ZERO;
+            this.totalPrice = totalPrice != null ? totalPrice : BigDecimal.ZERO;
         }
 
         public String getServiceName() { return serviceName; }
         public int getQuantity() { return quantity; }
-        public double getUnitPrice() { return unitPrice; }
-        public double getTotalPrice() { return totalPrice; }
+        public String getUnitPrice() {
+            return VND_FORMATTER.format(unitPrice).replace("₫", "VND").trim();
+        }
+        public String getTotalPrice() {
+            return VND_FORMATTER.format(totalPrice).replace("₫", "VND").trim();
+        }
+        public BigDecimal getUnitPriceRaw() {
+            return unitPrice;
+        }
+        public BigDecimal getTotalPriceRaw() {
+            return totalPrice;
+        }
     }
 }

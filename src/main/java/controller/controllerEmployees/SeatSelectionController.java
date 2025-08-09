@@ -35,6 +35,7 @@ public class SeatSelectionController {
 
     private Showtime selectedShowtime;
     private List<Map<String, Object>> selectedSeats;
+    private Map<String, Object> bookingData;
     private Map<Integer, Double> seatTypePrices;
     private int totalSeats = 0;
 
@@ -51,44 +52,11 @@ public class SeatSelectionController {
     }
 
     public void setData(Showtime showtime) {
-        this.selectedShowtime = showtime;
-        System.out.println("setData called with showtime: " + (showtime != null ? showtime.toString() : "null"));
-        if (selectedShowtime == null) {
-            System.err.println("Error: Showtime is null in SeatSelectionController!");
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Showtime Error");
-            alert.setHeaderText(null);
-            alert.setContentText("No showtime information available. Please select a showtime again.");
-            alert.showAndWait();
-            return;
-        }
-        System.out.println("showtimeId: " + selectedShowtime.getShowtimeId());
-
-        try (Connection conn = DBConnection.getConnection()) {
-            String checkQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
-            PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
-            checkStmt.setInt(1, selectedShowtime.getShowtimeId());
-            ResultSet rs = checkStmt.executeQuery();
-            if (rs.next() && rs.getInt(1) == 0) {
-                System.err.println("Error: showtimeId " + selectedShowtime.getShowtimeId() + " does not exist in showtimes table!");
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Showtime Error");
-                alert.setHeaderText(null);
-                alert.setContentText("The selected showtime does not exist in the database. Please try again.");
-                alert.showAndWait();
-                return;
-            }
-        } catch (SQLException ex) {
-            System.err.println("Error checking showtimeId: " + ex.getMessage());
-            ex.printStackTrace();
-        }
-
-        seatGrid.getChildren().clear();
-        selectedSeats.clear();
-        updateTotalPrice();
-        displayShowtimeInfo();
-        loadSeatTypePrices();
-        loadSeats();
+        Map<String, Object> bookingData = new HashMap<>();
+        bookingData.put("showtime", showtime);
+        bookingData.put("selectedSeats", new ArrayList<Map<String, Object>>());
+        bookingData.put("seatTypePrices", new HashMap<Integer, Double>());
+        setBookingData(bookingData);
     }
 
     private void displayShowtimeInfo() {
@@ -107,7 +75,7 @@ public class SeatSelectionController {
 
     private void loadSeatTypePrices() {
         try (Connection conn = DBConnection.getConnection()) {
-            String query = "SELECT seatTypeId, price FROM SeatType";
+            String query = "SELECT seatTypeId, price FROM seatTypes";
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -122,101 +90,128 @@ public class SeatSelectionController {
 
     private void loadSeats() {
         seatGrid.getChildren().clear();
-        System.out.println("Loading seat grid from database");
-        System.out.println("roomId: " + selectedShowtime.getRoomId());
+        if (selectedShowtime == null) {
+            showErrorAlert("Lỗi suất chiếu", "Không có thông tin suất chiếu. Vui lòng chọn lại.");
+            return;
+        }
 
         try (Connection conn = DBConnection.getConnection()) {
             if (conn == null) {
-                System.err.println("Error: Unable to connect to the database!");
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Connection Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Cannot connect to the database. Please check the connection.");
-                alert.showAndWait();
+                showErrorAlert("Lỗi kết nối", "Không thể kết nối đến cơ sở dữ liệu.");
                 return;
             }
 
-            String checkTableQuery = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'dbo' AND table_name = 'Seat'";
-            PreparedStatement checkStmt = conn.prepareStatement(checkTableQuery);
-            ResultSet checkRs = checkStmt.executeQuery();
-            if (!checkRs.next()) {
-                System.err.println("Error: Seats table does not exist in the database!");
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Database Error");
-                alert.setHeaderText(null);
-                alert.setContentText("The seats table does not exist. Please check the database.");
-                alert.showAndWait();
-                return;
-            }
-
-            String seatQuery = "SELECT s.seatId, s.seatRow, s.seatColumn, st.seatTypeName, s.seatTypeId, s.isActive " +
-                    "FROM Seat s " +
-                    "JOIN SeatType st ON s.seatTypeId = st.seatTypeId " +
-                    "WHERE s.roomId = ? AND s.isActive = 1";
-            PreparedStatement seatStmt = conn.prepareStatement(seatQuery);
-            seatStmt.setInt(1, selectedShowtime.getRoomId());
-            ResultSet seatRs = seatStmt.executeQuery();
-
-            String bookedSeatQuery = "SELECT ts.seatId FROM ticketSeats ts JOIN tickets t ON ts.ticketId = t.ticketId WHERE t.showtimeId = ?";
-            PreparedStatement bookedStmt = conn.prepareStatement(bookedSeatQuery);
-            bookedStmt.setInt(1, selectedShowtime.getShowtimeId());
-            ResultSet bookedRs = bookedStmt.executeQuery();
-            Set<Integer> bookedSeatIds = new HashSet<>();
-            while (bookedRs.next()) {
-                bookedSeatIds.add(bookedRs.getInt("seatId"));
-            }
-            System.out.println("Number of booked seats: " + bookedSeatIds.size());
-
-            int seatCount = 0;
-            while (seatRs.next()) {
-                int seatId = seatRs.getInt("seatId");
-                String seatRow = seatRs.getString("seatRow");
-                int seatColumn = seatRs.getInt("seatColumn");
-                String seatTypeName = seatRs.getString("seatTypeName");
-                int seatTypeId = seatRs.getInt("seatTypeId");
-                boolean isActive = seatRs.getBoolean("isActive");
-
-                if (isActive) {
-                    Button seat = new Button(seatRow + seatColumn);
-                    seat.setPrefSize(45, 45);
-                    seat.setMinSize(45, 45);
-                    seat.setMaxSize(45, 45);
-                    seat.setAccessibleText("Seat " + seatRow + seatColumn + ", " + seatTypeName + ", " + (bookedSeatIds.contains(seatId) ? "Booked" : "Available"));
-
-                    SeatInfo seatInfo = getSeatInfo(seatTypeName);
-                    if (bookedSeatIds.contains(seatId)) {
-                        seat.setStyle(getOccupiedSeatStyle());
-                        seat.setDisable(true);
-                    } else {
-                        seat.setStyle(getAvailableSeatStyle(seatInfo.color));
-                        setupSeatInteraction(seat, seatInfo, seatId, seatRow, seatColumn, seatTypeName, seatTypeId);
-                    }
-
-                    seatGrid.add(seat, seatColumn - 1, seatRow.charAt(0) - 'A');
-                    seatCount++;
+            // Kiểm tra bảng seats
+            String checkTableQuery = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'dbo' AND table_name = 'seats'";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkTableQuery);
+                 ResultSet checkRs = checkStmt.executeQuery()) {
+                if (!checkRs.next()) {
+                    showErrorAlert("Lỗi cơ sở dữ liệu", "Bảng seats không tồn tại.");
+                    return;
                 }
             }
-            totalSeats = seatCount;
-            updateSeatInfo();
-            System.out.println("Number of seats added to seatGrid: " + seatCount);
-            if (seatCount == 0) {
-                System.out.println("Warning: No seats loaded from seats table for roomId = " + selectedShowtime.getRoomId());
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("No Seats Available");
-                alert.setHeaderText(null);
-                alert.setContentText("No available seats found for this room. Please check the data.");
-                alert.showAndWait();
+
+            // Lấy danh sách ghế
+            String seatQuery = "SELECT s.seatId, s.seatRow, s.seatColumn, st.seatTypeName, s.seatTypeId, s.isActive " +
+                    "FROM seats s JOIN seatTypes st ON s.seatTypeId = st.seatTypeId " +
+                    "WHERE s.roomId = ? AND s.isActive = 1";
+            try (PreparedStatement seatStmt = conn.prepareStatement(seatQuery)) {
+                seatStmt.setInt(1, selectedShowtime.getRoomId());
+                ResultSet seatRs = seatStmt.executeQuery();
+
+                // Lấy danh sách ghế đã đặt
+                String bookedSeatQuery = "SELECT ts.seatId FROM ticketSeats ts JOIN tickets t ON ts.ticketId = t.ticketId WHERE t.showtimeId = ?";
+                try (PreparedStatement bookedStmt = conn.prepareStatement(bookedSeatQuery)) {
+                    bookedStmt.setInt(1, selectedShowtime.getShowtimeId());
+                    ResultSet bookedRs = bookedStmt.executeQuery();
+                    Set<Integer> bookedSeatIds = new HashSet<>();
+                    while (bookedRs.next()) {
+                        bookedSeatIds.add(bookedRs.getInt("seatId"));
+                    }
+
+                    int seatCount = 0;
+                    while (seatRs.next()) {
+                        int seatId = seatRs.getInt("seatId");
+                        String seatRow = seatRs.getString("seatRow");
+                        int seatColumn = seatRs.getInt("seatColumn");
+                        String seatTypeName = seatRs.getString("seatTypeName");
+                        int seatTypeId = seatRs.getInt("seatTypeId");
+                        boolean isActive = seatRs.getBoolean("isActive");
+
+                        if (isActive) {
+                            Button seat = new Button(seatRow + seatColumn);
+                            seat.setPrefSize(45, 45);
+                            seat.setMinSize(45, 45);
+                            seat.setMaxSize(45, 45);
+                            seat.setAccessibleText("Seat " + seatRow + seatColumn + ", " + seatTypeName + ", " +
+                                    (bookedSeatIds.contains(seatId) ? "Booked" : "Available"));
+
+                            SeatInfo seatInfo = getSeatInfo(seatTypeName);
+                            boolean isSelected = selectedSeats.stream()
+                                    .anyMatch(s -> (int) s.get("seatId") == seatId);
+
+                            if (bookedSeatIds.contains(seatId)) {
+                                seat.setStyle(getOccupiedSeatStyle());
+                                seat.setDisable(true);
+                            } else if (isSelected) {
+                                seat.setStyle(getSelectedSeatStyle(seatInfo.color));
+                                // Cập nhật button trong selectedSeats
+                                selectedSeats.stream()
+                                        .filter(s -> (int) s.get("seatId") == seatId)
+                                        .findFirst()
+                                        .ifPresent(s -> s.put("button", seat));
+                            } else {
+                                seat.setStyle(getAvailableSeatStyle(seatInfo.color));
+                            }
+
+                            setupSeatInteraction(seat, seatInfo, seatId, seatRow, seatColumn, seatTypeName, seatTypeId);
+                            seatGrid.add(seat, seatColumn - 1, seatRow.charAt(0) - 'A');
+                            seatCount++;
+                        }
+                    }
+                    totalSeats = seatCount;
+                    updateSeatInfo();
+
+                    if (seatCount == 0) {
+                        showErrorAlert("Không có ghế", "Không tìm thấy ghế khả dụng cho phòng này.");
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            showErrorAlert("Lỗi cơ sở dữ liệu", "Không thể tải danh sách ghế: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void setBookingData(Map<String, Object> bookingData) {
+        this.bookingData = bookingData;
+        if (bookingData != null) {
+            this.selectedShowtime = (Showtime) bookingData.get("showtime");
+            this.selectedSeats = (List<Map<String, Object>>) bookingData.get("selectedSeats");
+            this.seatTypePrices = (Map<Integer, Double>) bookingData.get("seatTypePrices");
+
+            if (selectedSeats == null) {
+                selectedSeats = new ArrayList<>();
+            }
+            if (seatTypePrices == null) {
+                seatTypePrices = new HashMap<>();
             }
 
-        } catch (SQLException ex) {
-            System.err.println("Error querying seats from database: " + ex.getMessage());
-            ex.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Database Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Unable to load seat list: " + ex.getMessage());
-            alert.showAndWait();
+            displayShowtimeInfo();
+            loadSeatTypePrices();
+            loadSeats();
+            updateTotalPrice();
+        } else {
+            showErrorAlert("Dữ liệu không hợp lệ", "Không tìm thấy thông tin đặt vé. Vui lòng thử lại.");
         }
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void setupSeatInteraction(Button seat, SeatInfo seatInfo, int seatId, String seatRow, int seatColumn, String seatTypeName, int seatTypeId) {

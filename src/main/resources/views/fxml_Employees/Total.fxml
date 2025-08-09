@@ -242,7 +242,7 @@
                         <HBox alignment="CENTER" spacing="20.0">
                             <children>
                                 <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px;" text="← Back" />
-                                <Button fx:id="invoiceHistoryButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="📋 Invoice History" />
+                                <Button fx:id="invoiceHistoryButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="📋 Invoice History" onAction="#openInvoiceHistory" />
                                 <Button fx:id="printInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-size: 14px;" text="🖨 Print Invoice" />
                                 <Button fx:id="newTransactionButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" text="🔄 New Transaction" />
                             </children>

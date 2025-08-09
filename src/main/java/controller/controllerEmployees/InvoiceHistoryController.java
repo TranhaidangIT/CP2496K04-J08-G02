@@ -509,8 +509,8 @@ public class InvoiceHistoryController {
                 SELECT seat.seatRow, seat.seatColumn, st.seatTypeName, st.price
                 FROM tickets t
                 JOIN ticketSeats ts ON t.ticketId = ts.ticketId
-                JOIN Seat seat ON ts.seatId = seat.seatId
-                JOIN SeatType st ON seat.seatTypeId = st.seatTypeId
+                JOIN seats seat ON ts.seatId = seat.seatId
+                JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
                 WHERE t.ticketCode = ?
                 """;
 
@@ -526,7 +526,7 @@ public class InvoiceHistoryController {
                 String seatNumber = seatRs.getString("seatRow") + seatRs.getInt("seatColumn");
                 String seatType = seatRs.getString("seatTypeName");
                 double price = seatRs.getDouble("price");
-                content.append(String.format("Seat %s (%s): %.0f VND\n", seatNumber, seatType, price));
+                content.append(String.format("seats %s (%s): %.0f VND\n", seatNumber, seatType, price));
             }
 
             // Get service information
