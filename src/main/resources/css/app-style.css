@@ -3,32 +3,38 @@
     -fx-background-color: #f8f9fa;
 }
 
-/* ========== MAIN TITLE - 32px, Bold, Red ========== */
+/* ========== MAIN TITLE ========== */
 .titleMain {
-    -fx-font-size: 32px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #AA0000;
     -fx-alignment: center;
 }
 
-/* ========== SUBTITLE - 24px, Bold, Red ========== */
+/* ========== SUBTITLE ========== */
 .titleSub {
-    -fx-font-size: 24px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #AA0000;
     -fx-alignment: center-left;
 }
 
-/* ========== LABELS / CAPTIONS (16px, Gray) ========== */
+/* ========== LABELS / CAPTIONS ========== */
 .labelCaption {
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #495057;
+}
+
+.mainContent {
+    -fx-font-size: 14px;
     -fx-font-weight: normal;
     -fx-text-fill: #495057;
 }
 
 /* ========== UNIFIED INPUT CONTROLS STYLE ========== */
 .textField, .passwordField, .comboBox, .datePicker {
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-text-fill: #212529;
     -fx-background-color: white;
     -fx-border-color: #ced4da;
@@ -44,70 +50,63 @@
     -fx-border-width: 2;
 }
 
+/* ========== TABLE VIEW ========== */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-padding: 4;
+    -fx-font-size: 14px;
+}
+
+.table-view .column-header {
+    -fx-background-color: grey;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-cell {
+    -fx-padding: 6px;
+    -fx-alignment: CENTER_LEFT;
+}
 
 
 /* ========== STANDARD BUTTON BASE STYLE ========== */
 .button {
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 10 20;
+    -fx-padding: 5 10;
     -fx-background-radius: 6;
-    -fx-text-fill: white;
     -fx-cursor: hand;
     -fx-border-width: 0;
 }
 
+.buttonSmall {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+    -fx-cursor: hand;
+    -fx-background-color: transparent;
+}
+
+
 /* ========== BUTTON COLORS ========== */
 
-/* Add / Insert */
-.btnAdd {
+/* Insert */
+.btnInsert {
     -fx-background-color: #28a745;
+    -fx-text-fill: #ffffff;
 }
-.btnAdd:hover {
+.btnInsert:hover {
     -fx-background-color: #218838;
-}
-.btnExit {
-    -fx-background-color: #ff6666;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-padding: 10px;
-    -fx-background-radius: 5px;
-}
-
-.btnExit:hover {
-    -fx-background-color: #cc0000;
-}
-
-.text-area {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-}
-
-.label {
-    -fx-text-fill: #333;
-}
-
-.grid-pane {
-    -fx-background-color: transparent;
-    -fx-alignment: center;
-}
-
-.text-area {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-}
-
-.label {
-    -fx-text-fill: #333;
 }
 
 /* Edit / Update */
 .btnEdit {
     -fx-background-color: #007bff;
+    -fx-text-fill: #ffffff;
 }
 .btnEdit:hover {
     -fx-background-color: #0069d9;
@@ -116,6 +115,7 @@
 /* Delete / Remove */
 .btnDelete {
     -fx-background-color: #dc3545;
+    -fx-text-fill: #ffffff;
 }
 .btnDelete:hover {
     -fx-background-color: #c82333;
@@ -124,6 +124,7 @@
 /* Cancel */
 .btnCancel {
     -fx-background-color: #6c757d;
+    -fx-text-fill: #ffffff;
 }
 .btnCancel:hover {
     -fx-background-color: #5a6268;
@@ -132,6 +133,7 @@
 /* Login (Main Red) */
 .btnLogin {
     -fx-background-color: #AA0000;
+    -fx-text-fill: #ffffff;
 }
 .btnLogin:hover {
     -fx-background-color: #880000;
@@ -151,7 +153,7 @@
     -fx-background-color: #0056b3;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-background-radius: 8;
     -fx-cursor: hand;
 }
@@ -197,3 +199,8 @@
     -fx-spacing: 10;
 }
 
+.warningText {
+    -fx-font-size: 14px;
+    -fx-text-fill: #dc3545; /* màu đỏ cảnh báo */
+    -fx-font-weight: normal;
+}

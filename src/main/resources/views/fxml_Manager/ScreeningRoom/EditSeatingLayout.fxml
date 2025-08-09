@@ -1,61 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.GridPane?>
 <AnchorPane prefHeight="768.0" prefWidth="950.0" style="-fx-background-color: #1e1e1e;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditSeatingLayoutController">
 
-    <!-- Screen Label -->
-    <Label layoutX="445.0" layoutY="14.0" style="-fx-font-weight: bold;" text="SCREEN" textFill="white">
+    <!-- SCREEN label -->
+    <Label layoutX="451.0" layoutY="58.0" style="-fx-font-weight: bold;" text="SCREEN" textFill="white">
         <font>
             <Font size="16" />
         </font>
     </Label>
 
-    <Separator layoutX="119.0" layoutY="38.0" prefWidth="700" />
+    <!--Seat Area-->
+    <AnchorPane fx:id="seatingArea" layoutX="135.0" layoutY="112.0" prefHeight="478.0" prefWidth="700.0">
+        <GridPane fx:id="seatGrid" hgap="5" layoutX="50" layoutY="60" vgap="5" />
+    </AnchorPane>
 
-    <!-- Seat Grid inside ScrollPane -->
-    <ScrollPane hbarPolicy="NEVER" layoutX="90.0" layoutY="60.0" prefHeight="570.0" prefWidth="769.0">
-        <content>
-            <GridPane fx:id="seatGrid" alignment="CENTER" hgap="5" style="-fx-background-color: #2e2e2e;" vgap="5">
-                <padding>
-                    <Insets bottom="10" left="10" right="10" top="10" />
-                </padding>
-            </GridPane>
-        </content>
-    </ScrollPane>
+    <Separator layoutX="125.0" layoutY="82.0" prefWidth="700" />
 
-    <!-- Center Zone -->
-    <Pane fx:id="centerZone" layoutX="338.0" layoutY="220" mouseTransparent="true" prefHeight="250" prefWidth="268.0" style="-fx-border-color: limegreen; -fx-border-width: 2; -fx-background-color: transparent;" />
+    <!-- Legend Title -->
+    <Label layoutX="149.0" layoutY="608.0" style="-fx-font-weight: bold;" text="Seat Legend:" textFill="white">
+        <font>
+            <Font size="14" />
+        </font>
+    </Label>
 
-    <!-- Legend -->
-    <HBox layoutX="315.0" layoutY="641.0" spacing="30">
-        <HBox alignment="CENTER" spacing="5">
-            <Region prefHeight="20" prefWidth="20" style="-fx-background-color: #28a745;" />
-            <Label text="Available" textFill="white" />
-        </HBox>
-        <HBox alignment="CENTER" spacing="5">
-            <Region prefHeight="20" prefWidth="20" style="-fx-background-color: gray;" />
-            <Label text="Unavailable" textFill="white" />
-        </HBox>
-        <HBox alignment="CENTER" spacing="5">
-            <Region prefHeight="20" prefWidth="20" style="-fx-background-color: orange;" />
-            <Label text="Maintenance" textFill="white" />
-        </HBox>
-    </HBox>
+    <!-- Standard -->
+    <AnchorPane fx:id="legendStandardColor" layoutX="250.0" layoutY="611.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #ff69b4; -fx-border-color: white;" />
+    <Label fx:id="legendStandardLabel" layoutX="275.0" layoutY="611.0" text="Standard" textFill="white" />
 
-    <!-- Buttons -->
-    <HBox layoutX="350" layoutY="700" spacing="20" />
-    <Button fx:id="btnSave" layoutX="671.0" layoutY="711.0" prefHeight="46.0" prefWidth="94.0" style="-fx-background-color: #28a745; -fx-text-fill: white;" stylesheets="@../../../css/app-style.css" text="Save" />
-    <Button fx:id="btnCancel" layoutX="787.0" layoutY="711.0" prefHeight="46.0" prefWidth="94.0" style="-fx-background-color: #6c757d; -fx-text-fill: white;" stylesheets="@../../../css/app-style.css" text="Cancel" />
+    <!-- VIP -->
+    <AnchorPane fx:id="legendVIPColor" layoutX="342.0" layoutY="610.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #00bfff; -fx-border-color: white;" />
+    <Label fx:id="legendVIPLabel" layoutX="372.0" layoutY="610.0" text="VIP" textFill="white" />
+
+    <!-- SweetBox -->
+    <AnchorPane fx:id="legendSweetboxColor" layoutX="410.0" layoutY="611.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #dc3545; -fx-border-color: white;" />
+    <Label fx:id="legendSweetboxLabel" layoutX="440.0" layoutY="611.0" text="SweetBox" textFill="white" />
+
+    <!-- Gold -->
+    <AnchorPane fx:id="legendGoldColor" layoutX="247.0" layoutY="610.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #ffc107; -fx-border-color: white;" visible="false" />
+    <Label fx:id="legendGoldLabel" layoutX="277.0" layoutY="610.0" text="Gold" textFill="white" visible="false" />
+
+    
+    <Button fx:id="btnUpdate" layoutX="683.0" layoutY="696.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Update">
+      <font>
+         <Font size="16.0" />
+      </font>
+   </Button>
+   <Button fx:id="btnCancel" layoutX="798.0" layoutY="696.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+      <font>
+         <Font size="16.0" />
+      </font>
+   </Button>
+
+   <Label layoutX="149.0" layoutY="641.0" style="-fx-font-weight: bold;" text="Seat Status:" textFill="white">
+      <font>
+         <Font size="14" />
+      </font>
+   </Label>
+   <AnchorPane fx:id="legendUnavailableColor" layoutX="250.0" layoutY="643.0" prefHeight="16" prefWidth="16" style="-fx-background-color: grey; -fx-border-color: white;" />
+   <Label fx:id="legendUnavailable" layoutX="279.0" layoutY="642.0" text="Unavailable" textFill="white" />
+
+
 
 </AnchorPane>

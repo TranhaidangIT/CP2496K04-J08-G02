@@ -3,85 +3,85 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="768.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditRoomController">
    <children>
-      <AnchorPane prefHeight="768.0" prefWidth="534.0">
+      <AnchorPane prefHeight="768.0" prefWidth="646.0">
          <children>
-            <AnchorPane layoutX="61.0" layoutY="17.0" prefHeight="734.0" prefWidth="435.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+            <AnchorPane layoutX="61.0" layoutY="17.0" prefHeight="734.0" prefWidth="563.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
                <children>
 
                   <!-- Title -->
-                  <Label layoutX="125.0" layoutY="14.0" styleClass="titleSub" stylesheets="@../../../css/app-style.css" text="Edit Screening Room">
+                  <Label layoutX="163.0" layoutY="27.0" styleClass="titleSub" stylesheets="@../../../css/app-style.css" text="Edit Screening Room">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
 
-                  <!-- Form Section -->
-                  <AnchorPane layoutX="4.0" layoutY="95.0" prefHeight="412.0" prefWidth="378.0" stylesheets="@../../../css/app-style.css">
+                  <Button fx:id="btnUpdate" layoutX="219.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Update">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+
+                  <Button fx:id="btnDelete" layoutX="334.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="35.0" prefWidth="100.0" styleClass="btnDelete" stylesheets="@../../../css/app-style.css" text="Delete">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+
+                  <Button fx:id="btnCancel" layoutX="449.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <AnchorPane layoutX="18.0" layoutY="94.0" prefHeight="546.0" prefWidth="526.0" stylesheets="@../../../css/app-style.css">
                      <children>
-                        <!-- Room Number -->
-                        <Label layoutX="4.0" layoutY="14.0" style="-fx-font-weight: bold;" styleClass="labelCaption" text="Room Number:" />
-                        <TextField fx:id="tfRoomNumber" editable="false" layoutX="131.0" layoutY="7.0" prefHeight="40.0" prefWidth="97.0" styleClass="textField" />
-
-                        <!-- Total Capacity -->
-                        <Label layoutX="14.0" layoutY="62.0" styleClass="labelCaption" text="Total Capacity:">
+                        <Label layoutX="18.0" layoutY="253.0" styleClass="labelCaption" text="Total Capacity:">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="tfTotalCap" layoutX="131.0" layoutY="55.0" prefWidth="240.0" styleClass="textField" />
-
-                        <!-- Room Type -->
-                        <Label layoutX="33.0" layoutY="116.0" styleClass="labelCaption" text="Room Type:">
+                        <TextField id="tfTotalCap" fx:id="tfTotalCap" layoutX="151.0" layoutY="242.0" prefHeight="46.0" prefWidth="324.0" styleClass="textField" />
+                        <Label layoutX="40.0" layoutY="86.0" styleClass="labelCaption" text="Room Type:">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <ComboBox fx:id="cbRoomType" layoutX="133.0" layoutY="103.0" prefHeight="51.0" prefWidth="236.0" styleClass="comboBox" />
-
-                        <!-- Equipment -->
-                        <Label layoutX="33.0" layoutY="154.0" prefHeight="26.0" prefWidth="84.0" styleClass="labelCaption" text="Equipment:">
+                        <Label layoutX="42.0" layoutY="300.0" styleClass="labelCaption" text="Equipment:" />
+                        <ComboBox id="cbRoomStatus" fx:id="cbRoomStatus" layoutX="149.0" layoutY="456.0" prefHeight="51.0" prefWidth="324.0" styleClass="comboBox" />
+                        <ComboBox id="cbRoomType" fx:id="cbRoomType" layoutX="146.0" layoutY="73.0" prefHeight="51.0" prefWidth="324.0" styleClass="comboBox" />
+                        <Label layoutX="14.0" layoutY="21.0" styleClass="labelCaption" text="Room Number:">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="tfEquipment" layoutX="131.0" layoutY="161.0" prefHeight="118.0" prefWidth="240.0" styleClass="textField" />
-
-                        <!-- Room Status -->
-                        <Label layoutX="19.0" layoutY="287.0" styleClass="labelCaption" text="Room Status:">
+                        <TextField id="tfTotalCap" fx:id="tfRoomNumber" layoutX="148.0" layoutY="14.0" prefHeight="43.0" prefWidth="125.0" styleClass="textField" />
+                        <Label fx:id="txtSeatLayout" layoutX="16.0" layoutY="158.0" styleClass="labelCaption" text="Seating Layout:">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <ComboBox fx:id="cbRoomStatus" layoutX="131.0" layoutY="287.0" prefHeight="51.0" prefWidth="240.0" styleClass="comboBox" />
+                        <HBox layoutX="144.0" layoutY="149.0" prefHeight="43.0" prefWidth="338.0" spacing="10">
+                           <children>
+                              <Label prefHeight="41.0" prefWidth="47.0" styleClass="mainContent" text="Rows:" />
+                              <Spinner fx:id="spinnerRows" editable="true" prefWidth="70" />
+                              <Label contentDisplay="CENTER" prefHeight="42.0" prefWidth="37.0" style="-fx-alignment: center;" styleClass="labelCaption" text="x" />
+                              <Label prefHeight="42.0" prefWidth="66.0" styleClass="mainContent" text="Columns:" />
+                              <Spinner fx:id="spinnerColumns" editable="true" prefHeight="43.0" prefWidth="66.0" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="txtRoomStatus" layoutX="35.0" layoutY="469.0" styleClass="labelCaption" text="Room Status:" />
+                        <Label fx:id="lblLayoutWarning" layoutX="144.0" layoutY="207.0" prefHeight="20.0" prefWidth="364.0" styleClass="warningText" text="Allowed seating layout: Minimum 5×5, Maximum 15×15." />
+                        <TextArea id="tfTotalCap" fx:id="tfEquipment" layoutX="151.0" layoutY="300.0" prefHeight="144.0" prefWidth="324.0" styleClass="textField" />
                      </children>
                   </AnchorPane>
-
-                  <!-- Buttons -->
-                  <Button fx:id="btnEditSLayout" layoutX="19.0" layoutY="507.0" mnemonicParsing="false" onAction="#handleOpenEditStLayout" prefHeight="59.0" prefWidth="399.0" text="Edit SeatingLayout" />
-
-                  <Button fx:id="btnUpdate" layoutX="205.0" layoutY="610.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Update">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-
-                  <Button fx:id="btnDelete" layoutX="317.0" layoutY="610.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="35.0" prefWidth="100.0" styleClass="btnDelete" stylesheets="@../../../css/app-style.css" text="Delete">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-
-                  <Button fx:id="btnCancel" layoutX="317.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
 
                </children>
             </AnchorPane>

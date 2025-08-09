@@ -264,8 +264,8 @@ public class TotalController {
     private void loadLatestTicket() {
         if (selectedShowtime != null && selectedSeats != null && !selectedSeats.isEmpty()) {
             movieTitleLabel.setText(selectedShowtime.getMovieTitle());
-            String showTime = selectedShowtime.getShowTime();
-            String endTime = selectedShowtime.getEndTime();
+            String showTime = String.valueOf(selectedShowtime.getShowTime());
+            String endTime = String.valueOf(selectedShowtime.getEndTime());
             showtimeLabel.setText(selectedShowtime.getShowDate() + " " +
                     (showTime != null ? showTime : "") + (endTime != null ? " - " + endTime : ""));
             roomLabel.setText("Room " + selectedShowtime.getRoomName());

@@ -1,202 +1,243 @@
 package controller.controllerManager;
 
+import dao.MovieDAO;
+import dao.ScreeningRoomDAO;
 import dao.ShowtimeDAO;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import models.Movie;
+import models.ScreeningRoom;
 import models.Showtime;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import javafx.event.ActionEvent;
+import java.time.LocalTime;
+import java.util.*;
 
 public class EditShowtimeController {
 
-    @FXML
-    private Button btnCancel;
+    @FXML private Button addTimeButton, btnCancel, btnDelete, btnUpdate;
+    @FXML private DatePicker datePicker;
+    @FXML private Spinner<Integer> hourSpinner, minuteSpinner;
+    @FXML private ComboBox<String> movieComboBox, roomComboBox;
+    @FXML private GridPane timeSlotGrid;
 
-    @FXML
-    private Button btnDelete;
+    private List<LocalTime> addedTimeSlots = new ArrayList<>();
+    private Map<String, Movie> movieMap = new HashMap<>();
+    private Map<String, ScreeningRoom> roomMap = new HashMap<>();
 
-    @FXML
-    private Button btnLoadSt;
+    private Showtime mainShowtime;
+    private List<Showtime> showtimeGroup;
+    private final int maxColumns = 10;
 
-    @FXML
-    private Button btnUpdate;
-
-    @FXML
-    private DatePicker datePicker;
-
-    @FXML
-    private ComboBox<String> movieComboBox;
-
-    @FXML
-    private ComboBox<String> roomComboBox;
-
-    @FXML
-    private VBox timeSlotList;
-
-    private List<Showtime> loadedShowtimes = new ArrayList<>();
-    private Showtime selectedShowtime = null;
+    private Runnable refreshCallback;
 
     @FXML
     public void initialize() {
-        // Mock movie/room list
-        movieComboBox.getItems().addAll("Oppenheimer", "Barbie");
-        roomComboBox.getItems().addAll("Room A", "Room B");
+        hourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 10));
+        minuteSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0, 5));
 
-        movieComboBox.setValue("Oppenheimer");
-        roomComboBox.setValue("Room A");
+        hourSpinner.getEditor().setTextFormatter(createTwoDigitFormatter());
+        minuteSpinner.getEditor().setTextFormatter(createTwoDigitFormatter());
+
+        loadMovieData();
+        loadRoomData();
     }
 
-    @FXML
-    void handleLoadShowtime(ActionEvent event) {
-        String selectedMovie = movieComboBox.getValue();
-        String selectedRoom = roomComboBox.getValue();
-        LocalDate selectedDate = datePicker.getValue();
-
-        if (selectedMovie == null || selectedRoom == null || selectedDate == null) {
-            showAlert("Missing Input", "Please choose movie, room and date.");
-            return;
-        }
-
-        String dateStr = selectedDate.toString();
-
-        // Filter by movieTitle, roomName and date
-        loadedShowtimes = ShowtimeDAO.getAllShowtimes().stream()
-                .filter(s -> s.getMovieTitle().equals(selectedMovie) &&
-                        s.getRoomName().equals(selectedRoom) &&
-                        s.getShowDate().equals(dateStr))
-                .toList();
-
-        displayTimeSlots();
+    private TextFormatter<String> createTwoDigitFormatter() {
+        return new TextFormatter<>(change -> {
+            if (!change.getControlNewText().matches("\\d{0,2}")) return null;
+            return change;
+        });
     }
 
-    private void displayTimeSlots() {
-        timeSlotList.getChildren().clear();
-
-        for (Showtime st : loadedShowtimes) {
-            Label timeLabel = new Label(st.getShowTime());
-            Button selectBtn = new Button("Select");
-            selectBtn.setOnAction(e -> {
-                selectedShowtime = st;
-                highlightSelection(st);
-            });
-
-            HBox box = new HBox(10, timeLabel, selectBtn);
-            timeSlotList.getChildren().add(box);
+    private void loadMovieData() {
+        try {
+            List<Movie> movies = MovieDAO.getAllMovies();
+            for (Movie movie : movies) {
+                String display = movie.getTitle() + " (" + movie.getReleasedDate().getYear() + ")";
+                movieComboBox.getItems().add(display);
+                movieMap.put(display, movie);
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Failed to load movie data.");
         }
     }
 
-    private void highlightSelection(Showtime st) {
-        for (var node : timeSlotList.getChildren()) {
-            if (node instanceof HBox hbox && hbox.getChildren().get(0) instanceof Label lbl) {
-                if (lbl.getText().equals(st.getShowTime())) {
-                    lbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #AA0000;");
-                } else {
-                    lbl.setStyle("");
-                }
+    private void loadRoomData() {
+        try {
+            List<ScreeningRoom> rooms = ScreeningRoomDAO.getAllRooms();
+            for (ScreeningRoom room : rooms) {
+                String display = room.getRoomNumber();
+                roomComboBox.getItems().add(display);
+                roomMap.put(display, room);
+            }
+        } catch (Exception e) {
+            showAlert("Error", "Failed to load room data.");
+        }
+    }
+
+    public void setShowtimeToEdit(Showtime mainShowtime, List<Showtime> showtimeGroup) {
+        this.mainShowtime = mainShowtime;
+        this.showtimeGroup = showtimeGroup;
+
+        datePicker.setValue(mainShowtime.getShowDate());
+
+        for (Map.Entry<String, Movie> entry : movieMap.entrySet()) {
+            if (entry.getValue().getMovieId() == mainShowtime.getMovieId()) {
+                movieComboBox.setValue(entry.getKey());
+                break;
             }
         }
+
+        for (Map.Entry<String, ScreeningRoom> entry : roomMap.entrySet()) {
+            if (entry.getValue().getRoomId() == mainShowtime.getRoomId()) {
+                roomComboBox.setValue(entry.getKey());
+                break;
+            }
+        }
+
+        for (Showtime st : showtimeGroup) {
+            addedTimeSlots.add(st.getShowTime());
+        }
+
+        updateTimeSlotGrid();
+    }
+
+    private void updateTimeSlotGrid() {
+        timeSlotGrid.getChildren().clear();
+
+        for (int i = 0; i < addedTimeSlots.size(); i++) {
+            LocalTime time = addedTimeSlots.get(i);
+            Label timeLabel = new Label(time.toString());
+
+            Button removeBtn = new Button("X");
+            removeBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white;");
+            removeBtn.setOnAction(e -> {
+                // Xác nhận khi xóa 1 khung giờ
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                confirm.setTitle("Xác nhận xóa");
+                confirm.setHeaderText("Bạn có chắc muốn xóa suất chiếu này?");
+                confirm.setContentText(time.toString());
+                Optional<ButtonType> result = confirm.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    // Xóa trong DB nếu suất này nằm trong nhóm hiện tại
+                    Showtime target = showtimeGroup.stream()
+                            .filter(st -> st.getShowTime().equals(time))
+                            .findFirst()
+                            .orElse(null);
+                    if (target != null) {
+                        ShowtimeDAO.deleteShowtimeById(target.getShowtimeId());
+                        showtimeGroup.remove(target);
+                    }
+
+                    addedTimeSlots.remove(time);
+                    updateTimeSlotGrid();
+                }
+            });
+
+            HBox hBox = new HBox(5, timeLabel, removeBtn);
+            hBox.setStyle("-fx-background-color: #f1f1f1; -fx-padding: 5; -fx-border-color: #ccc;");
+            int col = i % maxColumns;
+            int row = i / maxColumns;
+            timeSlotGrid.add(hBox, col, row);
+        }
     }
 
     @FXML
-    void handleDelete(ActionEvent event) {
-        if (selectedShowtime == null) {
-            showAlert("No selection", "Please select a showtime to delete.");
+    void handleAddTimeSlot(ActionEvent event) {
+        int hour = hourSpinner.getValue();
+        int minute = minuteSpinner.getValue();
+        LocalTime time = LocalTime.of(hour, minute);
+
+        if (addedTimeSlots.contains(time)) {
+            showAlert("Duplicate", "This time slot already exists.");
             return;
         }
 
-        boolean deleted = ShowtimeDAO.deleteShowtime(selectedShowtime.getShowtimeId());
-
-        if (deleted) {
-            showAlert("Deleted", "Showtime deleted successfully.");
-            loadedShowtimes.remove(selectedShowtime);
-            selectedShowtime = null;
-            displayTimeSlots();
-        } else {
-            showAlert("Error", "Failed to delete showtime.");
-        }
+        addedTimeSlots.add(time);
+        updateTimeSlotGrid();
     }
 
     @FXML
     void handleUpdate(ActionEvent event) {
-        if (selectedShowtime == null) {
-            showAlert("No selection", "Please select a showtime to update.");
+        if (movieComboBox.getValue() == null || roomComboBox.getValue() == null || datePicker.getValue() == null || addedTimeSlots.isEmpty()) {
+            showAlert("Error", "Please fill in all required fields.");
             return;
         }
 
-        // Here you could open a new dialog or inline edit
-        selectedShowtime.setShowTime("21:00"); // example update
-        boolean updated = ShowtimeDAO.updateShowtime(selectedShowtime);
+        Movie movie = movieMap.get(movieComboBox.getValue());
+        ScreeningRoom room = roomMap.get(roomComboBox.getValue());
 
-        if (updated) {
-            showAlert("Updated", "Showtime updated to 21:00.");
-            displayTimeSlots();
-        } else {
-            showAlert("Error", "Failed to update showtime.");
+        if (movie == null || room == null) {
+            showAlert("Invalid", "Movie or room selection is invalid.");
+            return;
+        }
+
+        for (Showtime st : showtimeGroup) {
+            ShowtimeDAO.deleteShowtimeById(st.getShowtimeId());
+        }
+
+        for (LocalTime time : addedTimeSlots) {
+            LocalTime end = time.plusMinutes(movie.getDuration());
+            boolean success = ShowtimeDAO.insertShowtime(
+                    movie.getMovieId(),
+                    room.getRoomId(),
+                    datePicker.getValue(),
+                    time,
+                    end
+            );
+            if (!success) {
+                showAlert("Error", "Failed to insert showtime: " + time);
+                return;
+            }
+        }
+
+        showAlert("Success", "Showtimes updated.");
+        if (refreshCallback != null) refreshCallback.run();
+        handleCancel(null);
+    }
+
+    @FXML
+    void handleDelete(ActionEvent event) {
+        // Xác nhận khi xóa cả nhóm
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Xác nhận xóa");
+        confirm.setHeaderText("Bạn có chắc muốn xóa toàn bộ suất chiếu này?");
+        confirm.setContentText("Thao tác này không thể hoàn tác.");
+        Optional<ButtonType> result = confirm.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            for (Showtime st : showtimeGroup) {
+                ShowtimeDAO.deleteShowtimeById(st.getShowtimeId());
+            }
+            showAlert("Deleted", "Showtimes deleted.");
+            if (refreshCallback != null) refreshCallback.run();
+            handleCancel(null);
         }
     }
 
     @FXML
     void handleCancel(ActionEvent event) {
-        ((Stage) btnCancel.getScene().getWindow()).close();
+        Stage stage = (Stage) btnCancel.getScene().getWindow();
+        stage.close();
     }
 
-    private void showAlert(String title, String content) {
+    private void showAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Info");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 
-    public void setShowtime(Showtime selected) {
+    public void setRefreshCallback(Runnable callback) {
+        this.refreshCallback = callback;
     }
 
-    public void handleAddTimeSlot(ActionEvent actionEvent) {
+    public void handleLoadShowtime(ActionEvent actionEvent) {
     }
-
-    @FXML
-    private VBox showtimeContainer;
-
-    public void loadShowtimes(Map<LocalDate, List<String>> showtimesByDate) {
-        showtimeContainer.getChildren().clear();
-
-        for (Map.Entry<LocalDate, List<String>> entry : showtimesByDate.entrySet()) {
-            LocalDate date = entry.getKey();
-            List<String> times = entry.getValue();
-
-            Label dateLabel = new Label();
-            if (date.equals(LocalDate.now())) {
-                dateLabel.setText("Today - " + date.format(DateTimeFormatter.ofPattern("MMMM dd")));
-            } else if (date.equals(LocalDate.now().plusDays(1))) {
-                dateLabel.setText("Tomorrow - " + date.format(DateTimeFormatter.ofPattern("MMMM dd")));
-            } else {
-                dateLabel.setText(date.format(DateTimeFormatter.ofPattern("EEEE - MMM dd")));
-            }
-            dateLabel.getStyleClass().add("showtime-day-label");
-
-            FlowPane timePane = new FlowPane();
-            timePane.setHgap(10);
-            timePane.setVgap(10);
-
-            for (String time : times) {
-                Button btn = new Button(time);
-                btn.getStyleClass().add("showtime-button");
-                btn.setOnAction(e -> System.out.println("Clicked time: " + time));
-                timePane.getChildren().add(btn);
-            }
-
-            VBox section = new VBox(5, dateLabel, timePane);
-            showtimeContainer.getChildren().add(section);
-        }
-    }
-
 }

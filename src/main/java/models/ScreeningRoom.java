@@ -7,34 +7,30 @@ public class ScreeningRoom {
     private String roomNumber;
     private String seatingLayout;
     private int totalCapacity;
-    private String roomType;
+    private int roomTypeId;
+    private String typeName;
     private String equipment;
     private String roomStatus;
     private LocalDateTime createdAt;
 
-    public ScreeningRoom(int roomId, String roomNumber, String roomType, String roomStatus,
-                         String seatingLayout, int totalCapacity, String equipment, LocalDateTime createdAt) {
+    public ScreeningRoom() {
+
+    }
+
+    public ScreeningRoom(int roomId, String roomNumber, String seatingLayout, int totalCapacity,
+                         int roomTypeId, String typeName, String equipment,
+                         String roomStatus, LocalDateTime createdAt) {
         this.roomId = roomId;
         this.roomNumber = roomNumber;
-        this.roomType = roomType;
-        this.roomStatus = roomStatus;
         this.seatingLayout = seatingLayout;
         this.totalCapacity = totalCapacity;
+        this.roomTypeId = roomTypeId;
+        this.typeName = typeName;
         this.equipment = equipment;
+        this.roomStatus = roomStatus;
         this.createdAt = createdAt;
     }
 
-    public ScreeningRoom(String roomNumber, String roomType, String roomStatus,
-                         String seatingLayout, int totalCapacity, String equipment) {
-        this.roomNumber = roomNumber;
-        this.roomType = roomType;
-        this.roomStatus = roomStatus;
-        this.seatingLayout = seatingLayout;
-        this.totalCapacity = totalCapacity;
-        this.equipment = equipment;
-    }
-
-    // Getters & Setters
     public int getRoomId() {
         return roomId;
     }
@@ -67,20 +63,29 @@ public class ScreeningRoom {
         this.totalCapacity = totalCapacity;
     }
 
-    public String getRoomType() {
-        return roomType;
+    public int getRoomTypeId() {
+        return roomTypeId;
     }
 
-    public void setRoomType(String roomType) {
-        this.roomType = roomType;
+    public void setRoomTypeId(int roomTypeId) {
+        this.roomTypeId = roomTypeId;
     }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String TypeName) {
+        this.typeName = TypeName;
+    }
+
 
     public String getEquipment() {
         return equipment;
     }
 
-    public void setEquipment(String equipment) {
-        this.equipment = equipment;
+    public void setEquipment(String equipmentList) {
+        this.equipment = equipmentList;
     }
 
     public String getRoomStatus() {
@@ -99,17 +104,4 @@ public class ScreeningRoom {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public String toString() {
-        return "ScreeningRoom{" +
-                "roomId=" + roomId +
-                ", roomNumber='" + roomNumber + '\'' +
-                ", seatingLayout='" + seatingLayout + '\'' +
-                ", totalCapacity=" + totalCapacity +
-                ", roomType='" + roomType + '\'' +
-                ", equipment='" + equipment + '\'' +
-                ", roomStatus='" + roomStatus + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
 }

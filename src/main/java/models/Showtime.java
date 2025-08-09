@@ -1,38 +1,36 @@
 package models;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 public class Showtime {
     private int showtimeId;
     private int movieId;
     private int roomId;
-    private String showDate;
-    private String showTime;
-    private String createdAt;
+    private LocalDate showDate;
+    private LocalTime showTime;
+    private LocalTime endTime;
+    private LocalDateTime createdAt;
     private String movieTitle;
     private String roomName;
-    private String endTime;
 
     public Showtime() {
-        this.showtimeId = 0;
-        this.movieId = 0;
-        this.roomId = 0;
-        this.showDate = null;
-        this.showTime = null;
-        this.endTime = null;
-        this.createdAt = null;
     }
 
-    public Showtime(int showtimeId,
-                    int movieId,
-                    int roomId,
-                    String showDate,
-                    String showTime,
-                    String createdAt) {
+    public Showtime(int showtimeId, int movieId, int roomId,
+                    LocalDate showDate, LocalTime showTime,
+                    LocalTime endTime, LocalDateTime createdAt,
+                    String movieTitle, String roomName) {
         this.showtimeId = showtimeId;
         this.movieId = movieId;
         this.roomId = roomId;
         this.showDate = showDate;
         this.showTime = showTime;
+        this.endTime = endTime;
         this.createdAt = createdAt;
+        this.movieTitle = movieTitle;
+        this.roomName = roomName;
     }
 
     public int getShowtimeId() {
@@ -59,27 +57,35 @@ public class Showtime {
         this.roomId = roomId;
     }
 
-    public String getShowDate() {
+    public LocalDate getShowDate() {
         return showDate;
     }
 
-    public void setShowDate(String showDate) {
+    public void setShowDate(LocalDate showDate) {
         this.showDate = showDate;
     }
 
-    public String getShowTime() {
+    public LocalTime getShowTime() {
         return showTime;
     }
 
-    public void setShowTime(String showTime) {
+    public void setShowTime(LocalTime showTime) {
         this.showTime = showTime;
     }
 
-    public String getCreatedAt() {
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -99,24 +105,16 @@ public class Showtime {
         this.roomName = roomName;
     }
 
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
-
     @Override
     public String toString() {
         return "Showtime{" +
                 "showtimeId=" + showtimeId +
                 ", movieId=" + movieId +
                 ", roomId=" + roomId +
-                ", showDate='" + showDate + '\'' +
-                ", showTime='" + showTime + '\'' +
-                ", endTime='" + endTime + '\'' +
-                ", createdAt='" + createdAt + '\'' +
+                ", showDate=" + showDate +
+                ", showTime=" + showTime +
+                ", endTime=" + endTime +
+                ", createdAt=" + createdAt +
                 ", movieTitle='" + movieTitle + '\'' +
                 ", roomName='" + roomName + '\'' +
                 '}';

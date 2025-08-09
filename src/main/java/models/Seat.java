@@ -3,17 +3,20 @@ package models;
 public class Seat {
     private int seatId;
     private int roomId;
-    private int seatRow;
+    private char seatRow;
     private int seatColumn;
-    private String seatType;
-    private String isActive;
+    private int seatTypeId;
+    private boolean isActive;
+    private SeatType seatType;
 
-    public Seat(int seatId, int roomId, int seatRow, int seatColumn, String seatType, String isActive) {
+    public Seat() {}
+
+    public Seat(int seatId, int roomId, char seatRow, int seatColumn, int seatTypeId, boolean isActive) {
         this.seatId = seatId;
         this.roomId = roomId;
         this.seatRow = seatRow;
         this.seatColumn = seatColumn;
-        this.seatType = seatType;
+        this.seatTypeId = seatTypeId;
         this.isActive = isActive;
     }
 
@@ -33,11 +36,11 @@ public class Seat {
         this.roomId = roomId;
     }
 
-    public int getSeatRow() {
+    public char getSeatRow() {
         return seatRow;
     }
 
-    public void setSeatRow(int seatRow) {
+    public void setSeatRow(char seatRow) {
         this.seatRow = seatRow;
     }
 
@@ -49,21 +52,27 @@ public class Seat {
         this.seatColumn = seatColumn;
     }
 
-    public String getSeatType() {
-        return seatType;
+    public int getSeatTypeId() {
+        return seatTypeId;
     }
 
-    public void setSeatType(String seatType) {
-        this.seatType = seatType;
+    public void setSeatTypeId(int seatTypeId) {
+        this.seatTypeId = seatTypeId;
     }
 
-    public String getIsActive() {
+    public boolean isActive() {
         return isActive;
     }
 
-    public void setIsActive(String isActive) {
-        this.isActive = isActive;
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 
+    public SeatType getSeatType() {
+        return seatType;
+    }
 
+    public void setSeatType(SeatType seatType) {
+        this.seatType = seatType;
+    }
 }

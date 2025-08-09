@@ -1,13 +1,18 @@
 package controller.controllerManager;
 
+import dao.RoomTypeDAO;
 import dao.ScreeningRoomDAO;
+import dao.SeatDAO;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import models.RoomType;
 import models.ScreeningRoom;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class AddRoomController {
 
@@ -21,13 +26,16 @@ public class AddRoomController {
     private ComboBox<String> cbRoomStatus;
 
     @FXML
-    private ComboBox<String> cbRoomType;
+    private ComboBox<RoomType> cbRoomType;
 
     @FXML
-    private ComboBox<String> cbSeatLayout;
+    private Label lblLayoutWarning;
 
     @FXML
-    private TextField tfEquipment;
+    private Spinner<Integer> spinnerRows;
+
+    @FXML
+    private Spinner<Integer> spinnerColumns;
 
     @FXML
     private TextField tfRoomNumber;
@@ -36,53 +44,59 @@ public class AddRoomController {
     private TextField tfTotalCap;
 
     @FXML
-    public void initialize() {
-        cbRoomStatus.getItems().addAll("Available", "Under Maintenance", "Closed");
-        cbRoomType.getItems().addAll("Standard", "VIP", "IMAX");
-        cbSeatLayout.getItems().addAll("Regular", "Premium", "Mixed");
-    }
+    private TextArea tfEquipment;
 
     @FXML
-    void handleInsert(ActionEvent event) {
-        String roomNumber = tfRoomNumber.getText().trim();
-        String roomType = cbRoomType.getValue();
-        String roomStatus = cbRoomStatus.getValue();
-        String seatLayout = cbSeatLayout.getValue();
-        String equipment = tfEquipment.getText().trim();
-        int totalCapacity;
+    private Label txtRoomStatus;
 
-        try {
-            totalCapacity = Integer.parseInt(tfTotalCap.getText().trim());
-        } catch (NumberFormatException e) {
-            showAlert("Total capacity must be a number.", Alert.AlertType.WARNING);
-            return;
+    @FXML
+    public void initialize() {
+        setRoomStatusCombo();
+        List<RoomType> roomTypes = RoomTypeDAO.getAllRoomTypes();
+        cbRoomType.setItems(FXCollections.observableArrayList(roomTypes));
+        if (!roomTypes.isEmpty()) {
+            cbRoomType.getSelectionModel().selectFirst();
         }
-
-        if (roomNumber.isEmpty() || roomType == null || roomStatus == null || seatLayout == null) {
-            showAlert("Please fill all required fields.", Alert.AlertType.WARNING);
-            return;
+        initializeSpinners();
+        spinnerRows.valueProperty().addListener((obs, oldVal, newVal) -> updateTotalCapacityAndValidate());
+        spinnerColumns.valueProperty().addListener((obs, oldVal, newVal) -> updateTotalCapacityAndValidate());
+        cbRoomType.valueProperty().addListener((obs, oldVal, newVal) -> updateSpinnerLimits(newVal));
+        if (cbRoomType.getValue() != null) {
+            updateSpinnerLimits(cbRoomType.getValue());
         }
+    }
 
-        System.out.println("Checking duplicate for roomNumber: " + roomNumber);
-        boolean isExists = ScreeningRoomDAO.isRoomNumberExists(roomNumber);
-        System.out.println("isRoomNumberExists: " + isExists);
+    public void updateSpinnerLimits(RoomType roomType) {
+        if (roomType == null) return;
 
-        if (isExists) {
-            showAlert("Room number already exists. Please enter a different number.", Alert.AlertType.WARNING);
-            return;
-        }
+        int maxRow = Math.min(roomType.getMaxRows(), 15);
+        int maxCol = Math.min(roomType.getMaxColumns(), 15);
 
-        ScreeningRoom newRoom = new ScreeningRoom(
-                0, roomNumber, roomType, roomStatus, seatLayout, totalCapacity, equipment, LocalDateTime.now()
-        );
+        int currentRow = spinnerRows.getValue() != null ? spinnerRows.getValue() : 1;
+        int currentCol = spinnerColumns.getValue() != null ? spinnerColumns.getValue() : 1;
 
-        boolean success = ScreeningRoomDAO.insertRoom(newRoom);
-        if (success) {
-            showAlert("Room added successfully!", Alert.AlertType.INFORMATION);
-            Stage stage = (Stage) btnInsert.getScene().getWindow();
-            stage.close();
+        // Giới hạn lại nếu đang vượt quá
+        currentRow = Math.min(currentRow, maxRow);
+        currentCol = Math.min(currentCol, maxCol);
+
+        spinnerRows.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxRow, currentRow));
+        spinnerColumns.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxCol, currentCol));
+
+        updateTotalCapacityAndValidate();
+    }
+
+
+    public void updateTotalCapacityAndValidate() {
+        int rows = spinnerRows.getValue() != null ? spinnerRows.getValue() : 1;
+        int cols = spinnerColumns.getValue() != null ? spinnerColumns.getValue() : 1;
+
+        int totalCapacity = rows * cols;
+        tfTotalCap.setText(String.valueOf(totalCapacity));
+
+        if (totalCapacity <= 0) {
+            tfTotalCap.setStyle("-fx-text-fill: red;");
         } else {
-            showAlert("Failed to add room.", Alert.AlertType.ERROR);
+            tfTotalCap.setStyle("-fx-text-fill: black;");
         }
     }
 
@@ -93,13 +107,82 @@ public class AddRoomController {
         stage.close();
     }
 
-    private void showAlert(String msg, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setContentText(msg);
-        alert.show();
+    @FXML
+    void handleInsert(ActionEvent event) {
+        String roomNumber = tfRoomNumber.getText().trim();
+        RoomType selectedRoomType = cbRoomType.getValue();
+        String roomStatus = cbRoomStatus.getValue();
+        int rows = spinnerRows.getValue() != null ? spinnerRows.getValue() : 1;
+        int cols = spinnerColumns.getValue() != null ? spinnerColumns.getValue() : 1;
+
+        int capacity = rows * cols;
+
+        if (roomNumber.isEmpty() || selectedRoomType == null) {
+            showAlert("Validation Error", "Room number and room type are required.");
+            return;
+        }
+
+        if (ScreeningRoomDAO.isRoomNumberExists(roomNumber)) {
+            showAlert("Duplicate Room", "Room number already exists.");
+            return;
+        }
+
+        String equipmentText = tfEquipment.getText().trim();
+
+        ScreeningRoom newRoom = new ScreeningRoom();
+        newRoom.setRoomNumber(roomNumber);
+        newRoom.setRoomTypeId(selectedRoomType.getRoomTypeId());
+
+        String seatingLayout = rows + "x" + cols;
+        newRoom.setSeatingLayout(seatingLayout);
+
+        newRoom.setTotalCapacity(capacity);
+        newRoom.setEquipment(equipmentText);
+        newRoom.setRoomStatus(roomStatus);
+        newRoom.setCreatedAt(LocalDateTime.now());
+
+        boolean inserted = ScreeningRoomDAO.insertRoom(newRoom);
+
+        if (inserted) {
+            int roomId = ScreeningRoomDAO.getRoomIdByRoomNumber(roomNumber); // bạn cần viết hàm này nếu chưa có
+
+            boolean seatsInserted = SeatDAO.insertSeatsForRoom(roomId, rows, cols, selectedRoomType.getRoomTypeId());
+
+            if (seatsInserted) {
+                showAlert("Success", "Room and seats added successfully.");
+                handleCancel(event);
+            } else {
+                showAlert("Error", "Room added, but failed to create seats.");
+            }
+        } else {
+            showAlert("Error", "Failed to insert room.");
+        }
     }
 
-    public void setRoomListController(RoomListController roomListController) {
-        // Optional: use this to refresh room list after adding
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void initializeSpinners() {
+        RoomType defaultRoomType = cbRoomType.getValue();
+        if (defaultRoomType != null) {
+            int maxRow = Math.min(defaultRoomType.getMaxRows(), 15);
+            int maxCol = Math.min(defaultRoomType.getMaxColumns(), 15);
+            spinnerRows.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxRow, 5));
+            spinnerColumns.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxCol, 5));
+        } else {
+            spinnerRows.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 15, 5));
+            spinnerColumns.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 15, 5));
+        }
+    }
+
+    public void setRoomStatusCombo() {
+        cbRoomStatus.setItems(FXCollections.observableArrayList("Available", "Unavailable", "Maintenance"));
+        cbRoomStatus.getSelectionModel().selectFirst();
     }
 }

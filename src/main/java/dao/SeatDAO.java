@@ -1,7 +1,10 @@
 package dao;
 
 import configs.DBConnection;
+import java.util.Map;
+import java.util.HashMap;
 import models.Seat;
+import models.SeatType;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,9 +12,110 @@ import java.util.List;
 
 public class SeatDAO {
 
+    /**
+     * Automatically insert seats into a room with default seat type based on row and room type.
+     * @param roomId The ID of the room
+     * @param rows Number of seat rows
+     * @param cols Number of seat columns
+     * @param roomTypeId Room type ID used to determine seat type distribution
+     * @return true if insertion successful, false otherwise
+     */
+    public static boolean insertSeatsForRoom(int roomId, int rows, int cols, int roomTypeId) {
+        String seatInsertSQL = "INSERT INTO seats (roomId, seatRow, seatColumn, seatTypeId, isActive) VALUES (?, ?, ?, ?, ?)";
+        Map<String, Integer> seatTypeMap = getSeatTypeMap(); // Get mapping from seat type names to IDs
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(seatInsertSQL)) {
+
+            // Loop through each row
+            for (int r = 0; r < rows; r++) {
+                char seatRowChar = (char) ('A' + r); // Convert row number to letter (A, B, C...)
+
+                String seatTypeKey = getSeatTypeForRow(r, rows, roomTypeId); // Get seat type for current row
+                int seatTypeId = seatTypeMap.getOrDefault(seatTypeKey, seatTypeMap.get("Standard"));
+
+                // Loop through each column
+                for (int c = 1; c <= cols; c++) {
+                    stmt.setInt(1, roomId);
+                    stmt.setString(2, String.valueOf(seatRowChar));
+                    stmt.setInt(3, c);
+                    stmt.setInt(4, seatTypeId);
+                    stmt.setBoolean(5, true); // default active
+                    stmt.addBatch();
+                }
+            }
+
+            stmt.executeBatch(); // Execute all inserts as a batch
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Helper method to fetch seat type IDs mapped by their names.
+     * @return Map of seat type name -> seat type ID
+     */
+    private static Map<String, Integer> getSeatTypeMap() {
+        Map<String, Integer> seatTypeMap = new HashMap<>();
+        String sql = "SELECT seatTypeId, seatTypeName FROM seatTypes";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("seatTypeId");
+                String name = rs.getString("seatTypeName");
+                seatTypeMap.put(name, id);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return seatTypeMap;
+    }
+
+    /**
+     * Determine the seat type for a given row based on room type and position.
+     * @param r Row index (0-based)
+     * @param rows Total number of rows
+     * @param roomTypeId Type of the room
+     * @return seat type name ("Standard", "VIP", "Sweetbox", or "Gold")
+     */
+    private static String getSeatTypeForRow(int r, int rows, int roomTypeId) {
+        if (roomTypeId == 2) {
+            return "Gold"; // All seats in "Gold" room are gold
+        } else {
+            int standardRows = 3;
+            int sweetboxRows = 1;
+            int vipStart = standardRows;
+            int vipEnd = rows - sweetboxRows - 1;
+
+            if (r < standardRows) {
+                return "Standard";
+            } else if (r > vipEnd) {
+                return "Sweetbox";
+            } else {
+                return "VIP";
+            }
+        }
+    }
+
+    /**
+     * Get all seats for a specific room including seat type details.
+     * @param roomId The ID of the room
+     * @return List of Seat objects with seat type data
+     */
     public static List<Seat> getSeatsByRoomId(int roomId) {
         List<Seat> seats = new ArrayList<>();
-        String sql = "SELECT * FROM seats WHERE roomId = ?";
+        String sql = "SELECT s.*, st.seatTypeId, st.seatTypeName, st.price " +
+                "FROM seats s " +
+                "JOIN seatTypes st ON s.seatTypeId = st.seatTypeId " +
+                "WHERE s.roomId = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -20,59 +124,66 @@ public class SeatDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Seat seat = new Seat(
-                        rs.getInt("seatId"),
-                        rs.getInt("roomId"),
-                        rs.getInt("seatRow"),
-                        rs.getInt("seatColumn"),
-                        rs.getString("seatType"),
-                        rs.getString("isActive")
-                );
+                int seatTypeId = rs.getInt("seatTypeId");
+                String typeName = rs.getString("seatTypeName");
+                double price = rs.getDouble("price");
+                SeatType seatType = new SeatType(seatTypeId, typeName, price);
+
+                int seatId = rs.getInt("seatId");
+                char seatRow = rs.getString("seatRow").charAt(0);
+                int seatColumn = rs.getInt("seatColumn");
+                boolean isActive = rs.getBoolean("isActive");
+
+                Seat seat = new Seat(seatId, roomId, seatRow, seatColumn, seatTypeId, isActive);
+                seat.setSeatType(seatType);
+                seat.setActive(isActive);
+
                 seats.add(seat);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
-
         return seats;
     }
 
-    public static boolean updateSeat(Seat seat) {
-        String sql = "UPDATE seats SET seatRow = ?, seatColumn = ?, seatType = ?, isActive = ? WHERE seatId = ?";
+    /**
+     * Update all seats of a room (used to modify seat status, type, etc.).
+     * @param roomId Room ID
+     * @param seatsInRoom List of updated Seat objects
+     * @return true if all updates succeed, false if any failed
+     */
+    public static boolean updateSeatsInRoom(int roomId, List<Seat> seatsInRoom) {
+        String sql = """
+            UPDATE seats
+            SET seatRow = ?, seatColumn = ?, seatTypeId = ?, isActive = ?
+            WHERE seatId = ? AND roomId = ?
+        """;
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, seat.getSeatRow());
-            stmt.setInt(2, seat.getSeatColumn());
-            stmt.setString(3, seat.getSeatType());
-            stmt.setString(4, seat.getIsActive());
-            stmt.setInt(5, seat.getSeatId());
+            for (Seat seat : seatsInRoom) {
+                pstmt.setString(1, String.valueOf(seat.getSeatRow()));
+                pstmt.setInt(2, seat.getSeatColumn());
+                pstmt.setInt(3, seat.getSeatTypeId());
+                pstmt.setBoolean(4, seat.isActive());
+                pstmt.setInt(5, seat.getSeatId());
+                pstmt.setInt(6, roomId);
+                pstmt.addBatch();
+            }
 
-            return stmt.executeUpdate() > 0;
+            int[] results = pstmt.executeBatch();
+            for (int result : results) {
+                if (result == PreparedStatement.EXECUTE_FAILED) {
+                    return false;
+                }
+            }
 
+            return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return false;
         }
-    }
-
-    public static boolean deleteSeatsByRoomId(int roomId) {
-        String sql = "DELETE FROM seats WHERE roomId = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, roomId);
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static void deleteSeatsByRoomNumber(String roomNumber) {
     }
 }

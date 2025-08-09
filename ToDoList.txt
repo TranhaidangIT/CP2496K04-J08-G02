@@ -87,7 +87,7 @@ thêm nếu thiếu
    -Tìm vé theo mã hoặc khách hàng
    -Hiển thị trạng thái vé (Chưa dùng / Đã dùng / Đã hủy)
    -Hủy vé
-   - Tìm vé
+   - Tìm vé(
    -Kiểm tra điều kiện hủy (phim chưa chiếu, chưa quá giờ)
    -Cập nhật trạng thái "Đã hủy"
    -(Có thể) hoàn tiền/tính phí hủy (nếu cần)
@@ -113,6 +113,75 @@ thêm nếu thiếu
     -Chọn ngày giờ chiếu
     -Kiểm tra trùng phòng và trùng giờ
     - Hiển thị danh sách suất chiếu
+
+    - Xử lý ScreeningRoom + Seat:
+
+        --screeningRooms--
+        roomId: tự chạy
+        roomNumber: số phòng
+        roomTypeID: fk với roomTypeID (roomTypes)
+        seatingLayout: set 1 spinner có 2 ô rows và columns.
+        totalCapacity: tự động cập nhật đếm ghế theo set seatingLayout
+        equipment: checklist, có thể thêm thiết bị mới
+        roomStatus: Available, Unavailable, Maintenance
+
+        --roomTypes--
+        roomTypeId: int
+        typeName: nvarchar
+        description: nvarchar
+        maxRows: int
+        maxColumns: int
+        extraFee: double
+
+        --seats--
+        seatId: int (auto)
+        roomId: int (fk screeningRoom)
+        seatRow: char (A->Z)
+        seatColumn: int (0->9)
+        seatTypeId: int
+        isActive: true/false.
+
+        --seatTypes--
+        seatTypeId: int (FK Seat)
+        seatTypeName: Standard, VIP, SweetBox, Gold
+        extraFee: double
+
+Dữ liệu khảo sát CGV Xuân Khánh:
+- Standard Room: có layout 12x10, 14x10
+- Gold Class: có layout 5x8
+- có 4 loại ghế: standard: 99k, VIp: 105k, Sweetbox: 230k, gold: 300k
+
+
+      Mục tiêu cần xử lý:
+      1. RoomList.fxml
+      bên trái form room details/ bên phải handle addnewroom và table room list
+      khi click vào dữ liệu trong table thì dữ liệu chi tiết truyền qua form bên trái (uneditable)
+      handle edit phải bắt buột chọn phòng trong table và hiện lên form để có thể edit
+
+      1.2. mở AddRoom.fxml thì hiện form có
+      <label> Room Number: <text field> (roomNumber bảng ScreeningRoom)
+      <label> Seating Layout: <spinner> rows: [] x <spinner> columns: [] !max: 15x15 (seatRow, seatColumn bảng Seat) -> set ghế là loạt các btn
+      <label> Total Capcity: <text field> !disedit (totalCapacity bảng Screening Room)
+      <label> Room Type: <comboBox> (typeName bảng roomTypes)
+                         opt1: Standard -> có 3 loại ghế Standard, VIP, SweetBox (seatName, seatID bảng seats)
+                         opt2: Gold Class -> có 1 loại ghế Gold
+      <label> Equipment: checklist -> có thể thêm (equipment bảng ScreeningRoom)
+      <label> Room Status: <comboBox> Available, Unavailable, Maintenance (roomStatus bảng ScreeningRoom)
+
+      1.3. Mở EditRoom.fxml:
+      <label> Room Number: <text field> (roomNumber bảng ScreeningRoom) k dc sửa số
+      <label> Seating Layout: <spinner> rows: [] x <spinner> columns: [] !max Standard: 15x15, Gold Class: 8x8 (seatRow, seatColumn bảng Seat)
+      <label> Total Capcity: <text field> !disedit (totalCapacity bảng Screening Room)
+      <label> Room Type: <comboBox> Standard/ Gold Class (roomType bảng ScreeningRoom) -> k dc sửa
+      <label> Equipment: checklist -> có thể thêm (equipment bảng ScreeningRoom)
+      <label> Room Status: <comboBox> Available, Unavailable, Maintenance (roomStatus bảng ScreeningRoom)
+      <label> Seat Status: handle nhấn vào ghế để edit (btnSeat)
+                            + khi nhấn 1 lần là chọn, nhấn thêm
+
+
+      <btn>Edit SeatingLayout -> mở EditSeatingLayout.fxml: hiển thị 1 loạt dãy ghế đã dc set bởi seatLayout,
+      nhấn vào 1 lần -> ghế đang chọn (có viền ở ô đỏ)
+      nhấn vào 2 lần để có thể cập ghế k hoạt động -> xám -> ẩn ghế ở trang view
 
 
 

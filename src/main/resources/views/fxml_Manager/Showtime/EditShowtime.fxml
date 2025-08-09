@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -21,7 +22,7 @@
         </Label>
 
         <!-- Filters: Movie, Room, Date -->
-        <AnchorPane layoutX="60.0" layoutY="70.0" prefHeight="214.0" prefWidth="1000.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+        <AnchorPane layoutX="12.0" layoutY="70.0" prefHeight="214.0" prefWidth="1098.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
             <children>
                 <Label layoutX="279.0" layoutY="19.0" prefHeight="35.0" prefWidth="75.0" styleClass="labelCaption" stylesheets="@../../../css/app-style.css" text="Movie:" />
                 <ComboBox id="comboBoxMovie" fx:id="movieComboBox" layoutX="379.0" layoutY="14.0" prefWidth="250.0" styleClass="comboBox" stylesheets="@../../../css/app-style.css" />
@@ -36,46 +37,32 @@
             </children>
         </AnchorPane>
 
-        <!-- Showtime Slots Section -->
-        <AnchorPane layoutX="60.0" layoutY="300.0" prefHeight="390.0" prefWidth="1000.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
-            <children>
-            <VBox layoutY="14.0" prefHeight="82.0" prefWidth="992.0" spacing="20">
-               <children>
-                  <Label prefHeight="35.0" prefWidth="994.0" style="-fx-alignment: center;" styleClass="titleSub" stylesheets="@../../../css/app-style.css" text="Manage Time Slots" />
-                  <VBox fx:id="timeSlotList1" spacing="10" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="75.0" prefWidth="992.0" spacing="10" style="-fx-alignment: center;">
-                     <children>
-                        <Label prefHeight="26.0" prefWidth="81.0" styleClass="labelCaption" stylesheets="@../../../css/app-style.css" text="New Time:">
-                           <HBox.margin>
-                              <Insets />
-                           </HBox.margin>
-                        </Label>
-                        <Spinner fx:id="hourSpinner" prefHeight="34.0" prefWidth="97.0" stylesheets="@../../../css/app-style.css" />
-                        <Label text=":" />
-                        <Spinner fx:id="minuteSpinner" prefHeight="34.0" prefWidth="90.0" stylesheets="@../../../css/app-style.css" />
-                        <Button fx:id="addTimeButton" onAction="#handleAddTimeSlot" prefHeight="25.0" prefWidth="147.0" styleClass="btnAddTimeSlot" stylesheets="@../../../css/manager.css" text="Add Time Slot" />
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-
-                
-            <AnchorPane layoutX="9.0" layoutY="156.0" prefHeight="226.0" prefWidth="983.0" stylesheets="@../../../css/app-style.css">
-               <children>
-                  <Label layoutX="7.0" prefHeight="26.0" prefWidth="81.0" styleClass="labelCaption" stylesheets="@../../../css/app-style.css" text="Time Slot:" />
-                   <VBox fx:id="showtimeContainer" spacing="20" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml">
-                       <!-- Giao diện sẽ được đổ động từ controller -->
-                   </VBox>
-               </children>
-            </AnchorPane>
-
-            </children>
-        </AnchorPane>
-
         <!-- Action Buttons -->
         <Button id="btnCancel" fx:id="btnCancel" layoutX="960.0" layoutY="710.0" onAction="#handleCancel" prefHeight="35" prefWidth="100" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel" />
         <Button id="btnDelete" fx:id="btnDelete" layoutX="843.0" layoutY="710.0" onAction="#handleDelete" prefHeight="35" prefWidth="100" styleClass="btnDelete" stylesheets="@../../../css/app-style.css" text="Delete" />
         <Button id="btnUpdate" fx:id="btnUpdate" layoutX="730.0" layoutY="710.0" onAction="#handleUpdate" prefHeight="35" prefWidth="100" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Update" />
+      <AnchorPane layoutX="14.0" layoutY="311.0" prefHeight="375.0" prefWidth="1097.0" styleClass="bg-white">
+         <children>
+            <VBox layoutX="14.0" layoutY="20.0" prefHeight="324.0" prefWidth="1084.0" spacing="20" stylesheets="@../../../css/app-style.css">
+               <children>
+                  <Label prefHeight="35.0" prefWidth="934.0" style="-fx-alignment: center;" styleClass="titleSub" text="Manage Time Slots" />
+                  <GridPane fx:id="timeSlotGrid" hgap="10" vgap="10">
+                     <padding>
+                        <Insets right="5.0" />
+                     </padding></GridPane>
+                  <HBox alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="874.0" spacing="10">
+                     <children>
+                        <Label styleClass="labelCaption" text="New Time:" />
+                        <Spinner fx:id="hourSpinner" prefHeight="34.0" prefWidth="97.0" />
+                        <Label text=":" />
+                        <Spinner fx:id="minuteSpinner" prefHeight="34.0" prefWidth="90.0" />
+                        <Button fx:id="addTimeButton" onAction="#handleAddTimeSlot" style="-fx-background-radius: 25px;" styleClass="btnAddTimeSlot" stylesheets="@../../../css/manager.css" text="Add Time Slot" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
 
     </children>
 </AnchorPane>

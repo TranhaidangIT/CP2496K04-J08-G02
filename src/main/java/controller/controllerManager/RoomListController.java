@@ -1,6 +1,9 @@
 package controller.controllerManager;
 
 import dao.ScreeningRoomDAO;
+import dao.RoomTypeDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,49 +17,123 @@ import javafx.stage.Stage;
 import models.ScreeningRoom;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class RoomListController {
 
-    @FXML
-    private Button btnAdd, btnEdit, btnFind;
+    @FXML private Button btnAdd;
+    @FXML private Button btnEdit;
+    @FXML private Button btnViewSeatLayout;
 
-    @FXML
-    private TableView<ScreeningRoom> tblRoomList;
+    @FXML private TableColumn<ScreeningRoom, Integer> colRoomID;
+    @FXML private TableColumn<ScreeningRoom, String> colRoomNumber;
+    @FXML private TableColumn<ScreeningRoom, String> colRoomType;
+    @FXML private TableColumn<ScreeningRoom, String> colRoomStatus;
+    @FXML private TableColumn<ScreeningRoom, Integer> colRoomCap;
+    @FXML private TableView<ScreeningRoom> tblRoomList;
 
-    @FXML
-    private TableColumn<ScreeningRoom, Integer> colRoomID, colRoomNumber, colRoomCap;
+    @FXML private TextField tfRoomNumb;
+    @FXML private TextField tfSeatLayout;
+    @FXML private Spinner<Integer> spRows;
+    @FXML private Spinner<Integer> spCols;
+    @FXML private TextField tfTotalCap;
+    @FXML private TextField tfRoomType;
+    @FXML private ComboBox<String> cbRoomStatus;
+    @FXML private TextArea tfEquipment;
+    @FXML private TextField tfCreatedAt;
+    @FXML private TextField tfFind;
 
-    @FXML
-    private TableColumn<ScreeningRoom, String> colRoomType, colRoomStatus, colSeatLayout;
-
-    @FXML
-    private Label lbRoomId;
-
-    @FXML
-    private TextField tfRoomNumb, tfSeatLayout, tfTotalCap, tfRoomType, tfRoomStatus, tfEquipment, tfCreatedAt;
-
-    private ScreeningRoom selected;
+    private ObservableList<ScreeningRoom> roomList;
 
     @FXML
     public void initialize() {
         setupTable();
-        loadRoomList();
-        tblRoomList.setOnMouseClicked(this::handleSelectRow);
+        setupSpinners();
+        setupRoomStatusCombo();
+        loadRoomData();
+        tblRoomList.setOnMouseClicked(this::handleTableClick);
     }
 
     private void setupTable() {
         colRoomID.setCellValueFactory(new PropertyValueFactory<>("roomId"));
         colRoomNumber.setCellValueFactory(new PropertyValueFactory<>("roomNumber"));
-        colRoomCap.setCellValueFactory(new PropertyValueFactory<>("totalCapacity"));
-        colRoomType.setCellValueFactory(new PropertyValueFactory<>("roomType"));
+        colRoomType.setCellValueFactory(new PropertyValueFactory<>("typeName")); // Assuming typeName is fetched via RoomTypeDAO
         colRoomStatus.setCellValueFactory(new PropertyValueFactory<>("roomStatus"));
-        colSeatLayout.setCellValueFactory(new PropertyValueFactory<>("seatingLayout"));
+        colRoomCap.setCellValueFactory(new PropertyValueFactory<>("totalCapacity"));
     }
 
-    public void loadRoomList() {
+    private void setupSpinners() {
+        spRows = new Spinner<>(1, 26, 5); // A-Z (1-26 rows)
+        spCols = new Spinner<>(1, 10, 5); // 0-9 (1-10 columns)
+        spRows.valueProperty().addListener((obs, oldVal, newVal) -> updateCapacity());
+        spCols.valueProperty().addListener((obs, oldVal, newVal) -> updateCapacity());
+        tfSeatLayout.setText(spRows.getValue() + "x" + spCols.getValue());
+        spRows.valueProperty().addListener((obs, oldVal, newVal) -> tfSeatLayout.setText(newVal + "x" + spCols.getValue()));
+        spCols.valueProperty().addListener((obs, oldVal, newVal) -> tfSeatLayout.setText(spRows.getValue() + "x" + newVal));
+    }
+
+    private void setupRoomStatusCombo() {
+        cbRoomStatus = new ComboBox<>(FXCollections.observableArrayList("Available", "Unavailable", "Maintenance"));
+        cbRoomStatus.setValue("Available");
+    }
+
+    private void updateCapacity() {
+        int rows = spRows.getValue();
+        int cols = spCols.getValue();
+        int capacity = rows * cols;
+        tfTotalCap.setText(String.valueOf(capacity));
+    }
+
+    private void loadRoomData() {
         List<ScreeningRoom> rooms = ScreeningRoomDAO.getAllRooms();
-        tblRoomList.getItems().setAll(rooms);
+        roomList = FXCollections.observableArrayList(rooms);
+        tblRoomList.setItems(roomList);
+    }
+
+    private void showRoomDetails(ScreeningRoom room) {
+        if (room != null) {
+            tfRoomNumb.setText(room.getRoomNumber());
+
+            String roomTypeName = RoomTypeDAO.getRoomTypeNameById(room.getRoomTypeId());
+            tfRoomType.setText(roomTypeName);
+
+            cbRoomStatus.setValue(room.getRoomStatus());
+            tfCreatedAt.setText(room.getCreatedAt() != null ? room.getCreatedAt().toString() : LocalDateTime.now().toString());
+
+            String[] layout = room.getSeatingLayout().split("x");
+            spRows.getValueFactory().setValue(Integer.parseInt(layout[0]));
+            spCols.getValueFactory().setValue(Integer.parseInt(layout[1]));
+            tfSeatLayout.setText(room.getSeatingLayout());
+            tfTotalCap.setText(String.valueOf(room.getTotalCapacity()));
+            tfEquipment.setText(room.getEquipment() != null ? room.getEquipment() : "");
+        }
+    }
+
+    @FXML
+    void handleTableClick(MouseEvent event) {
+        ScreeningRoom selected = tblRoomList.getSelectionModel().getSelectedItem();
+        showRoomDetails(selected);
+    }
+
+    @FXML
+    void handleFindClick(MouseEvent event) {
+        String keyword = tfFind.getText().trim().toLowerCase();
+        if (keyword.isEmpty()) {
+            loadRoomData();
+            return;
+        }
+
+        ObservableList<ScreeningRoom> filteredList = FXCollections.observableArrayList();
+        for (ScreeningRoom room : roomList) {
+            String roomTypeName = RoomTypeDAO.getRoomTypeNameById(room.getRoomTypeId()).toLowerCase();
+            if (room.getRoomNumber().toLowerCase().contains(keyword) ||
+                    roomTypeName.contains(keyword) ||
+                    room.getRoomStatus().toLowerCase().contains(keyword)) {
+                filteredList.add(room);
+            }
+        }
+        tblRoomList.setItems(filteredList);
     }
 
     @FXML
@@ -64,27 +141,27 @@ public class RoomListController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Manager/ScreeningRoom/AddRoom.fxml"));
             Parent root = loader.load();
-
-            AddRoomController addCtrl = loader.getController();
-            addCtrl.setRoomListController(this);
+            AddRoomController controller = loader.getController();
+            controller.initializeSpinners();
+            controller.setRoomStatusCombo();
 
             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Add New Room");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
-            loadRoomList();
+            loadRoomData(); // Refresh
         } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Failed to open Add Room form.");
+            System.out.println();
         }
     }
 
     @FXML
     void handleEditRoom(ActionEvent event) {
+        ScreeningRoom selected = tblRoomList.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("No Room Selected", "Please select a room to edit.");
+            showAlert("Please select a room to edit.");
             return;
         }
 
@@ -92,51 +169,55 @@ public class RoomListController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Manager/ScreeningRoom/EditRoom.fxml"));
             Parent root = loader.load();
 
-            EditRoomController editCtrl = loader.getController();
-            editCtrl.setRoomListController(this);
-            editCtrl.setRoomData(selected);
+            EditRoomController controller = loader.getController();
+            controller.initializeSpinners();
+            controller.setRoomData(selected);
+            controller.setRoomStatusCombo();
 
             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Edit Room");
             stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
-            loadRoomList();
+            loadRoomData(); // Refresh
         } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Failed to open Edit Room form.");
+            System.out.println();
         }
     }
 
     @FXML
-    void handleSelectRow(MouseEvent event) {
-        selected = tblRoomList.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            tfRoomNumb.setText(selected.getRoomNumber());
-            tfSeatLayout.setText(selected.getSeatingLayout());
-            tfTotalCap.setText(String.valueOf(selected.getTotalCapacity()));
-            tfRoomType.setText(selected.getRoomType());
-            tfRoomStatus.setText(selected.getRoomStatus());
-            tfEquipment.setText(selected.getEquipment());
-            tfCreatedAt.setText(String.valueOf(selected.getCreatedAt()));
+    void handleViewSeatLayout(ActionEvent event) {
+        ScreeningRoom selected = tblRoomList.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Please select a room to view seat layout.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Manager/ScreeningRoom/ViewSeatingLayout.fxml"));
+            Parent root = loader.load();
+
+            SeatingLayoutController controller = loader.getController();
+            controller.setRoomData(selected);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Seat Layout: Room " + selected.getRoomNumber());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            loadRoomData();
+        } catch (IOException e) {
+            System.out.println();
         }
     }
 
-    @FXML
-    void btnFindRoom(ActionEvent event) {
-        showAlert("Coming Soon", "Find room functionality will be implemented later.");
-    }
-
-    private void showAlert(String title, String content) {
+    private void showAlert(String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
+        alert.setTitle("Info");
+        alert.setHeaderText("No Room Selected");
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    public void refreshRoomList() {
-        loadRoomList();
     }
 }

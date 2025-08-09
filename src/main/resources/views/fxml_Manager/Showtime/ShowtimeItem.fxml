@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="root" onMouseClicked="#handleClickShowtimeItem" prefHeight="223.0" prefWidth="929.0" styleClass="bg-white" stylesheets="@../../../css/manager.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.ShowtimeItemController">
+   <children>
+      <ImageView fx:id="posterImage" fitHeight="182.0" fitWidth="121.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../icon/default_poster.jpg" />
+         </image>
+      </ImageView>
+      <Pane fx:id="showTimeList" layoutX="318.0" layoutY="12.0" prefHeight="190.0" prefWidth="500.0" styleClass="bg-white">
+         <children>
+            <GridPane fx:id="gridShowtime" prefHeight="0.0" prefWidth="0.0" styleClass="time-ticket">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+            </GridPane>
+         </children>
+      </Pane>
+      <VBox layoutX="142.0" layoutY="14.0" prefHeight="171.0" prefWidth="176.0">
+         <children>
+            <Label fx:id="lblMovieTitle" prefHeight="26.0" prefWidth="177.0" style="-fx-font-weight: bold;" text="Movie Title" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <padding>
+                  <Insets bottom="20.0" />
+               </padding>
+            </Label>
+            <Label fx:id="lblDuration" prefHeight="26.0" prefWidth="178.0" text="Duration">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <padding>
+                  <Insets bottom="20.0" />
+               </padding>
+            </Label>
+            <Label fx:id="lblReleaseDate" prefHeight="26.0" prefWidth="182.0" text="Release Date">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <padding>
+                  <Insets bottom="20.0" />
+               </padding>
+            </Label>
+            <Label fx:id="lblRoomNumber" prefHeight="26.0" prefWidth="179.0" text="RoomNumber">
+               <font>
+                  <Font size="16.0" />
+               </font>
+               <padding>
+                  <Insets bottom="20.0" />
+               </padding>
+            </Label>
+         </children>
+      </VBox>
+      <Button fx:id="btnEdit" layoutX="832.0" layoutY="68.0" mnemonicParsing="false" onAction="#handleEditClickShowtime" prefHeight="35.0" prefWidth="100.0" styleClass="bg-white" text="Edit" textFill="#007bff">
+         <graphic>
+            <ImageView fitHeight="20.0" fitWidth="19.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icon/edit.png" />
+               </image>
+            </ImageView>
+         </graphic>
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Button>
+      <Button id="btnDelete" fx:id="btnDelete" layoutX="832.0" layoutY="121.0" onAction="#handleDeleteClickShowtime" prefHeight="35" prefWidth="100" styleClass="bg-white" stylesheets="@../../../css/app-style.css" text="Delete" textFill="#dc3545">
+         <graphic>
+            <ImageView fitHeight="28.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icon/remove.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+   </padding>
+</AnchorPane>

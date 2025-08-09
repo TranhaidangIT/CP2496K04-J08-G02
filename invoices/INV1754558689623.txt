@@ -1,0 +1,18 @@
+=====================================
+          HÓA ĐƠN THANH TOÁN        
+         RạP CHIẾU PHIM XYZ         
+=====================================
+
+Mã hóa đơn: INV1754558689623
+Ngày giờ: 07/08/2025 16:25:24
+Nhân viên: Pham The Duyet
+Khách hàng: Khách hàng l?
+
+-------------------------------------
+           THÔNG TIN PHIM           
+-------------------------------------
+Phim: Conan
+Suất chiếu: 2025-08-07 12:15:00.0000000 - 14:05:00.0000000
+Phòng: Phòng Screen 1
+
+Lỗi khi tạo nội dung hóa đơn: Invalid object name 'Seat'.
