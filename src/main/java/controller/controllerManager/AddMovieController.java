@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-
 public class AddMovieController {
 
     @FXML private Button btnChooseFile;
@@ -34,22 +33,47 @@ public class AddMovieController {
     @FXML private Button btnInsert;
     @FXML private Button btnCancel;
 
-    private File selectedFile;
-    private MovieListController movieListController;
-
+    private File selectedFile;  // Stores the chosen image file
+    private MovieListController movieListController;  // Reference to main movie list controller (for updating list)
 
     @FXML
     public void initialize() {
-        cbGenre.getItems().addAll("Action", "Drama", "Comedy", "Horror", "Romance");
-        cbLanguage.getItems().addAll("English", "Vietnamese", "Korean", "Japanese");
-        cbAgeRating.getItems().addAll("G", "PG", "PG-13", "R", "NC-17");
+        // Initialize combo boxes with preset options
+        // Movie genres
+        cbGenre.getItems().addAll(
+                "Action", "Drama", "Comedy", "Horror", "Romance",
+                "Thriller", "Sci-Fi", "Fantasy", "Animation", "Documentary",
+                "Adventure", "Crime", "Mystery", "Family", "Musical"
+        );
+
+        // Languages
+        cbLanguage.getItems().addAll(
+                "English", "Vietnamese", "Korean", "Japanese",
+                "Chinese", "French", "Thai", "Hindi"
+        );
+
+        // Age ratings
+        cbAgeRating.getItems().addAll(
+                "G",        // General audiences
+                "PG",       // Parental guidance suggested
+                "PG-13",    // Parents strongly cautioned
+                "R",        // Restricted
+                "NC-17",    // Adults only
+                "C18"       // 18+ (common in CGV Vietnam)
+        );
+
     }
 
+    /**
+     * Opens a file chooser dialog to select an image file for the movie poster.
+     * Shows a preview of the selected image.
+     */
     @FXML
     private void handleChooseFile(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose image file");
 
+        // Filter to only show image file types
         FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter(
                 "Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"
         );
@@ -66,6 +90,12 @@ public class AddMovieController {
         }
     }
 
+    /**
+     * Handles the insert button click event.
+     * Validates inputs, copies the poster image to the app directory,
+     * creates a Movie object, inserts it into the database,
+     * shows success/failure alerts, and closes the form.
+     */
     @FXML
     private void handleInsert(ActionEvent event) {
         String title = txtTitle.getText();
@@ -78,6 +108,7 @@ public class AddMovieController {
         String description = descriptionTextArea.getText();
         String poster = getSelectedImageFileName();
 
+        // Check required fields are not empty or null
         if (title.isEmpty() || genre == null || durationStr.isEmpty() || language == null ||
                 ageRating == null || releaseDate == null || description.isEmpty() ||
                 directedBy == null || directedBy.isEmpty()) {
@@ -87,11 +118,14 @@ public class AddMovieController {
 
         try {
             int duration = Integer.parseInt(durationStr);
+
+            // Validate duration is positive
             if (duration <= 0) {
                 showAlert(Alert.AlertType.ERROR, "Invalid Duration", "Duration must be a number greater than 0.");
                 return;
             }
 
+            // Copy selected image file to app's images folder if a file was chosen
             if (selectedFile != null) {
                 File destDir = new File("images");
                 if (!destDir.exists()) destDir.mkdirs();
@@ -100,21 +134,26 @@ public class AddMovieController {
                 Files.copy(selectedFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
 
+            // Create new Movie object with collected data
             Movie movie = new Movie(
                     0, title, duration, genre, description,
                     directedBy, language, poster, ageRating,
                     LocalDateTime.now(), releaseDate
             );
 
+            // Insert the movie into the database via DAO
             boolean inserted = MovieDAO.insertMovie(movie);
             if (inserted) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Movie added successfully.");
 
+                // Optionally refresh the movie list if the controller reference is set
                 if (movieListController != null) {
-
+                    // e.g. movieListController.loadMovies();
                 }
 
                 clearForm();
+
+                // Close the current form window
                 Stage stage = (Stage) btnInsert.getScene().getWindow();
                 stage.close();
 
@@ -129,7 +168,9 @@ public class AddMovieController {
         }
     }
 
-
+    /**
+     * Clears all input fields and resets image preview.
+     */
     private void clearForm() {
         txtTitle.clear();
         txtDirectedby.clear();
@@ -143,12 +184,21 @@ public class AddMovieController {
         selectedFile = null;
     }
 
+    /**
+     * Handles the cancel button event, closes the form window.
+     */
     @FXML
     private void handleCancel(ActionEvent event) {
         Stage stage = (Stage) btnCancel.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Utility method to show an alert dialog.
+     * @param type AlertType of the alert (e.g. INFORMATION, ERROR)
+     * @param title Title of the alert dialog
+     * @param message Message content of the alert
+     */
     public void showAlert(AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -157,11 +207,18 @@ public class AddMovieController {
         alert.showAndWait();
     }
 
-
+    /**
+     * Returns the filename of the selected image file or null if none selected.
+     * @return selected image file name or null
+     */
     public String getSelectedImageFileName() {
         return selectedFile != null ? selectedFile.getName() : null;
     }
 
+    /**
+     * Sets a reference to the MovieListController to allow interaction (e.g. refreshing list).
+     * @param movieListController the movie list controller instance
+     */
     public void setMovieListController(MovieListController movieListController) {
         this.movieListController = movieListController;
     }

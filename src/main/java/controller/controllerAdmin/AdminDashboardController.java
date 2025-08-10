@@ -74,13 +74,13 @@ public class AdminDashboardController {
         }
     }
 
-    // ===================================
+    // ==================================
     // === Xử lý sự kiện khi nhấn nút ===
     // ===================================
 
     @FXML
     private void handleDashboardClick(ActionEvent event) {
-        loadContent("/views/fxml_Admin/DashboardOverview.fxml");
+        loadContent("/views/DashboardOverview.fxml");
         highlightButton(btnOverview);
     }
 

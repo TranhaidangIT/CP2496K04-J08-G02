@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1124.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.MovieDetailController">
+<AnchorPane prefHeight="768.0" prefWidth="1124.0" stylesheets="@../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.MovieDetailController">
     <children>
         <HBox spacing="30" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
 
@@ -62,8 +62,8 @@
 
                 <!-- Action Buttons -->
                 <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 10 0 0 0;">
-                    <Button fx:id="exitButton" onAction="#handleExit" prefHeight="45.0" prefWidth="120.0" styleClass="btnExit" stylesheets="@../../css/app-style.css" text="Exit" />
-                    <Button fx:id="confirmButton" onAction="#handleConfirm" prefHeight="45.0" prefWidth="120.0" styleClass="btnAdd" stylesheets="@../../css/app-style.css" text="Confirm" />
+                    <Button fx:id="exitButton" onAction="#handleExit" prefHeight="45.0" prefWidth="120.0" styleClass="btnCancel" stylesheets="@../../css/app-style.css" text="Exit" />
+                    <Button fx:id="confirmButton" onAction="#handleConfirm" prefHeight="45.0" prefWidth="120.0" styleClass="btnInsert" stylesheets="@../../css/app-style.css" text="Confirm" />
                 </HBox>
             </VBox>
         </HBox>

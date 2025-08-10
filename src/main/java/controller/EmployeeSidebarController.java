@@ -33,7 +33,7 @@ public class EmployeeSidebarController {
             AnchorPane.setLeftAnchor(fxml, 0.0);
             AnchorPane.setRightAnchor(fxml, 0.0);
 
-            // Truyền contentArea cho các controller cần thiết
+            // Pass contentArea to controllers that require it
             Object controller = loader.getController();
 
             if (controller instanceof ListMoviesController) {
@@ -45,7 +45,7 @@ public class EmployeeSidebarController {
             }
 
         } catch (IOException e) {
-            System.err.println("Lỗi khi tải " + fxmlFile + ": " + e.getMessage());
+            System.err.println("Error loading " + fxmlFile + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -69,7 +69,7 @@ public class EmployeeSidebarController {
                 System.err.println("FXML file not found: " + path);
                 return;
             }
-            System.out.println("Tải SeatDemo.fxml");
+            System.out.println("Loading SeatDemo.fxml");
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent fxml = loader.load();
             contentArea.getChildren().setAll(fxml);
@@ -78,7 +78,7 @@ public class EmployeeSidebarController {
             AnchorPane.setLeftAnchor(fxml, 0.0);
             AnchorPane.setRightAnchor(fxml, 0.0);
         } catch (IOException e) {
-            System.err.println("Lỗi khi tải SeatDemo.fxml: " + e.getMessage());
+            System.err.println("Error loading SeatDemo.fxml: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -102,7 +102,7 @@ public class EmployeeSidebarController {
     private void onLogoutClicked(ActionEvent event) {
         try {
             Node source = (Node) event.getSource();
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml_Login/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/Login.fxml"));
             source.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();

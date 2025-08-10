@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AddShowtimeController {
 
@@ -44,9 +45,6 @@ public class AddShowtimeController {
 
     @FXML
     private Button btnInsert;
-
-    @FXML
-    private Button btnRefresh;
 
     @FXML
     private ComboBox<String> cbMovieList;
@@ -82,8 +80,6 @@ public class AddShowtimeController {
 
     private final List<Showtime> existingShowtimesCache = new ArrayList<>();
 
-    private final MovieDAO movieDAO = new MovieDAO();
-    private final ScreeningRoomDAO roomDAO = new ScreeningRoomDAO();
     private final ShowtimeDAO showtimeDAO = new ShowtimeDAO();
 
     @FXML
@@ -100,13 +96,11 @@ public class AddShowtimeController {
         cbMovieList.setOnAction(this::handleSelectMovie);
         cbRoomList.setOnAction(this::handleSelectRoom);
         pickerDate.setOnAction(this::handleDatePicker);
-
-        btnRefresh.setOnAction(this::handleRefresh);
     }
 
     private void initializeComboBoxes() {
-        List<Movie> movies = movieDAO.getAllMovies();
-        List<ScreeningRoom> rooms = roomDAO.getAllRooms();
+        List<Movie> movies = MovieDAO.getAllMovies();
+        List<ScreeningRoom> rooms = ScreeningRoomDAO.getAllRooms();
 
         ObservableList<String> movieNames = FXCollections.observableArrayList();
         for (Movie m : movies) movieNames.add(m.getTitle());
@@ -118,10 +112,10 @@ public class AddShowtimeController {
     }
 
     public void initializeSpinners() {
-        SpinnerValueFactory<Integer> hourFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 10);
+        SpinnerValueFactory<Integer> hourFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 8); // Default to 8 AM
         hourSpinner.setValueFactory(hourFactory);
 
-        SpinnerValueFactory<Integer> minuteFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 55, 0, 5);
+        SpinnerValueFactory<Integer> minuteFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 55, 30, 5); // Default to 30 minutes
         minuteSpinner.setValueFactory(minuteFactory);
     }
 
@@ -166,7 +160,7 @@ public class AddShowtimeController {
         LocalTime newTime = LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue());
         LocalDate selectedDate = pickerDate.getValue();
 
-        ScreeningRoom room = roomDAO.getRoomByName(selectedRoom);
+        ScreeningRoom room = ScreeningRoomDAO.getRoomByName(selectedRoom);
         if (room == null) {
             showAlert(Alert.AlertType.ERROR, "Selected room not found.");
             return;
@@ -202,7 +196,7 @@ public class AddShowtimeController {
         // Kiểm tra xung đột với showtime trong DB
         for (Showtime st : existingShowtimes) {
             LocalTime existingStart = st.getShowTime();
-            Movie existingMovie = movieDAO.getMovieById(st.getMovieId());
+            Movie existingMovie = MovieDAO.getMovieById(st.getMovieId());
             if (existingMovie == null) continue;
             LocalTime existingEnd = existingStart.plusMinutes(existingMovie.getDuration());
             existingEnd = existingEnd.plusMinutes(breakTime);
@@ -215,9 +209,9 @@ public class AddShowtimeController {
             }
         }
 
-        // Kiểm tra xung đột với các slot đã thêm trong phiên làm việc này
+        // Check conflict showtime
         if (!timeSlots.isEmpty()) {
-            LocalTime lastStart = timeSlots.get(timeSlots.size() - 1);
+            LocalTime lastStart = timeSlots.getLast();
             LocalTime earliestNext = lastStart.plusMinutes(duration + breakTime);
             if (newTime.isBefore(earliestNext)) {
                 showAlert(Alert.AlertType.WARNING, "Start time must be at or after " + earliestNext + ".");
@@ -236,10 +230,10 @@ public class AddShowtimeController {
             return;
         }
 
-        // Thêm slot mới
+        // Add new slot
         timeSlots.add(newTime);
 
-        // Xóa toàn bộ slot hiện có trên GridPane trước khi thêm lại
+        //
         timeSlotGrid.getChildren().clear();
         int maxPerRow = 5;
         for (int i = 0; i < timeSlots.size(); i++) {
@@ -300,7 +294,7 @@ public class AddShowtimeController {
             return;
         }
 
-        Movie movie = movieDAO.getMovieByTitle(selectedMovie);
+        Movie movie = MovieDAO.getMovieByTitle(selectedMovie);
         if (movie != null) {
             tfDuration.setText(String.valueOf(movie.getDuration()));
         } else {
@@ -330,7 +324,7 @@ public class AddShowtimeController {
             return;
         }
 
-        ScreeningRoom room = roomDAO.getRoomByName(selectedRoom);
+        ScreeningRoom room = ScreeningRoomDAO.getRoomByName(selectedRoom);
         if (room == null) return;
 
         List<Showtime> showtimes = showtimeDAO.getShowtimesByRoomDate(room.getRoomId(), selectedDate);
@@ -344,7 +338,7 @@ public class AddShowtimeController {
             txtTimeExisting.setText("No showtimes available.");
         } else {
             for (Showtime st : existingShowtimesCache) {
-                Movie movie = movieDAO.getMovieById(st.getMovieId());
+                Movie movie = MovieDAO.getMovieById(st.getMovieId());
                 if (movie == null) continue;
 
                 LocalTime startTime = st.getShowTime();
@@ -412,8 +406,8 @@ public class AddShowtimeController {
             return;
         }
 
-        Movie movie = movieDAO.getMovieByTitle(selectedMovie);
-        ScreeningRoom room = roomDAO.getRoomByName(selectedRoom);
+        Movie movie = MovieDAO.getMovieByTitle(selectedMovie);
+        ScreeningRoom room = ScreeningRoomDAO.getRoomByName(selectedRoom);
 
         if (movie == null || room == null) {
             showAlert(Alert.AlertType.ERROR, "Movie or room not found.");
@@ -441,22 +435,21 @@ public class AddShowtimeController {
                 return;
             }
 
-            // Kiểm tra xung đột với showtime đã có
+            // Check conflict
             for (Showtime existing : allShowtimesInRoom) {
                 LocalTime existingStart = existing.getShowTime();
-                LocalTime existingEnd = existing.getEndTime();  // thường chưa cộng break time
+                LocalTime existingEnd = existing.getEndTime();
 
                 if (timesOverlap(newStart, newEnd, existingStart, existingEnd)) {
                     showAlert(Alert.AlertType.ERROR,
                             "Time slot " + newStart + " - " + newEnd + " overlaps with existing showtime " +
                                     existingStart + " - " + existingEnd + " (Movie: " +
-                                    movieDAO.getMovieById(existing.getMovieId()).getTitle() + ").");
+                                    Objects.requireNonNull(MovieDAO.getMovieById(existing.getMovieId())).getTitle() + ").");
                     return;
                 }
             }
         }
 
-        // Nếu không trùng và hợp lệ thì lưu vào DB
         List<Showtime> showtimesToAdd = new ArrayList<>();
         for (LocalTime startTime : timeSlots) {
             LocalTime endTime = startTime.plusMinutes(duration);
@@ -481,7 +474,7 @@ public class AddShowtimeController {
     }
 
     private boolean timesOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
-        return !(end1.compareTo(start2) <= 0 || end2.compareTo(start1) <= 0);
+        return !(!end1.isAfter(start2) || !end2.isAfter(start1));
     }
 
     @FXML

@@ -4,20 +4,21 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1124.0" style="-fx-background-color: #f8f9fa;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.SeatSelectionController">
-    <VBox layoutX="140.0" layoutY="72.0" prefHeight="613.0" prefWidth="890.0" spacing="20" AnchorPane.bottomAnchor="113.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="195.0" AnchorPane.topAnchor="52.0">
+<AnchorPane prefHeight="768.0" prefWidth="1124.0" stylesheets="@../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.SeatSelectionController">
+    <VBox layoutX="51.0" layoutY="54.0" prefHeight="627.0" prefWidth="1117.0" spacing="20" AnchorPane.bottomAnchor="86.8" AnchorPane.leftAnchor="51.0" AnchorPane.rightAnchor="50.6" AnchorPane.topAnchor="54.0">
         <!-- Header Section -->
-        <VBox prefWidth="889.0" spacing="10" style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);">
+        <VBox prefHeight="121.0" prefWidth="850.0" spacing="10" style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);">
             <padding>
                 <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
             </padding>
-            <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Cinema Seat Selection" />
             <Label fx:id="showtimeLabel" style="-fx-font-size: 16px; -fx-text-fill: #34495e; -fx-background-color: #f1f2f6; -fx-background-radius: 8px; -fx-padding: 15px; -fx-border-color: #dcdde1; -fx-border-width: 1px; -fx-border-radius: 8px;" />
             <HBox alignment="CENTER_LEFT" spacing="30">
                 <Label fx:id="totalSeatsLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;" text="Total Seats: 0" />
@@ -26,51 +27,54 @@
         </VBox>
 
         <!-- Cinema Screen Section -->
-        <VBox prefHeight="409.0" prefWidth="850.0" spacing="15" style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);">
+        <VBox prefHeight="476.0" prefWidth="1117.0" spacing="15" style="-fx-background-color: white; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);">
             <padding>
                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
             </padding>
-            <HBox alignment="CENTER" spacing="10">
-                <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="🎬 CINEMA SCREEN 🎬" />
-            </HBox>
-            <HBox alignment="CENTER">
-                <Rectangle arcHeight="15.0" arcWidth="15.0" fill="linear-gradient(to right, #3498db, #2980b9)" height="15.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);" width="800.0" />
-            </HBox>
-            <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent;">
+
+            <!-- Màn hình cong với Arc -->
+            <AnchorPane prefHeight="58.0" prefWidth="973.0">
+                <Label layoutX="423.0" layoutY="1.0" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;" text="CINEMA SCREEN" />
+            <ImageView fitHeight="27.0" fitWidth="858.0" layoutX="163.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../icon/screen.png" />
+               </image>
+            </ImageView>
+            </AnchorPane>
+
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="383.0" prefWidth="1067.0" style="-fx-background-color: transparent;">
                 <content>
-                    <GridPane fx:id="seatGrid" alignment="CENTER" hgap="8" prefHeight="727.0" prefWidth="838.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10px; -fx-padding: 20px;" vgap="8" />
+                    <GridPane fx:id="seatGrid" alignment="CENTER" hgap="8" prefHeight="380.0" prefWidth="1066.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10px; -fx-padding: 20px;" vgap="8" />
                 </content>
             </ScrollPane>
         </VBox>
     </VBox>
 
     <!-- Buttons -->
-    <HBox alignment="CENTER_RIGHT" layoutX="666.0" layoutY="684.0" prefHeight="50.0" prefWidth="323.0" spacing="20">
-        <Button fx:id="cancelButton" onAction="#handleCancel" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);" text="Cancel" />
-        <Button fx:id="confirmButton" onAction="#handleConfirm" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);" text="Confirm" />
+    <HBox alignment="CENTER_RIGHT" layoutX="855.0" layoutY="690.0" prefHeight="50.0" prefWidth="218.0" spacing="20">
+        <Button fx:id="cancelButton" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);" text="Cancel" />
+        <Button fx:id="confirmButton" onAction="#handleConfirm" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10px; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);" text="Confirm" />
     </HBox>
 
-        <!-- Legend Section -->
-     <HBox alignment="CENTER" layoutX="130.0" layoutY="676.0" prefHeight="67.0" prefWidth="530.0" spacing="40" style="-fx-background-color: white; -fx-background-radius: 12px; -fx-padding: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);">
-         <HBox alignment="CENTER" spacing="8">
-             <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#FF6B9D" height="25.0" style="-fx-stroke: #34495e; -fx-stroke-width: 2;" width="25.0" />
-             <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Standard" />
-         </HBox>
-         <HBox alignment="CENTER" spacing="8">
-             <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#3498DB" height="25.0" style="-fx-stroke: #34495e; -fx-stroke-width: 2;" width="25.0" />
-             <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="VIP" />
-         </HBox>
-         <HBox alignment="CENTER" spacing="8">
-             <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#E74C3C" height="25.0" style="-fx-stroke: #34495e; -fx-stroke-width: 2;" width="25.0" />
-             <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Sweet Box" />
-         </HBox>
-         <HBox alignment="CENTER" spacing="8">
-             <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#7f8c8d" height="25.0" style="-fx-stroke: #95a5a6; -fx-stroke-width: 2; -fx-opacity: 0.6;" width="25.0" />
-             <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;" text="Booked" />
-         </HBox>
-     </HBox>
+    <!-- Legend Section -->
+    <HBox alignment="CENTER" layoutX="208.0" layoutY="682.0" prefHeight="67.0" prefWidth="530.0" spacing="40" style="-fx-padding: 20px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2);">
+        <HBox alignment="CENTER" spacing="8">
+            <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#FF6B9D" height="25.0" style="-fx-stroke: #34495e; -fx-stroke-width: 2;" width="25.0" />
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Standard" />
+        </HBox>
+        <HBox alignment="CENTER" spacing="8">
+            <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#3498DB" height="25.0" style="-fx-stroke: #34495e; -fx-stroke-width: 2;" width="25.0" />
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="VIP" />
+        </HBox>
+        <HBox alignment="CENTER" spacing="8">
+            <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#E74C3C" height="25.0" style="-fx-stroke: #34495e; -fx-stroke-width: 2;" width="25.0" />
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Sweet Box" />
+        </HBox>
+        <HBox alignment="CENTER" spacing="8">
+            <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#7f8c8d" height="25.0" style="-fx-stroke: #95a5a6; -fx-stroke-width: 2; -fx-opacity: 0.6;" width="25.0" />
+            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;" text="Booked" />
+        </HBox>
+    </HBox>
 
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
+    <Label layoutX="51.0" layoutY="13.0" style="-fx-font-weight: bold;" styleClass="titleSub" text="CINEMA SEAT SELECTION" />
 </AnchorPane>

@@ -14,13 +14,16 @@ import models.Movie;
 import models.Showtime;
 import configs.DBConnection;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.nio.file.Paths;
 
 public class MovieDetailController {
 
@@ -100,13 +103,34 @@ public class MovieDetailController {
         descriptionArea.setText(movie.getDescription());
 
         String posterFile = movie.getPoster();
-        var stream = getClass().getResourceAsStream("images" + posterFile);
+        InputStream imgStream = null;
 
-        if (stream != null) {
-            Image img = new Image(stream);
-            posterImage.setImage(img);
-        } else {
-            System.err.println("Image not found: " + posterFile);
+        try {
+            // Construct the absolute path to the images folder outside src
+            String imagePath = Paths.get("images", posterFile).toAbsolutePath().toString();
+            imgStream = new FileInputStream(imagePath);
+            if (imgStream != null) {
+                Image img = new Image(imgStream);
+                posterImage.setImage(img);
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading image: " + e.getMessage());
+            // Fallback to default poster if the image is not found
+            InputStream defaultStream = getClass().getResourceAsStream("/images/default-poster.png");
+            if (defaultStream != null) {
+                Image defaultImg = new Image(defaultStream);
+                posterImage.setImage(defaultImg);
+            } else {
+                System.err.println("Default poster not found");
+            }
+        } finally {
+            if (imgStream != null) {
+                try {
+                    imgStream.close();
+                } catch (IOException e) {
+                    System.err.println("Error closing input stream: " + e.getMessage());
+                }
+            }
         }
 
         loadShowtimesFromDatabase(movie);

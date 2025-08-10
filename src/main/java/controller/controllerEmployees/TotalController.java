@@ -690,53 +690,31 @@ public class TotalController {
     @FXML
     private void openInvoiceHistory() {
         try {
-            // Create a simple dialog to show invoice history
-            Dialog<Void> dialog = new Dialog<>();
-            dialog.setTitle("Invoice History");
-            dialog.setHeaderText("Recent Invoices");
+            // Tải FXML của InvoiceHistoryController
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Employees/InvoiceHistory.fxml"));
+            Parent invoiceHistoryRoot = loader.load();
+            InvoiceHistoryController controller = loader.getController();
 
-            // Create table to show invoices
-            TableView<InvoiceRecord> invoiceTable = new TableView<>();
+            // Đặt contentArea cho InvoiceHistoryController
+            if (contentArea == null) {
+                System.err.println("contentArea is null in TotalController!");
+                showAlert(Alert.AlertType.ERROR, "Error", "contentArea has not been initialized!");
+                return;
+            }
+            controller.setContentArea(contentArea);
 
-            // Define columns
-            TableColumn<InvoiceRecord, String> invoiceNumberCol = new TableColumn<>("Invoice Number");
-            invoiceNumberCol.setCellValueFactory(new PropertyValueFactory<>("invoiceNumber"));
-            invoiceNumberCol.setPrefWidth(120);
+            // Thay thế nội dung trong contentArea bằng giao diện InvoiceHistory
+            contentArea.getChildren().setAll(invoiceHistoryRoot);
+            AnchorPane.setTopAnchor(invoiceHistoryRoot, 0.0);
+            AnchorPane.setBottomAnchor(invoiceHistoryRoot, 0.0);
+            AnchorPane.setLeftAnchor(invoiceHistoryRoot, 0.0);
+            AnchorPane.setRightAnchor(invoiceHistoryRoot, 0.0);
 
-            TableColumn<InvoiceRecord, String> ticketCodeCol = new TableColumn<>("Ticket Code");
-            ticketCodeCol.setCellValueFactory(new PropertyValueFactory<>("ticketCode"));
-            ticketCodeCol.setPrefWidth(120);
-
-            TableColumn<InvoiceRecord, String> employeeCol = new TableColumn<>("Employee");
-            employeeCol.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
-            employeeCol.setPrefWidth(100);
-
-            TableColumn<InvoiceRecord, String> totalCol = new TableColumn<>("Total Amount");
-            totalCol.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
-            totalCol.setPrefWidth(120);
-
-            TableColumn<InvoiceRecord, String> dateCol = new TableColumn<>("Date");
-            dateCol.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-            dateCol.setPrefWidth(150);
-
-            invoiceTable.getColumns().addAll(invoiceNumberCol, ticketCodeCol, employeeCol, totalCol, dateCol);
-
-            // Load invoice data
-            ObservableList<InvoiceRecord> invoiceData = loadInvoiceHistory();
-            invoiceTable.setItems(invoiceData);
-
-            // Set table size
-            invoiceTable.setPrefWidth(620);
-            invoiceTable.setPrefHeight(400);
-
-            dialog.getDialogPane().setContent(invoiceTable);
-            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-
-            dialog.showAndWait();
-
-        } catch (Exception e) {
-            System.err.println("Error opening invoice history: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open invoice history: " + e.getMessage());
+            System.out.println("Successfully switched to InvoiceHistory.fxml");
+        } catch (IOException ex) {
+            System.err.println("Error loading InvoiceHistory.fxml: " + ex.getMessage());
+            ex.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load invoice history: " + ex.getMessage());
         }
     }
 

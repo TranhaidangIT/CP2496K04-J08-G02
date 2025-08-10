@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
 
 <VBox prefHeight="700.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerAdmin.TicketsHistoryController"
       styleClass="light-gray-background">
@@ -24,13 +19,42 @@
                 <Label text="Search" />
                 <TextField fx:id="historySearchField" prefWidth="250.0" promptText="Enter ticket ID or username..." />
                 <Button mnemonicParsing="false" text="Search" onAction="#handleSearchHistory" />
+                <Button mnemonicParsing="false" text="Refresh" onAction="#handleRefresh" />
             </children>
             <VBox.margin>
                 <Insets left="20.0" right="20.0" />
             </VBox.margin>
         </HBox>
 
-        <TableView fx:id="ticketsHistoryTable" prefHeight="500.0" prefWidth="710.0" VBox.vgrow="ALWAYS">
+        <VBox spacing="10.0" style="-fx-padding: 20px;">
+            <Label text="Revenue Statistics" style="-fx-font-weight: bold;" />
+            <HBox spacing="10.0">
+                <Button text="By Quarter" onAction="#handleQuarterlyStatistics" />
+                <Button text="By Month" onAction="#handleMonthlyStatistics" />
+                <Button text="By Year" onAction="#handleYearlyStatistics" />
+                <Label text="Custom Date Range:" />
+                <DatePicker fx:id="startDatePicker" promptText="From date" />
+                <DatePicker fx:id="endDatePicker" promptText="To date" />
+                <Button text="Statistics" onAction="#handleCustomRangeStatistics" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label text="Analysis:" style="-fx-font-weight: bold;"/>
+                <Button fx:id="analyzeMostBookedMoviesButton" text="Most Booked Movies" onAction="#handleAnalyzeMostBookedMovies" />
+                <Button fx:id="analyzeMostPopularShowtimesButton" text="Most Popular Showtimes" onAction="#handleAnalyzeMostPopularShowtimes" />
+            </HBox>
+
+            <BarChart fx:id="ticketBarChart" title="Number of Tickets Sold">
+                <xAxis>
+                    <CategoryAxis label="Movie Name" fx:id="xAxis" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Number of Tickets" fx:id="yAxis" />
+                </yAxis>
+            </BarChart>
+        </VBox>
+
+        <TableView fx:id="ticketsHistoryTable" prefHeight="500.0" prefWidth="710.0" >
             <columns>
                 <TableColumn fx:id="ticketIdCol" prefWidth="80.0" text="Ticket ID" />
                 <TableColumn fx:id="movieNameCol" prefWidth="200.0" text="Movie Name" />

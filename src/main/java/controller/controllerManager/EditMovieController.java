@@ -54,9 +54,27 @@ public class EditMovieController {
 
     @FXML
     public void initialize() {
-        cbGenre.getItems().addAll("Action", "Drama", "Comedy", "Horror", "Romance");
-        cbLanguage.getItems().addAll("English", "Vietnamese", "Korean", "Japanese");
-        cbAgeRating.getItems().addAll("G", "PG", "PG-13", "R", "NC-17");
+        cbGenre.getItems().addAll(
+                "Action", "Drama", "Comedy", "Horror", "Romance",
+                "Thriller", "Sci-Fi", "Fantasy", "Animation", "Documentary",
+                "Adventure", "Crime", "Mystery", "Family", "Musical"
+        );
+
+        // Languages
+        cbLanguage.getItems().addAll(
+                "English", "Vietnamese", "Korean", "Japanese",
+                "Chinese", "French", "Thai", "Hindi"
+        );
+
+        // Age ratings
+        cbAgeRating.getItems().addAll(
+                "G",        // General audiences
+                "PG",       // Parental guidance suggested
+                "PG-13",    // Parents strongly cautioned
+                "R",        // Restricted
+                "NC-17",    // Adults only
+                "C18"       // 18+ (common in CGV Vietnam)
+        );
     }
 
     @FXML

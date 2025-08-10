@@ -40,8 +40,8 @@ public class RoomShowtimeBlockController {
     private LocalDate currentDate;
 
     /**
-     * Thiết lập phòng và danh sách suất chiếu cho block này.
-     * Nhóm theo phim + ngày để tạo nhiều MovieShowtimeItem.
+     * Sets the screening room and its showtimes for this block.
+     * Grouped by movie title and date to create multiple MovieShowtimeItem instances.
      */
     public void setRoomAndShowtimes(ScreeningRoom room, List<Showtime> showtimes) {
         this.currentRoom = room;
@@ -51,19 +51,21 @@ public class RoomShowtimeBlockController {
 
         if (showtimes.isEmpty()) return;
 
-        // Nhóm showtime theo phim rồi theo ngày
+        // Group showtimes first by movie, then by date
         Map<String, Map<LocalDate, List<Showtime>>> groupedByMovieAndDate = showtimes.stream()
                 .collect(Collectors.groupingBy(
                         Showtime::getMovieTitle,
                         Collectors.groupingBy(Showtime::getShowDate)
                 ));
 
+        // Store the earliest date found
         currentDate = showtimes.stream()
                 .map(Showtime::getShowDate)
                 .sorted()
                 .findFirst()
                 .orElse(null);
 
+        // Create UI blocks for each (movie + date) group
         groupedByMovieAndDate.forEach((movieTitle, dateMap) -> {
             dateMap.forEach((date, stList) -> {
                 try {
@@ -71,7 +73,8 @@ public class RoomShowtimeBlockController {
                     Parent node = loader.load();
 
                     MovieShowtimeItemController controller = loader.getController();
-                    controller.setData(stList.get(0), stList); // truyền showtime đầu và cả list
+                    // Pass the first showtime as reference plus the full list for that movie-date group
+                    controller.setData(stList.get(0), stList);
 
                     vboxListShowtime.getChildren().add(node);
                 } catch (IOException e) {
@@ -82,12 +85,12 @@ public class RoomShowtimeBlockController {
     }
 
     /**
-     * Bấm nút edit để chỉnh sửa suất chiếu của phòng này trong ngày currentDate.
+     * Opens the edit dialog for the current room's showtimes on currentDate.
      */
     @FXML
     private void handleEditClickShowtime() {
         if (currentRoom == null || currentDate == null) {
-            showAlert(Alert.AlertType.WARNING, "Không có dữ liệu phòng hoặc ngày để chỉnh sửa.");
+            showAlert(Alert.AlertType.WARNING, "No room or date data available to edit.");
             return;
         }
 
@@ -96,58 +99,57 @@ public class RoomShowtimeBlockController {
             Parent root = loader.load();
 
             EditShowtimeController controller = loader.getController();
-
-            // Chỉ truyền roomId và ngày, controller load toàn bộ showtime phòng đó trong ngày
+            // Pass room ID and date; the controller will load all showtimes for that room on that date
             controller.loadShowtimeToEdit(currentRoom.getRoomId(), currentDate);
 
             Stage stage = new Stage();
-            stage.setTitle("Chỉnh sửa suất chiếu phòng " + currentRoom.getRoomNumber() + " ngày " + currentDate);
+            stage.setTitle("Edit showtimes for room " + currentRoom.getRoomNumber() + " on " + currentDate);
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
-            // Sau khi sửa xong, reload lại showtime cho block
+            // Refresh showtime list after editing
             reloadShowtimes();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi khi mở cửa sổ chỉnh sửa suất chiếu.");
+            showAlert(Alert.AlertType.ERROR, "Error opening edit showtime window.");
         }
     }
 
     /**
-     * Xóa tất cả suất chiếu của phòng này trong ngày currentDate.
+     * Deletes all showtimes for this room on the currentDate.
      */
     @FXML
     public void handleDeleteClickShowtime(ActionEvent actionEvent) {
         if (currentRoom == null || currentDate == null) {
-            showAlert(Alert.AlertType.WARNING, "Không có dữ liệu phòng hoặc ngày để xóa.");
+            showAlert(Alert.AlertType.WARNING, "No room or date data available to delete.");
             return;
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Xác nhận xóa");
+        confirm.setTitle("Confirm deletion");
         confirm.setHeaderText(null);
-        confirm.setContentText("Bạn có chắc muốn xóa tất cả suất chiếu của phòng "
-                + currentRoom.getRoomNumber() + " vào ngày " + currentDate + "?");
+        confirm.setContentText("Are you sure you want to delete all showtimes for room "
+                + currentRoom.getRoomNumber() + " on " + currentDate + "?");
 
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 ShowtimeDAO showtimeDAO = new ShowtimeDAO();
-
                 boolean success = showtimeDAO.deleteShowtimesByRoomAndDate(currentRoom.getRoomId(), currentDate);
                 if (success) {
-                    showAlert(Alert.AlertType.INFORMATION, "Đã xóa thành công suất chiếu.");
+                    showAlert(Alert.AlertType.INFORMATION, "All showtimes deleted successfully.");
                     vboxListShowtime.getChildren().clear();
                     currentDate = null;
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Xóa suất chiếu thất bại.");
+                    showAlert(Alert.AlertType.ERROR, "Failed to delete showtimes.");
                 }
             }
         });
     }
 
     /**
-     * Reload lại danh sách suất chiếu cho phòng và ngày hiện tại (có thể gọi sau sửa hoặc thêm).
+     * Reloads the showtimes list for the current room and date.
+     * Can be called after editing or adding showtimes.
      */
     private void reloadShowtimes() {
         if (currentRoom == null || currentDate == null) return;
@@ -158,6 +160,9 @@ public class RoomShowtimeBlockController {
         setRoomAndShowtimes(currentRoom, showtimes);
     }
 
+    /**
+     * Shows a simple alert dialog with the given message.
+     */
     private void showAlert(Alert.AlertType type, String msg) {
         Alert alert = new Alert(type);
         alert.setHeaderText(null);

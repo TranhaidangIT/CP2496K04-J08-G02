@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.TotalController">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.TotalController">
     <children>
         <ScrollPane fitToWidth="true" prefHeight="800.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <content>
-                <VBox spacing="15.0">
+                <VBox spacing="15.0" stylesheets="@../../css/app-style.css">
                     <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </padding>
@@ -99,6 +109,11 @@
                                             </font>
                                         </Label>
                                     </children>
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                           </rowConstraints>
                                 </GridPane>
                             </children>
                         </VBox>
@@ -117,8 +132,8 @@
                                 <TableView fx:id="ticketsTable" prefHeight="150.0">
                                     <columns>
                                         <TableColumn fx:id="seatColumn" prefWidth="100.0" text="Seat" />
-                                        <TableColumn fx:id="seatTypeColumn" prefWidth="120.0" text="Seat Type" />
-                                        <TableColumn fx:id="ticketPriceColumn" prefWidth="120.0" text="Price" />
+                                        <TableColumn fx:id="seatTypeColumn" prefWidth="319.2000732421875" text="Seat Type" />
+                                        <TableColumn fx:id="ticketPriceColumn" prefWidth="479.20001220703125" text="Price" />
                                     </columns>
                                 </TableView>
                             </children>
@@ -138,9 +153,9 @@
                                 <TableView fx:id="servicesTable" prefHeight="120.0">
                                     <columns>
                                         <TableColumn fx:id="serviceNameColumn" prefWidth="200.0" text="Service Name" />
-                                        <TableColumn fx:id="quantityColumn" prefWidth="80.0" text="Qty" />
-                                        <TableColumn fx:id="unitPriceColumn" prefWidth="100.0" text="Unit Price" />
-                                        <TableColumn fx:id="totalPriceColumn" prefWidth="120.0" text="Total" />
+                                        <TableColumn fx:id="quantityColumn" prefWidth="112.00001525878906" text="Qty" />
+                                        <TableColumn fx:id="unitPriceColumn" prefWidth="233.60000610351562" text="Unit Price" />
+                                        <TableColumn fx:id="totalPriceColumn" prefWidth="355.199951171875" text="Total" />
                                     </columns>
                                 </TableView>
                             </children>
@@ -193,6 +208,9 @@
                                             </font>
                                         </Label>
                                     </children>
+                           <rowConstraints>
+                              <RowConstraints />
+                           </rowConstraints>
                                 </GridPane>
                             </children>
                         </VBox>
@@ -234,6 +252,10 @@
                                             </font>
                                         </Label>
                                     </children>
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                           </rowConstraints>
                                 </GridPane>
                             </children>
                         </VBox>
@@ -241,10 +263,10 @@
                         <!-- Action Buttons -->
                         <HBox alignment="CENTER" spacing="20.0">
                             <children>
-                                <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-size: 14px;" text="← Back" />
-                                <Button fx:id="invoiceHistoryButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;" text="📋 Invoice History" onAction="#openInvoiceHistory" />
-                                <Button fx:id="printInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-size: 14px;" text="🖨 Print Invoice" />
-                                <Button fx:id="newTransactionButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" text="🔄 New Transaction" />
+                                <Button fx:id="backButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" styleClass="btnCancel" text="← Back" />
+                                <Button fx:id="invoiceHistoryButton" mnemonicParsing="false" onAction="#openInvoiceHistory" prefHeight="40.0" prefWidth="150.0" styleClass="btnEdit" text="📋 Invoice History" />
+                                <Button fx:id="printInvoiceButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="btnInsert" text="🖨 Print Invoice" />
+                                <Button fx:id="newTransactionButton" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14px;" styleClass="btnDelete" text="🔄 New Transaction" />
                             </children>
                         </HBox>
                     </children>

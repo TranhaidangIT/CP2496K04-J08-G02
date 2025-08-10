@@ -22,9 +22,11 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import models.Movie;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -84,7 +86,9 @@ public class ListMoviesController implements Initializable {
         allListViews.add(ratingListView);
         allListViews.add(languageListView);
 
-        ObservableList<String> genres = FXCollections.observableArrayList("Action", "Drama", "Comedy", "Horror", "Romance");
+        ObservableList<String> genres = FXCollections.observableArrayList("Action", "Drama", "Comedy", "Horror", "Romance",
+                "Thriller", "Sci-Fi", "Fantasy", "Animation", "Documentary",
+                "Adventure", "Crime", "Mystery", "Family", "Musical");
         genreListView.setItems(genres);
         genreListView.setVisible(false);
         for (String genre : genres) {
@@ -102,7 +106,7 @@ public class ListMoviesController implements Initializable {
         durationListView.setCellFactory(CheckBoxListCell.forListView(item -> selectedMap.get(item)));
         durations.forEach(item -> selectedMap.get(item).addListener((obs, wasSelected, isSelected) -> filterMovies()));
 
-        ObservableList<String> rate = FXCollections.observableArrayList("P", "K", "T13", "T16", "T18");
+        ObservableList<String> rate = FXCollections.observableArrayList("G", "PG", "PG-13", "R", "NC-17", "C18");
         ratingListView.setItems(rate);
         ratingListView.setVisible(false);
         for (String rating : rate) {
@@ -111,7 +115,7 @@ public class ListMoviesController implements Initializable {
         ratingListView.setCellFactory(CheckBoxListCell.forListView(item -> selectedMap.get(item)));
         rate.forEach(item -> selectedMap.get(item).addListener((obs, wasSelected, isSelected) -> filterMovies()));
 
-        ObservableList<String> languages = FXCollections.observableArrayList("English", "Vietnamese", "Korean", "Japanese");
+        ObservableList<String> languages = FXCollections.observableArrayList("English", "Vietnamese", "Korean", "Japanese", "Chinese", "French", "Thai", "Hindi");
         languageListView.setItems(languages);
         languageListView.setVisible(false);
         for (String language : languages) {
@@ -167,16 +171,31 @@ public class ListMoviesController implements Initializable {
 
         ImageView posterView = new ImageView();
         String posterFileName = movie.getPoster();
-        InputStream imgStream = getClass().getResourceAsStream("/images/" + posterFileName);
+        InputStream imgStream = null;
 
-        if (imgStream != null) {
-            posterView.setImage(new Image(imgStream));
-        } else {
+        try {
+            // Construct the absolute path to the images folder outside src
+            String imagePath = Paths.get("images", posterFileName).toAbsolutePath().toString();
+            imgStream = new FileInputStream(imagePath);
+            if (imgStream != null) {
+                posterView.setImage(new Image(imgStream));
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading image: " + e.getMessage());
+            // Fallback to default poster if the image is not found
             InputStream defaultStream = getClass().getResourceAsStream("/images/default-poster.png");
             if (defaultStream != null) {
                 posterView.setImage(new Image(defaultStream));
             } else {
-                System.err.println("not found poster");
+                System.err.println("Default poster not found");
+            }
+        } finally {
+            if (imgStream != null) {
+                try {
+                    imgStream.close();
+                } catch (IOException e) {
+                    System.err.println("Error closing input stream: " + e.getMessage());
+                }
             }
         }
 
@@ -264,7 +283,9 @@ public class ListMoviesController implements Initializable {
             }
 
             List<String> selectedGenres = new ArrayList<>();
-            for (String genre : Arrays.asList("Action", "Drama", "Comedy", "Horror", "Romance")) {
+            for (String genre : Arrays.asList("Action", "Drama", "Comedy", "Horror", "Romance",
+                    "Thriller", "Sci-Fi", "Fantasy", "Animation", "Documentary",
+                    "Adventure", "Crime", "Mystery", "Family", "Musical")) {
                 BooleanProperty prop = selectedMap.get(genre);
                 if (prop != null && prop.get()) selectedGenres.add(genre);
             }
@@ -311,7 +332,7 @@ public class ListMoviesController implements Initializable {
             }
 
             List<String> selectedRatings = new ArrayList<>();
-            for (String rating : Arrays.asList("P", "K", "T13", "T16", "T18")) {
+            for (String rating : Arrays.asList("G", "PG", "PG-13", "R", "NC-17", "C18")) {
                 BooleanProperty prop = selectedMap.get(rating);
                 if (prop != null && prop.get()) selectedRatings.add(rating);
             }
@@ -320,7 +341,7 @@ public class ListMoviesController implements Initializable {
             }
 
             List<String> selectedLangs = new ArrayList<>();
-            for (String lang : Arrays.asList("English", "Tiếng Việt")) {
+            for (String lang : Arrays.asList("English", "Vietnamese", "Korean", "Japanese", "Chinese", "French", "Thai", "Hindi")) {
                 BooleanProperty prop = selectedMap.get(lang);
                 if (prop != null && prop.get()) selectedLangs.add(lang);
             }

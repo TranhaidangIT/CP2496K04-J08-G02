@@ -3,211 +3,165 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-<<<<<<< HEAD
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.layout.AnchorPane;
-=======
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
->>>>>>> 44fab4a810779ded600d5ec37ab3c472deb80785
+import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class DashboardController {
-
-    // Avatar hiển thị theo vai trò
-    @FXML private ImageView avrManager;
-    @FXML private ImageView avtAdmin;
-    @FXML private ImageView avtEmployee;
-
-    // Các nút điều hướng cho Admin
-    @FXML private Button btnTicketsHistory;
-    @FXML private Button btnUser;
-    @FXML private Button btnOverviewAdmin;
-    @FXML private Button btnLogoutAdmin;
-
     // Các nút điều hướng cho Manager
     @FXML private Button btnMovie;
     @FXML private Button btnRoom;
     @FXML private Button btnService;
+    @FXML private Button btnLocker;
     @FXML private Button btnShowtime;
     @FXML private Button btnOverviewManager;
     @FXML private Button btnLogoutManager;
 
-    // Các nút điều hướng cho Employee
-    @FXML private Button btnMovieList;
-    @FXML private Button btnLocker;
-    @FXML private Button btnSellTicket;
-    @FXML private Button btnTotal;
-    @FXML private Button btnOverviewEmp;
-    @FXML private Button btnLogoutEmp;
-
-    // Label chào mừng theo vai trò
-    @FXML private Label helloAdmin;
-    @FXML private Label helloManager;
-    @FXML private Label helloEmployee;
-
-    // Vùng nội dung chính để load các FXML
     @FXML private Pane mainContent;
 
-    // Sidebar riêng cho từng vai trò
-    @FXML private VBox sideBarAdmin;
-    @FXML private VBox sideBarManager;
-    @FXML private VBox sideBarEmployee;
 
-    // Tạm thời hardcode role do chưa có chức năng đăng nhập
-    private String currentRole = "manager" ;
+    // List of buttons for easy management
+    private Button[] navigationButtons;
+
+    // Cache for preloaded FXML content
+    private final Map<String, Node> viewCache = new HashMap<>();
 
     @FXML
     public void initialize() {
-        // Ẩn toàn bộ giao diện theo role
-        sideBarAdmin.setVisible(false);
-        sideBarManager.setVisible(false);
-        sideBarEmployee.setVisible(false);
+        // Initialize the array of navigation buttons
+        navigationButtons = new Button[] {
+                btnMovie, btnRoom, btnService, btnLocker, btnShowtime, btnOverviewManager, btnLogoutManager
+        };
 
-        avtAdmin.setVisible(false);
-        avrManager.setVisible(false);
-        avtEmployee.setVisible(false);
+        // Apply .btnSelect style to all buttons
+        for (Button button : navigationButtons) {
+            button.getStyleClass().add("btnSelect");
+        }
 
-        helloAdmin.setVisible(false);
-        helloManager.setVisible(false);
-        helloEmployee.setVisible(false);
+        // Preload all FXML views
+        preloadViews();
 
-        // Hiển thị giao diện theo vai trò
-        switch (currentRole.toLowerCase()) {
-            case "admin":
-                sideBarAdmin.setVisible(true);
-                avtAdmin.setVisible(true);
-                helloAdmin.setVisible(true);
-                break;
-            case "manager":
-                sideBarManager.setVisible(true);
-                avrManager.setVisible(true);
-                helloManager.setVisible(true);
-                break;
-            case "employee":
-                sideBarEmployee.setVisible(true);
-                avtEmployee.setVisible(true);
-                helloEmployee.setVisible(true);
-                break;
-            default:
-                System.out.println();
+        // Set default selected button and view (e.g., Overview)
+        setSelectedButton(btnOverviewManager);
+        showView("/views/fxml_Manager/Overview.fxml");
+    }
+
+    private void preloadViews() {
+        // List of FXML paths to preload
+        String[] fxmlPaths = {
+                "/views/fxml_Manager/Overview.fxml",
+                "/views/fxml_Manager/Movie/MovieList.fxml",
+                "/views/fxml_Manager/ScreeningRoom/RoomList.fxml",
+                "/views/fxml_Manager/Service/ServiceList.fxml",
+                "/views/fxml_Manager/Locker/LockerList.fxml",
+                "/views/fxml_Manager/Showtime/ShowtimeList.fxml"
+        };
+
+        // Load each FXML and store in cache
+        for (String fxmlPath : fxmlPaths) {
+            try {
+                Node content = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxmlPath)));
+                viewCache.put(fxmlPath, content);
+            } catch (IOException e) {
+                System.err.println("Error preloading FXML: " + fxmlPath + " - " + e.getMessage());
+            }
         }
     }
 
-    private void loadUI(String fxmlPath) {
-        try {
-            Pane content = FXMLLoader.load(getClass().getResource(fxmlPath));
+    private void showView(String fxmlPath) {
+        // Retrieve cached view or load if not cached
+        Node content = viewCache.computeIfAbsent(fxmlPath, path -> {
+            try {
+                return FXMLLoader.load(Objects.requireNonNull(getClass().getResource(path)));
+            } catch (IOException e) {
+                System.err.println("Error loading UI: " + e.getMessage());
+                return null;
+            }
+        });
+
+        if (content != null) {
             mainContent.getChildren().setAll(content);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-
-    // ----------------- Event Handler theo Role -----------------
-
-    // Admin
-    @FXML
-    void handleTicketsHistoryClick(ActionEvent event) {
-        loadUI("/views/fxml_Admin/");
+    // Method to set the selected button style
+    private void setSelectedButton(Button selectedButton) {
+        // Reset style for all buttons
+        for (Button button : navigationButtons) {
+            button.getStyleClass().remove("selected-button");
+        }
+        // Apply selected style to the clicked button
+        selectedButton.getStyleClass().add("selected-button");
     }
-
-    @FXML
-    void handleUserManageClick(ActionEvent event) {
-        loadUI("/views/fxml_Admin/UserManagementContent.fxml");
-    }
-
-    @FXML
-    void handleDashboardClick(ActionEvent event) {
-
-
-    }
-
 
     // ------------------MANAGER-------------------
     @FXML
     void onMovieClickedbyManager(ActionEvent event) {
-
-        loadUI("/views/fxml_Manager/Movie/MovieList.fxml");
+        showView("/views/fxml_Manager/Movie/MovieList.fxml");
+        setSelectedButton(btnMovie);
     }
 
     @FXML
     void onRoomClickedbbyManager(ActionEvent event) {
-
-        loadUI("/views/fxml_Manager/ScreeningRoom/RoomList.fxml");
+        showView("/views/fxml_Manager/ScreeningRoom/RoomList.fxml");
+        setSelectedButton(btnRoom);
     }
 
     @FXML
-    void onServiceClickedbyManager(ActionEvent event) {
-
-        loadUI("/views/fxml_Manager");
+    void onServiceClicked(ActionEvent event) {
+        showView("/views/fxml_Manager/Service/ServiceList.fxml");
+        setSelectedButton(btnService);
     }
 
     @FXML
     void onShowtimeClickedbyManager(ActionEvent event) {
-
-        loadUI("/views/fxml_Manager/Showtime/ShowtimeList.fxml");
+        showView("/views/fxml_Manager/Showtime/ShowtimeList.fxml");
+        setSelectedButton(btnShowtime);
     }
 
     @FXML
     void onOverviewClickedbyManager(ActionEvent event) {
-
-        loadUI("/views/fxml_Manager/Overview.fxml");
-    }
-
-
-    // -----------------EMPLOYEE--------------------------
-    @FXML
-    void onMovieClickedbyEmp(ActionEvent event) {
-
-        loadUI("views/");
+        showView("/views/fxml_Manager/Overview.fxml");
+        setSelectedButton(btnOverviewManager);
     }
 
     @FXML
-<<<<<<< HEAD
-    private void onLockerClicked() { loadUI("/views/fxml_Manager/Locker/LockerList.fxml");}
+    void onLockerClicked(ActionEvent event) {
+        showView("/views/fxml_Manager/Locker/LockerList.fxml");
+        setSelectedButton(btnLocker);
+    }
 
     @FXML
     private void onLogoutClicked(ActionEvent event) {
         try {
-            Node source = (Node) event.getSource();
-            Parent root = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/login.fxml"));
-            source.getScene().setRoot(root);
+            // Load login.fxml
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Admin/login.fxml"));
+            Parent loginRoot = loader.load();
+
+            // Create a new stage for the login screen
+            Stage loginStage = new Stage();
+            loginStage.setTitle("Login");
+            loginStage.setScene(new Scene(loginRoot));
+            loginStage.show();
+
+            // Close the current window (Dashboard)
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            currentStage.close();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error loading login UI: " + e.getMessage());
         }
-=======
-    void onLockerClickedbyEmp(ActionEvent event) {
-
-        System.out.println("Employee clicked Locker");
-    }
-
-    @FXML
-    void onSellTicketClickedbyEmp(ActionEvent event) {
-        System.out.println("Employee clicked Sell Ticket");
-    }
-
-    @FXML
-    void onTotalClickedbyEmp(ActionEvent event) {
-
-        System.out.println("Employee clicked Total");
-    }
-
-    @FXML
-    void onOverviewClickedbyEmp(ActionEvent event) {
-
-        System.out.println("Employee clicked Overview");
-    }
-
-    // Logout chung
-    @FXML
-    void onLogoutClicked(ActionEvent event) {
-        loadUI("/views/fxml_Admin/Login.fxml");
->>>>>>> 44fab4a810779ded600d5ec37ab3c472deb80785
+        setSelectedButton(btnLogoutManager);
     }
 }

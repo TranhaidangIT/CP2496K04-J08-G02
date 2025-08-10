@@ -20,27 +20,7 @@
                 <Label text="Dashboard Overview" styleClass="overviewTitle"/>
 
                 <HBox spacing="20.0">
-                    <children>
-                        <VBox spacing="10.0" styleClass="overviewCard">
-                            <Label text="Movies" styleClass="cardTitle"/>
-                            <Label fx:id="movieCountLabel" text="0" styleClass="cardValue"/>
-                        </VBox>
-
-                        <VBox spacing="10.0" styleClass="overviewCard">
-                            <Label text="Rooms" styleClass="cardTitle"/>
-                            <Label fx:id="roomCountLabel" text="0" styleClass="cardValue"/>
-                        </VBox>
-
-                        <VBox spacing="10.0" styleClass="overviewCard">
-                            <Label text="Services" styleClass="cardTitle"/>
-                            <Label fx:id="serviceCountLabel" text="0" styleClass="cardValue"/>
-                        </VBox>
-
-                        <VBox spacing="10.0" styleClass="overviewCard">
-                            <Label text="Employees" styleClass="cardTitle"/>
-                            <Label fx:id="employeeCountLabel" text="0" styleClass="cardValue"/>
-                        </VBox>
-                    </children>
+                    
                 </HBox>
 
             </children>

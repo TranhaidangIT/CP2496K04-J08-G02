@@ -289,4 +289,28 @@ public class ShowtimeDAO {
         return showtimes;
     }
 
+    public List<Showtime> getShowtimesByRoomDateMovie(int roomId, LocalDate selectedDate, int movieId) {
+        List<Showtime> showtimes = new ArrayList<>();
+        String sql = "SELECT * FROM showtimes WHERE roomId = ? AND showDate = ? AND movieId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, roomId);
+            stmt.setString(2, selectedDate.toString());
+            stmt.setInt(3, movieId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Showtime showtime = new Showtime();
+                showtime.setShowtimeId(rs.getInt("showtimeId"));
+                showtime.setRoomId(rs.getInt("roomId"));
+                showtime.setMovieId(rs.getInt("movieId"));
+                showtime.setShowDate(rs.getDate("showDate").toLocalDate());
+                showtime.setShowTime(rs.getTime("showTime").toLocalTime());
+                showtime.setEndTime(rs.getTime("endTime").toLocalTime());
+                showtimes.add(showtime);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return showtimes;
+    }
 }

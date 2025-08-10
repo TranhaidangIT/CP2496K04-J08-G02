@@ -13,25 +13,17 @@
 .btnSelect {
     -fx-background-color: #AA0000;
     -fx-text-fill: #FFFFFF;
-    -fx-alignment: CENTER_LEFT;
+    -fx-alignment: CENTER-LEFT;
     -fx-font-size: 18px;
     -fx-padding: 0 30px;
 }
 
-.btnSelect:hover {
+.selected-button {
     -fx-background-color: #FFFFFF;
     -fx-text-fill: #AA0000;
     -fx-font-weight: bold;
     -fx-background-radius: 100px 0 0 100px;
 }
-
-.btnSelect:selected {
-    -fx-background-color: #FFFFFF;
-    -fx-text-fill: #AA0000;
-    -fx-font-weight: bold;
-    -fx-background-radius: 100px 0 0 100px;
-}
-
 .btnLogout {
     -fx-background-color: transparent;
     -fx-text-fill: white;

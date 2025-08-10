@@ -8,21 +8,21 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddServiceController">
+<AnchorPane prefHeight="510.0" prefWidth="518.0" stylesheets="@../../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddServiceController">
     <children>
-        <AnchorPane layoutX="50.0" layoutY="25.0" prefHeight="525.0" prefWidth="500.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+        <AnchorPane layoutX="7.0" layoutY="10.0" prefHeight="489.0" prefWidth="500.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
             <children>
-                <Label layoutX="200.0" layoutY="14.0" text="Add New Service" textFill="#aa0000">
+                <Label layoutX="147.0" text="Add New Service" textFill="#aa0000">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
 
                 <!-- Service Image -->
-                <ImageView fx:id="imgService" fitHeight="137.0" fitWidth="138.0" layoutX="227.0" layoutY="49.0" pickOnBounds="true" preserveRatio="true" />
+                <ImageView fx:id="imgService" fitHeight="137.0" fitWidth="138.0" layoutX="174.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" />
 
                 <!-- Button to choose image -->
-                <Button fx:id="btnChooseImage" layoutX="243.0" layoutY="193.0" onAction="#handleChooseImage" prefHeight="26.0" prefWidth="106.0" text="Choose Image">
+                <Button fx:id="btnChooseImage" layoutX="177.0" layoutY="177.0" onAction="#handleChooseImage" prefHeight="42.0" prefWidth="146.0" styleClass="btnChooseFile" text="Choose Image">
                     <font>
                         <Font size="12.0" />
                     </font>
@@ -30,43 +30,43 @@
 
                 <AnchorPane layoutX="50.0" layoutY="226.0" prefHeight="180.0" prefWidth="400.0" stylesheets="@../../../css/app-style.css">
                     <children>
-                        <Label layoutX="35.0" layoutY="19.0" text="Service Name:">
+                        <Label layoutX="27.0" layoutY="10.0" styleClass="labelCaption" text="Service Name:">
                             <font>
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="txtServiceName" layoutX="140.0" layoutY="6.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
+                        <TextField fx:id="txtServiceName" layoutX="140.0" layoutY="6.0" prefHeight="40.0" prefWidth="250.0" styleClass="textField" />
 
-                        <Label layoutX="35.0" layoutY="69.0" text="Price ($):">
+                        <Label layoutX="54.0" layoutY="66.0" styleClass="labelCaption" text="Price ($):">
                             <font>
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="txtPrice" layoutX="140.0" layoutY="56.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
+                        <TextField fx:id="txtPrice" layoutX="140.0" layoutY="56.0" prefHeight="40.0" prefWidth="250.0" styleClass="textField" />
 
-                        <Label layoutX="35.0" layoutY="121.0" text="Category:">
+                        <Label layoutX="52.0" layoutY="120.0" styleClass="labelCaption" text="Category:">
                             <font>
                                 <Font size="16.0" />
                             </font>
                         </Label>
                         <ComboBox fx:id="cbCategory" layoutX="140.0" layoutY="108.0" prefHeight="40.0" prefWidth="250.0" styleClass="comboBox" />
 
-                        <Label layoutX="35.0" layoutY="173.0" text="Image Path:">
+                        <Label layoutX="34.0" layoutY="170.0" styleClass="labelCaption" text="Image Path:">
                             <font>
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="txtImagePath" editable="false" layoutX="140.0" layoutY="160.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
+                        <TextField fx:id="txtImagePath" editable="false" layoutX="140.0" layoutY="160.0" prefHeight="40.0" prefWidth="250.0" styleClass="textField" />
                     </children>
                 </AnchorPane>
 
-                <Button fx:id="btnCancel" layoutX="323.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+                <Button fx:id="btnCancel" layoutX="339.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
                     <font>
                         <Font size="16.0" />
                     </font>
                 </Button>
 
-                <Button fx:id="btnInsert" layoutX="210.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnAdd" stylesheets="@../../../css/app-style.css" text="Insert">
+                <Button fx:id="btnInsert" layoutX="223.0" layoutY="441.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnInsert" stylesheets="@../../../css/app-style.css" text="Insert">
                     <font>
                         <Font size="16.0" />
                     </font>

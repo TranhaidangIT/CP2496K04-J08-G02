@@ -11,7 +11,7 @@
 
 <AnchorPane prefHeight="201.0" prefWidth="794.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.MovieShowtimeItemController">
    <children>
-      <VBox layoutY="1.0" prefHeight="200.0" prefWidth="794.0">
+      <VBox layoutY="1.0" prefHeight="200.0" prefWidth="800.0">
          <children>
             <Label fx:id="txtMovie" prefHeight="40.0" prefWidth="746.0" styleClass="labelCaption" stylesheets="@../../../css/app-style.css" text="Movie">
                <VBox.margin>

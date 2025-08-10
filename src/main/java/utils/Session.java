@@ -4,11 +4,11 @@ import models.User;
 import java.util.Map;
 
 /**
- * Lưu thông tin người dùng đang đăng nhập để dùng trong toàn hệ thống.
+ * Lưu thông tin người dùng đang đăng nhập và các dữ liệu tạm thời khác trong toàn hệ thống.
  */
 public class Session {
     private static User currentUser;
-    private static Map<String, Object> bookingData; // Thêm để lưu thông tin booking tạm thời
+    private static Map<String, Object> bookingData;
 
     public static User getCurrentUser() {
         return currentUser;
@@ -20,16 +20,15 @@ public class Session {
 
     public static void clear() {
         currentUser = null;
-        clearBookingData(); // Xóa cả booking data khi clear session
-    }
-
-    // Thêm các method mới để quản lý booking data
-    public static void setBookingData(Map<String, Object> data) {
-        bookingData = data;
+        clearBookingData();
     }
 
     public static Map<String, Object> getBookingData() {
         return bookingData;
+    }
+
+    public static void setBookingData(Map<String, Object> data) {
+        bookingData = data;
     }
 
     public static void clearBookingData() {

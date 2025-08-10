@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.ScreeningRoom;
 import models.Seat;
@@ -46,7 +47,6 @@ public class SeatingLayoutController {
     private List<SeatType> allSeatTypes;
     private ScreeningRoom currentRoom;
 
-
     @FXML
     public void initialize() {
         seatingArea.setStyle("-fx-background-color: #f0f0f0;");
@@ -57,17 +57,17 @@ public class SeatingLayoutController {
     public void setRoomData(ScreeningRoom room) {
         this.currentRoom = room;
 
-        // Load seat types từ DB
+        // Load seat types from DB
         loadSeatTypes();
 
-        // Lấy danh sách ghế theo roomId
+        // Load seats for the room
         seatsInRoom = SeatDAO.getSeatsByRoomId(room.getRoomId());
         if (seatsInRoom.isEmpty()) {
             System.err.println("No seats found for room " + room.getRoomNumber());
             return;
         }
 
-        // Tính số hàng (A → Z) và cột (1 → N)
+        // Calculate max row and column
         int maxRow = 0, maxCol = 0;
         for (Seat s : seatsInRoom) {
             int rowIndex = s.getSeatRow() - 'A';
@@ -77,14 +77,10 @@ public class SeatingLayoutController {
 
         generateSeatGrid(maxRow + 1, maxCol);
 
-        // Hiển thị các loại ghế trong legend
+        // Update legends based on seat types
         Set<String> seatTypesInRoom = new HashSet<>();
         for (Seat seat : seatsInRoom) {
             if (!seat.isActive()) continue;
-
-        }
-
-        for (Seat seat : seatsInRoom) {
             SeatType type = seat.getSeatType();
             if (type != null && type.getSeatTypeName() != null) {
                 seatTypesInRoom.add(type.getSeatTypeName().toLowerCase());
@@ -93,13 +89,12 @@ public class SeatingLayoutController {
         updateLegendVisibility(seatTypesInRoom);
     }
 
-
     private void loadSeatTypes() {
         allSeatTypes = SeatTypeDAO.getAllSeatTypes();
     }
 
     private void updateLegendVisibility(Set<String> seatTypesInRoom) {
-        // Ẩn toàn bộ trước
+        // Hide all legends first
         legendStandardColor.setVisible(false);
         legendStandardLabel.setVisible(false);
         legendVIPColor.setVisible(false);
@@ -109,7 +104,7 @@ public class SeatingLayoutController {
         legendGoldColor.setVisible(false);
         legendGoldLabel.setVisible(false);
 
-        // Hiện đúng loại có trong phòng
+        // Show only the legends present in the room
         for (String type : seatTypesInRoom) {
             switch (type) {
                 case "standard":
@@ -135,14 +130,14 @@ public class SeatingLayoutController {
     private void generateSeatGrid(int rowCount, int columnCount) {
         seatGrid.getChildren().clear();
 
-        // 1. Cột header (1, 2, ..., columnCount)
+        // Column headers (1, 2, ..., columnCount)
         for (int col = 1; col <= columnCount; col++) {
             Label colLabel = new Label(String.valueOf(col));
             colLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: black;");
             seatGrid.add(colLabel, col, 0);
         }
 
-        // 2. Hàng header (A, B, ..., Z)
+        // Row headers (A, B, ..., Z)
         for (int row = 1; row <= rowCount; row++) {
             char rowChar = (char) ('A' + row - 1);
             Label rowLabel = new Label(String.valueOf(rowChar));
@@ -154,11 +149,11 @@ public class SeatingLayoutController {
             if (!seat.isActive()) continue;
 
             int rowIndex = seat.getSeatRow() - 'A' + 1;
-            int colIndex = seat.getSeatColumn();       // 1-based
+            int colIndex = seat.getSeatColumn(); // 1-based
 
             String seatLabel = seat.getSeatRow() + String.valueOf(seat.getSeatColumn());
 
-            // Rectangle là phần nền màu ghế
+            // Rectangle for seat background
             Rectangle rect = new Rectangle(30, 30);
             String seatTypeName = (seat.getSeatType() != null) ? seat.getSeatType().getSeatTypeName() : "";
             Color fillColor = getColorForSeatType(seatTypeName);
@@ -166,23 +161,23 @@ public class SeatingLayoutController {
             rect.setStroke(Color.WHITE);
             rect.setStrokeWidth(1);
 
-            // Label hiển thị mã ghế
+            // Label for seat identifier
             Label label = new Label(seatLabel);
             label.setStyle("-fx-font-size: 10px; -fx-text-fill: white; -fx-font-weight: bold;");
 
-            // StackPane chứa cả Rectangle + Label
+            // StackPane to hold Rectangle and Label
             StackPane seatPane = new StackPane(rect, label);
             seatPane.setId(seatLabel);
 
-            // Click để hiện viền đỏ + sout
+            // Click handling for selection
             seatPane.setOnMouseClicked(e -> {
                 System.out.println("Click " + seatLabel);
 
-                // Đổi stroke ghế đang chọn
+                // Update stroke for selected seat
                 rect.setStroke(Color.RED);
                 rect.setStrokeWidth(3);
 
-                // Reset các ghế khác
+                // Reset stroke for other seats
                 for (Node node : seatGrid.getChildren()) {
                     if (node instanceof StackPane && node != seatPane) {
                         Node child = ((StackPane) node).getChildren().get(0);
@@ -196,10 +191,9 @@ public class SeatingLayoutController {
 
             seatGrid.add(seatPane, colIndex, rowIndex);
         }
-
     }
 
-        private Color getColorForSeatType(String typeName) {
+    private Color getColorForSeatType(String typeName) {
         if (typeName == null) return Color.GRAY;
 
         switch (typeName.toLowerCase()) {
@@ -211,7 +205,6 @@ public class SeatingLayoutController {
         }
     }
 
-
     @FXML
     void handleEditLayout(ActionEvent event) {
         try {
@@ -219,18 +212,21 @@ public class SeatingLayoutController {
             Parent root = loader.load();
 
             EditSeatingLayoutController controller = loader.getController();
-            controller.setRoomData(currentRoom); // Gán selectedRoom cho currentRoom
+            controller.setRoomData(currentRoom);
 
             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Edit Seating Layout");
             stage.setScene(new Scene(root));
-            stage.show();
+            stage.showAndWait();
 
+            // Refresh data after edit is complete
+            if (currentRoom != null) {
+                setRoomData(currentRoom);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-
 }

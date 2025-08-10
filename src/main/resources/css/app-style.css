@@ -50,31 +50,11 @@
     -fx-border-width: 2;
 }
 
-/* ========== TABLE VIEW (Đơn giản, gọn) ========== */
-.table-view {
-    -fx-background-color: #fff;
-    -fx-border-color: #dee2e6;
-    -fx-border-radius: 4;
-    -fx-font-size: 14px;
-    -fx-padding: 4;
-    -fx-table-cell-border-color: transparent; /* bỏ đường viền cell rối mắt */
-    -fx-table-header-border-color: transparent;
+.comboBox:disabled, .datePicker:disabled, .textField:disabled, .textArea:disabled {
+    -fx-opacity: 1.0;
+    -fx-text-fill: -fx-text-inner-color;
+    -fx-background-color: white;
 }
-
-.table-view .column-header {
-    -fx-background-color: grey;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
-    -fx-padding: 8 0;
-    -fx-border-radius: 4 4 0 0;
-}
-
-.table-view .table-cell {
-    -fx-padding: 6 10;
-    -fx-alignment: center-left;
-}
-
 /* ========== SPINNER (Đơn giản, gọn) ========== */
 .spinner {
     -fx-background-color: white;

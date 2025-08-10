@@ -9,7 +9,7 @@ public class TestDbConnection {
     public static void main(String[] args) {
         String url = "jdbc:sqlserver://localhost:1433;databaseName=cinema_management;encrypt=true;trustServerCertificate=true;";
         String user = "sa";
-        String password = "sqladmin";
+        String password = "sql";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
             System.out.println("Kết nối thành công!");
