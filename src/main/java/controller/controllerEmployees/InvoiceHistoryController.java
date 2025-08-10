@@ -526,7 +526,7 @@ public class InvoiceHistoryController {
                 String seatNumber = seatRs.getString("seatRow") + seatRs.getInt("seatColumn");
                 String seatType = seatRs.getString("seatTypeName");
                 double price = seatRs.getDouble("price");
-                content.append(String.format("Seat %s (%s): %.0f VND\n", seatNumber, seatType, price));
+                content.append(String.format("seats %s (%s): %.0f VND\n", seatNumber, seatType, price));
             }
 
             // Get service information

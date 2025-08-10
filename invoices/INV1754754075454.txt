@@ -1,40 +1,39 @@
 =====================================
-           PAYMENT INVOICE           
-         CGV Xuan Khanh Cinema      
+          PAYMENT INVOICE       
+         Xuan Khanh CGV   
 =====================================
 
-Invoice Number: INV1754588927266
-Date & Time: 08/08/2025 00:48:54
-Employee: Pham The Duyet
+Invoice number: INV1754754075454
+Date & Time: 09/08/2025 22:41:15
+Staff: Pham The Duyet (ID: EMP002)
 
 -------------------------------------
-          MOVIE INFORMATION         
+        MOVIE INFORMATION            
 -------------------------------------
 Movie: Titanic
-Showtime: 2025-08-08 08:00:00.0000000 - 11:00:00.0000000
-Room: Room R001
+Showtime: 2025-08-09 08:00:00 - 11:30:00
+Room: Room Room 1
 
 -------------------------------------
-           TICKET DETAILS           
+        TICKET DETAILS              
 -------------------------------------
-Seat D6 (VIP): 30 VND
+Seat A2 (Standard): 0 VND
 
 -------------------------------------
-          LOCKER INFORMATION        
+        LOCKER INFORMATION         
 -------------------------------------
-Locker L002 - PIN: 9295
-Description: Buồi giả
-
-=====================================
-TOTAL: 30 VND
-=====================================
-
--------------------------------------
-         PAYMENT (CASH)               
--------------------------------------
-Amount Received: 30 VND
-Change: 0 VND
+Locker: Not used
 
 =====================================
-      THANK YOU FOR YOUR VISIT      
+Total: 0 VND
+=====================================
+
+-------------------------------------
+        PAYMENT (CASH)      
+-------------------------------------
+Amount received: 0 VND
+Change: 0 VND
+
+=====================================
+     THANK YOU FOR YOUR SUPPORT    
 =====================================

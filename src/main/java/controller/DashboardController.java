@@ -3,11 +3,17 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+<<<<<<< HEAD
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.layout.AnchorPane;
+=======
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+>>>>>>> 44fab4a810779ded600d5ec37ab3c472deb80785
 
 import java.io.IOException;
 
@@ -163,6 +169,19 @@ public class DashboardController {
     }
 
     @FXML
+<<<<<<< HEAD
+    private void onLockerClicked() { loadUI("/views/fxml_Manager/Locker/LockerList.fxml");}
+
+    @FXML
+    private void onLogoutClicked(ActionEvent event) {
+        try {
+            Node source = (Node) event.getSource();
+            Parent root = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/login.fxml"));
+            source.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+=======
     void onLockerClickedbyEmp(ActionEvent event) {
 
         System.out.println("Employee clicked Locker");
@@ -189,5 +208,6 @@ public class DashboardController {
     @FXML
     void onLogoutClicked(ActionEvent event) {
         loadUI("/views/fxml_Admin/Login.fxml");
+>>>>>>> 44fab4a810779ded600d5ec37ab3c472deb80785
     }
 }

@@ -13,6 +13,7 @@ import models.*;
 import utils.Session;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -95,8 +96,11 @@ public class LockerController {
 
         Showtime showtime = (Showtime) bookingData.get("showtime");
         List<Map<String, Object>> seats = (List<Map<String, Object>>) bookingData.get("selectedSeats");
-        Double seatsTotal = (Double) bookingData.get("seatsTotalPrice");
-        Double addonsTotal = (Double) bookingData.get("addonsTotalPrice");
+
+        // Handle both BigDecimal and Double for prices
+        BigDecimal seatsTotal = convertToBigDecimal(bookingData.get("seatsTotalPrice"));
+        BigDecimal addonsTotal = convertToBigDecimal(bookingData.get("addonsTotalPrice"));
+
         List<Service> selectedAddons = (List<Service>) bookingData.get("selectedAddons");
 
         if (showtime != null && seats != null) {
@@ -131,9 +135,10 @@ public class LockerController {
             }
             addonsLabel.setText(addonsInfo.toString());
 
-            // Update total price
-            double totalPrice = (seatsTotal != null ? seatsTotal : 0) + (addonsTotal != null ? addonsTotal : 0);
-            totalPriceLabel.setText("Total: " + String.format("%.0f VND", totalPrice));
+            // Update total price - use BigDecimal arithmetic
+            BigDecimal totalPrice = (seatsTotal != null ? seatsTotal : BigDecimal.ZERO)
+                    .add(addonsTotal != null ? addonsTotal : BigDecimal.ZERO);
+            totalPriceLabel.setText("Total: " + String.format("%.0f VND", totalPrice.doubleValue()));
         } else {
             movieTitleLabel.setText("No booking information.");
             showtimeLabel.setText("");
@@ -142,6 +147,38 @@ public class LockerController {
             addonsLabel.setText("");
             totalPriceLabel.setText("Please go back to select a ticket.");
         }
+    }
+
+    /**
+     * Helper method to convert various number types to BigDecimal
+     */
+    private BigDecimal convertToBigDecimal(Object value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
+        if (value instanceof Double) {
+            return BigDecimal.valueOf((Double) value);
+        }
+        if (value instanceof Float) {
+            return BigDecimal.valueOf((Float) value);
+        }
+        if (value instanceof Integer) {
+            return BigDecimal.valueOf((Integer) value);
+        }
+        if (value instanceof Long) {
+            return BigDecimal.valueOf((Long) value);
+        }
+        if (value instanceof String) {
+            try {
+                return new BigDecimal((String) value);
+            } catch (NumberFormatException e) {
+                return BigDecimal.ZERO;
+            }
+        }
+        return BigDecimal.ZERO;
     }
 
     private void loadAllLockers() {

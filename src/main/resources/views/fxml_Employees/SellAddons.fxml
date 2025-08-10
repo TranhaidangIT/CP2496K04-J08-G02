@@ -58,10 +58,10 @@
         <Button fx:id="removeFromCartButton" layoutX="865.0" layoutY="369.0" onAction="#handleRemoveFromCart" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Remove from Cart" />
 
         <!-- Total Amount -->
-        <Label fx:id="totalLabel" layoutX="750.0" layoutY="410.0" prefHeight="69.0" prefWidth="350.0" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #f8f9fa; -fx-padding: 10; -fx-border-color: #dee2e6; -fx-border-radius: 5; -fx-background-radius: 5;" text="Total: 0 VND" wrapText="true" />
+        <Label fx:id="totalLabel" layoutX="750.0" layoutY="410.0" prefHeight="127.0" prefWidth="350.0" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #f8f9fa; -fx-padding: 10; -fx-border-color: #dee2e6; -fx-border-radius: 5; -fx-background-radius: 5;" text="Total: 0 VND" wrapText="true" />
 
         <!-- Action Buttons -->
-        <HBox layoutX="749.0" layoutY="537.0" spacing="10.0">
+        <HBox layoutX="749.0" layoutY="570.0" spacing="10.0">
             <children>
                 <Button fx:id="backToSeatsButton" onAction="#handleBackToSeats" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white;" text="Back" />
                 <Button fx:id="skipAddonsButton" onAction="#handleSkipAddons" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Skip" />

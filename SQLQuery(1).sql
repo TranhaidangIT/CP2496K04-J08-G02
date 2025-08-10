@@ -92,6 +92,7 @@ CREATE TABLE services (
     serviceName NVARCHAR(100) NOT NULL,
     price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
     categoryId INT NOT NULL,
+	img VARCHAR(255),
     createdAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (categoryId) REFERENCES serviceCategories(categoryId)
 );
@@ -129,14 +130,20 @@ CREATE TABLE lockerHistory (
     FOREIGN KEY (lockerId) REFERENCES lockers(lockerId)
 );
 
+<<<<<<< HEAD
+=======
 --SEAT TYPES
+>>>>>>> 44fab4a810779ded600d5ec37ab3c472deb80785
 CREATE TABLE seatTypes (
     seatTypeId INT PRIMARY KEY,
     seatTypeName VARCHAR(50),
     price DECIMAL(10,2)
 );
 
+<<<<<<< HEAD
+=======
 --SEATS
+>>>>>>> 44fab4a810779ded600d5ec37ab3c472deb80785
 CREATE TABLE seats (
     seatId INT PRIMARY KEY,
     roomId INT,
@@ -144,7 +151,7 @@ CREATE TABLE seats (
     seatColumn INT,
     seatTypeId INT,
     isActive BIT,
-    FOREIGN KEY (seatTypeId) REFERENCES SeatType(seatTypeId)
+    FOREIGN KEY (seatTypeId) REFERENCES seatTypes(seatTypeId)
 );
 
 -- TICKETS
@@ -166,7 +173,7 @@ CREATE TABLE ticketSeats (
     ticketId INT NOT NULL,
     seatId INT NOT NULL,
     FOREIGN KEY (ticketId) REFERENCES tickets(ticketId),
-    FOREIGN KEY (seatId) REFERENCES Seat(seatId)
+    FOREIGN KEY (seatId) REFERENCES seats(seatId)
 );
 
 -- TICKET SERVICES

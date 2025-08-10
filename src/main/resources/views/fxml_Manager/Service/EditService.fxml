@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="521.0" prefWidth="654.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditServiceController">
+    <children>
+        <AnchorPane layoutX="71.0" layoutY="27.0" prefHeight="455.0" prefWidth="500.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+            <children>
+                <Label layoutX="210.0" layoutY="14.0" text="Edit Service" textFill="#aa0000">
+                    <font><Font name="System Bold" size="24.0" /></font>
+                </Label>
+
+                <!-- Service Image -->
+                <ImageView fx:id="imgService" fitHeight="80.0" fitWidth="80.0" layoutX="210.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
+
+                <!-- Button to choose image -->
+                <Button fx:id="btnChooseImage" layoutX="210.0" layoutY="140.0" onAction="#handleChooseImage" prefHeight="26.0" prefWidth="94.0" text="Choose Image">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Button>
+
+                <AnchorPane layoutX="50.0" layoutY="180.0" prefHeight="180.0" prefWidth="400.0" stylesheets="@../../../css/app-style.css">
+                    <children>
+                        <Label layoutX="35.0" layoutY="19.0" text="Service Name:">
+                            <font><Font size="16.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtServiceName" layoutX="140.0" layoutY="6.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
+
+                        <Label layoutX="35.0" layoutY="69.0" text="Price ($):">
+                            <font><Font size="16.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtPrice" layoutX="140.0" layoutY="56.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
+
+                        <Label layoutX="35.0" layoutY="121.0" text="Category:">
+                            <font><Font size="16.0" /></font>
+                        </Label>
+                        <ComboBox fx:id="cbCategory" layoutX="140.0" layoutY="108.0" prefHeight="40.0" prefWidth="250.0" styleClass="comboBox" />
+
+                        <Label layoutX="35.0" layoutY="173.0" text="Image Path:">
+                            <font><Font size="16.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtImagePath" editable="false" layoutX="140.0" layoutY="166.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
+                    </children>
+                </AnchorPane>
+
+                <!-- Buttons -->
+                <Button fx:id="btnCancel" layoutX="379.0" layoutY="394.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+                    <font><Font size="16.0" /></font>
+                </Button>
+
+                <Button fx:id="btnDelete" layoutX="269.0" layoutY="394.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="35.0" prefWidth="100.0" styleClass="btnDelete" stylesheets="@../../../css/app-style.css" text="Delete">
+                    <font><Font size="16.0" /></font>
+                </Button>
+
+                <Button fx:id="btnUpdate" layoutX="160.0" layoutY="394.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Update">
+                    <font><Font size="16.0" /></font>
+                </Button>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>
