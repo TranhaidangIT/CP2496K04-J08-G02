@@ -100,7 +100,7 @@ public class MovieDetailController {
         descriptionArea.setText(movie.getDescription());
 
         String posterFile = movie.getPoster();
-        var stream = getClass().getResourceAsStream("/images/" + posterFile);
+        var stream = getClass().getResourceAsStream("images" + posterFile);
 
         if (stream != null) {
             Image img = new Image(stream);
@@ -115,13 +115,13 @@ public class MovieDetailController {
     private void loadShowtimesFromDatabase(Movie movie) {
         showtimePane.getChildren().clear();
         confirmButton.setDisable(true);
-        roomLabel.setText("No showtime selected"); // Reset roomLabel when loading showtimes
+        roomLabel.setText("No showtime selected");
 
         try (Connection conn = DBConnection.getConnection()) {
             String query = "SELECT showtimeId, roomId, showDate, showTime, endTime FROM showtimes WHERE movieId = ? AND showDate = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, movie.getMovieId());
-            stmt.setString(2, LocalDate.now().toString()); // Fetch showtimes for the current date
+            stmt.setString(2, LocalDate.now().toString());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

@@ -1,6 +1,8 @@
 package dao;
 
 import configs.DBConnection;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import models.ScreeningRoom;
 
 import java.sql.*;
@@ -91,85 +93,39 @@ public class ScreeningRoomDAO {
         return -1;
     }
 
-    //Delete Room
     public static boolean deleteRoomById(int roomId) {
-        String deleteTicketSeatsSQL = """
-        DELETE ts
-        FROM ticketSeats ts
-        JOIN seats s ON ts.seatId = s.seatId
-        WHERE s.roomId = ?
-    """;
-
-        String deleteTicketsSQL = """
-        DELETE t
-        FROM tickets t
-        JOIN showtimes st ON t.showtimeId = st.showtimeId
-        WHERE st.roomId = ?
-    """;
-
-        String deleteShowtimesSQL = "DELETE FROM showtimes WHERE roomId = ?";
         String deleteSeatsSQL = "DELETE FROM seats WHERE roomId = ?";
         String deleteRoomSQL = "DELETE FROM screeningRooms WHERE roomId = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
-            System.out.println("Starting to delete room with roomId = " + roomId);
 
             try (
-                    PreparedStatement deleteTicketSeatsStmt = conn.prepareStatement(deleteTicketSeatsSQL);
-                    PreparedStatement deleteTicketsStmt = conn.prepareStatement(deleteTicketsSQL);
-                    PreparedStatement deleteShowtimesStmt = conn.prepareStatement(deleteShowtimesSQL);
                     PreparedStatement deleteSeatsStmt = conn.prepareStatement(deleteSeatsSQL);
                     PreparedStatement deleteRoomStmt = conn.prepareStatement(deleteRoomSQL)
             ) {
-                // Step 1: Delete ticketSeats
-                deleteTicketSeatsStmt.setInt(1, roomId);
-                int deletedTicketSeats = deleteTicketSeatsStmt.executeUpdate();
-                System.out.println("Deleted " + deletedTicketSeats + " ticket seat records");
-
-                // Step 2: Delete tickets
-                deleteTicketsStmt.setInt(1, roomId);
-                int deletedTickets = deleteTicketsStmt.executeUpdate();
-                System.out.println("Deleted " + deletedTickets + " tickets");
-
-                // Step 3: Delete showtimes
-                deleteShowtimesStmt.setInt(1, roomId);
-                int deletedShowtimes = deleteShowtimesStmt.executeUpdate();
-                System.out.println("Deleted " + deletedShowtimes + " showtimes");
-
-                // Step 4: Delete seats
+                // Delete seats first
                 deleteSeatsStmt.setInt(1, roomId);
-                int deletedSeats = deleteSeatsStmt.executeUpdate();
-                System.out.println("Deleted " + deletedSeats + " seats");
+                deleteSeatsStmt.executeUpdate();
 
-                // Step 5: Delete room
+                // Delete room
                 deleteRoomStmt.setInt(1, roomId);
                 int deletedRooms = deleteRoomStmt.executeUpdate();
 
-                if (deletedRooms > 0) {
-                    System.out.println("Room with roomId = " + roomId + " was successfully deleted");
-                } else {
-                    System.out.println("No room found with roomId = " + roomId);
-                }
-
                 conn.commit();
                 return deletedRooms > 0;
-
             } catch (SQLException e) {
                 conn.rollback();
-                System.out.println("Error while deleting room: " + e.getMessage());
                 e.printStackTrace();
                 return false;
-            } finally {
-                conn.setAutoCommit(true);
             }
-
         } catch (SQLException e) {
-            System.out.println("Database connection error: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
+
+
 
 
     public static boolean updateRoom(ScreeningRoom currentRoom) {
@@ -220,5 +176,69 @@ public class ScreeningRoomDAO {
         }
     }
 
+
+    public static ScreeningRoom getRoomByName(String roomName) {
+        String sql = """
+        SELECT sr.*, rt.typeName
+        FROM screeningRooms sr
+        JOIN roomTypes rt ON sr.roomTypeId = rt.roomTypeId
+        WHERE sr.roomNumber = ?
+    """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, roomName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    ScreeningRoom room = new ScreeningRoom();
+                    room.setRoomId(rs.getInt("roomId"));
+                    room.setRoomNumber(rs.getString("roomNumber"));
+                    room.setRoomTypeId(rs.getInt("roomTypeId"));
+                    room.setSeatingLayout(rs.getString("seatingLayout"));
+                    room.setTotalCapacity(rs.getInt("totalCapacity"));
+                    room.setEquipment(rs.getString("equipment"));
+                    room.setRoomStatus(rs.getString("roomStatus"));
+                    room.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                    room.setTypeName(rs.getString("typeName"));
+                    return room;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ScreeningRoom getRoomById(int roomId) {
+        String sql = """
+        SELECT sr.*, rt.typeName
+        FROM screeningRooms sr
+        JOIN roomTypes rt ON sr.roomTypeId = rt.roomTypeId
+        WHERE sr.roomId = ?
+    """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, roomId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    ScreeningRoom room = new ScreeningRoom();
+                    room.setRoomId(rs.getInt("roomId"));
+                    room.setRoomNumber(rs.getString("roomNumber"));
+                    room.setRoomTypeId(rs.getInt("roomTypeId"));
+                    room.setSeatingLayout(rs.getString("seatingLayout"));
+                    room.setTotalCapacity(rs.getInt("totalCapacity"));
+                    room.setEquipment(rs.getString("equipment"));
+                    room.setRoomStatus(rs.getString("roomStatus"));
+                    room.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                    room.setTypeName(rs.getString("typeName"));
+                    return room;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

@@ -5,74 +5,162 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="973.0" styleClass="bg-white" stylesheets="@../../../css/manager.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddShowtimeController">
+<AnchorPane prefHeight="768.0" prefWidth="960.0" styleClass="bg-white" stylesheets="@../../../css/manager.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddShowtimeController">
 
    <children>
 
 
-      <Button id="btnCancel" fx:id="btnCancel" layoutX="853.0" layoutY="707.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+      <Button id="btnCancel" fx:id="btnCancel" layoutX="846.0" layoutY="718.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button id="btnAdd" fx:id="btnInsert" layoutX="734.0" layoutY="707.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnInsert" stylesheets="@../../../css/app-style.css" text="Insert">
+      <Button id="btnAdd" fx:id="btnInsert" layoutX="727.0" layoutY="718.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnInsert" stylesheets="@../../../css/app-style.css" text="Insert">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <AnchorPane layoutX="16.0" layoutY="14.0" prefHeight="312.0" prefWidth="941.0" styleClass="bg-white" stylesheets="@../../../css/app-style.css">
+      <AnchorPane layoutX="9.0" layoutY="14.0" prefHeight="682.0" prefWidth="942.0" styleClass="bg-white" stylesheets="@../../../css/app-style.css">
          <children>
-
-            <!-- LEFT: Movie, Room, Date selection -->
-            <VBox layoutX="210.0" layoutY="31.0" prefHeight="249.0" prefWidth="471.0" spacing="20" stylesheets="@../../../css/app-style.css">
-               <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="35.0" prefWidth="474.0" style="-fx-alignment: center;" styleClass="titleSub" text="Add Showtime Details" />
-
-               <HBox spacing="10">
-                  <Label prefWidth="80" styleClass="labelCaption" text="Movie:" />
-                  <ComboBox fx:id="movieComboBox" prefHeight="51.0" prefWidth="315.0" styleClass="comboBox" />
-               </HBox>
-
-                  <HBox spacing="10">
-                  <Label prefWidth="80" styleClass="labelCaption" text="Room:" />
-                  <ComboBox fx:id="roomComboBox" prefHeight="51.0" prefWidth="321.0" styleClass="comboBox" />
-               </HBox>
-
-               <HBox prefWidth="397.0" spacing="10">
-                  <Label prefWidth="80" styleClass="labelCaption" text="Date:" />
-                  <DatePicker fx:id="datePicker" prefHeight="51.0" prefWidth="324.0" styleClass="datePicker" />
-               </HBox>
-            </VBox>
-         </children>
-      </AnchorPane>
-      <AnchorPane layoutX="15.0" layoutY="337.0" prefHeight="346.0" prefWidth="942.0" styleClass="bg-white">
-         <children>
-
-                  <!-- RIGHT: Time slots and controls -->
-            <VBox layoutX="11.0" layoutY="11.0" prefHeight="324.0" prefWidth="919.0" spacing="20" stylesheets="@../../../css/app-style.css">
-               <Label prefHeight="35.0" prefWidth="934.0" style="-fx-alignment: center;" styleClass="titleSub" text="Manage Time Slots" />
-
-                     <!-- Existing time slots -->
-               <GridPane fx:id="timeSlotGrid" hgap="10" vgap="10">
-                  <padding>
-                     <Insets right="5.0" />
-                  </padding></GridPane>
-
-
-               <!-- Add time slot -->
-               <HBox alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="874.0" spacing="10">
-                  <Label styleClass="labelCaption" text="New Time:" />
-                  <Spinner fx:id="hourSpinner" prefHeight="34.0" prefWidth="97.0" />
-                  <Label text=":" />
-                  <Spinner fx:id="minuteSpinner" prefHeight="34.0" prefWidth="90.0" />
-                  <Button fx:id="addTimeButton" onAction="#handleAddTimeSlot" style="-fx-background-radius: 25px;" styleClass="btnAddTimeSlot" stylesheets="@../../../css/manager.css" text="Add Time Slot" />
-               </HBox>
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="233.0" layoutY="14.0" prefHeight="35.0" prefWidth="474.0" style="-fx-alignment: center;" styleClass="titleSub" text="Add Showtime" />
+            <VBox layoutX="3.0" layoutY="67.0" prefHeight="607.0" prefWidth="935.0" spacing="20.0">
+               <children>
+                  <HBox prefHeight="50.0" prefWidth="935.0">
+                     <children>
+                        <HBox prefHeight="50.0" prefWidth="294.0" spacing="10">
+                           <children>
+                              <Label prefHeight="45.0" prefWidth="48.0" styleClass="labelCaption" text="Room:" />
+                              <ComboBox fx:id="cbRoomList" editable="true" onAction="#handleSelectRoom" prefHeight="30.0" prefWidth="226.0" styleClass="comboBox" />
+                           </children>
+                           <padding>
+                              <Insets left="15.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="50.0" prefWidth="310.0" spacing="10">
+                           <children>
+                              <Label prefHeight="45.0" prefWidth="38.0" styleClass="labelCaption" text="Date:" />
+                              <DatePicker fx:id="pickerDate" onAction="#handleDatePicker" prefHeight="30.0" prefWidth="251.0" styleClass="datePicker" />
+                           </children>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="50.0" prefWidth="302.0" spacing="10">
+                           <children>
+                              <Label prefHeight="46.0" prefWidth="79.0" styleClass="labelCaption" text="Break Time:" />
+                              <TextField fx:id="tfBreakTime" editable="false" prefHeight="44.0" prefWidth="68.0" styleClass="textField" />
+                              <Label prefHeight="43.0" prefWidth="26.0" text="min">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="100.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="541.0" prefWidth="935.0" spacing="15.0">
+                     <children>
+                        <VBox prefHeight="495.0" prefWidth="451.0" spacing="15.0" styleClass="bg-white">
+                           <children>
+                              <Label prefHeight="37.0" prefWidth="451.0" style="-fx-alignment: center;" styleClass="labelCaption" text="Existing Showtimes">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets top="5.0" />
+                                 </padding>
+                              </Label>
+                              <ScrollPane prefHeight="486.0" prefWidth="451.0">
+                                 <content>
+                                    <VBox fx:id="vboxShowtimeExistingList" prefHeight="486.0" prefWidth="448.0">
+                                       <children>
+                                          <HBox fx:id="hboxShowtimeExit" prefHeight="38.0" prefWidth="446.0" spacing="10.0">
+                                             <children>
+                                                <Label fx:id="txtTimeExisting" prefHeight="40.0" prefWidth="0.0" />
+                                                <Label fx:id="txtMovieExisting" prefHeight="38.0" prefWidth="0.0" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                           <HBox.margin>
+                              <Insets left="15.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox fx:id="paneTimeSlot" prefHeight="370.0" prefWidth="450.0" spacing="10.0" stylesheets="@../../../css/app-style.css">
+                           <children>
+                              <Label prefHeight="30.0" prefWidth="475.0" style="-fx-alignment: center;" styleClass="labelCaption" text="Time Slots" />
+                              <HBox prefHeight="46.0" prefWidth="450.0" spacing="10">
+                                 <children>
+                                    <Label prefHeight="46.0" prefWidth="63.0" styleClass="labelCaption" text="Movie:">
+                                       <padding>
+                                          <Insets left="15.0" />
+                                       </padding>
+                                    </Label>
+                                    <ComboBox fx:id="cbMovieList" editable="true" onAction="#handleSelectMovie" prefHeight="44.0" prefWidth="378.0" styleClass="comboBox" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="48.0" prefWidth="450.0" spacing="10">
+                                 <children>
+                                    <Label prefHeight="46.0" prefWidth="64.0" styleClass="labelCaption" text="Duration:" />
+                                    <TextField fx:id="tfDuration" prefHeight="44.0" prefWidth="75.0" styleClass="textField" />
+                                    <Label prefHeight="43.0" prefWidth="35.0" text="mins">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <padding>
+                                    <Insets left="15.0" />
+                                 </padding>
+                              </HBox>
+                              <ScrollPane fx:id="scrTimeSlot" prefHeight="180.0" prefWidth="450.0">
+                                 <content>
+                                    <AnchorPane fx:id="paneTimeSlots" minHeight="0.0" minWidth="0.0" prefHeight="175.0" prefWidth="450.0">
+                                       <children>
+                                          <GridPane fx:id="timeSlotGrid" hgap="10" vgap="10">
+                                             <padding>
+                                                <Insets right="5.0" />
+                                             </padding>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </ScrollPane>
+                              <HBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="450.0" spacing="10">
+                                 <children>
+                                    <Label styleClass="labelCaption" text="New Time:" />
+                                    <Spinner fx:id="hourSpinner" editable="true" prefHeight="34.0" prefWidth="97.0" />
+                                    <Label text=":" />
+                                    <Spinner fx:id="minuteSpinner" editable="true" prefHeight="34.0" prefWidth="90.0" />
+                                    <Button fx:id="addTimeButton" onAction="#handleAddTimeSlot" style="-fx-background-radius: 25px;" styleClass="btnAddTimeSlot" stylesheets="@../../../css/manager.css" text="Add Time Slot" />
+                                 </children>
+                              </HBox>
+                              <AnchorPane prefHeight="68.0" prefWidth="450.0">
+                                 <children>
+                                    <Button fx:id="btnSaveSlotTime" layoutX="155.0" layoutY="15.0" mnemonicParsing="false" onAction="#handleSaveTimeSlot" prefHeight="38.0" prefWidth="139.0" styleClass="btnInsert" text="💾 Save Time Slot" />
+                                 </children>
+                              </AnchorPane>
+                              <Label styleClass="warningText" text="Please save the time slot before inserting." />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
             </VBox>
          </children>
       </AnchorPane>

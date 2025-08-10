@@ -84,7 +84,7 @@ public class ListMoviesController implements Initializable {
         allListViews.add(ratingListView);
         allListViews.add(languageListView);
 
-        ObservableList<String> genres = FXCollections.observableArrayList("Action", "Romantic", "Drama", "Horror", "Comedy");
+        ObservableList<String> genres = FXCollections.observableArrayList("Action", "Drama", "Comedy", "Horror", "Romance");
         genreListView.setItems(genres);
         genreListView.setVisible(false);
         for (String genre : genres) {
@@ -111,7 +111,7 @@ public class ListMoviesController implements Initializable {
         ratingListView.setCellFactory(CheckBoxListCell.forListView(item -> selectedMap.get(item)));
         rate.forEach(item -> selectedMap.get(item).addListener((obs, wasSelected, isSelected) -> filterMovies()));
 
-        ObservableList<String> languages = FXCollections.observableArrayList("English", "Tiếng Việt");
+        ObservableList<String> languages = FXCollections.observableArrayList("English", "Vietnamese", "Korean", "Japanese");
         languageListView.setItems(languages);
         languageListView.setVisible(false);
         for (String language : languages) {
@@ -172,11 +172,11 @@ public class ListMoviesController implements Initializable {
         if (imgStream != null) {
             posterView.setImage(new Image(imgStream));
         } else {
-            InputStream defaultStream = getClass().getResourceAsStream("/images/Arisu.gif");
+            InputStream defaultStream = getClass().getResourceAsStream("/images/default-poster.png");
             if (defaultStream != null) {
                 posterView.setImage(new Image(defaultStream));
             } else {
-                System.err.println("Ảnh mặc định Arisu.gif không tồn tại trong /images/");
+                System.err.println("not found poster");
             }
         }
 
@@ -210,7 +210,7 @@ public class ListMoviesController implements Initializable {
             AnchorPane.setLeftAnchor(root, 0.0);
             AnchorPane.setRightAnchor(root, 0.0);
         } catch (IOException e) {
-            System.err.println("Lỗi khi tải MovieDetail.fxml: " + e.getMessage());
+            System.err.println("Error load MovieDetail.fxml: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -264,7 +264,7 @@ public class ListMoviesController implements Initializable {
             }
 
             List<String> selectedGenres = new ArrayList<>();
-            for (String genre : Arrays.asList("Action", "Romantic", "Drama", "Horror", "Comedy")) {
+            for (String genre : Arrays.asList("Action", "Drama", "Comedy", "Horror", "Romance")) {
                 BooleanProperty prop = selectedMap.get(genre);
                 if (prop != null && prop.get()) selectedGenres.add(genre);
             }

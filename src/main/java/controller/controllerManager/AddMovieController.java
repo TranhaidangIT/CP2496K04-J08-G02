@@ -48,7 +48,7 @@ public class AddMovieController {
     @FXML
     private void handleChooseFile(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Chọn ảnh poster phim");
+        fileChooser.setTitle("Choose image file");
 
         FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter(
                 "Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif"
@@ -92,7 +92,6 @@ public class AddMovieController {
                 return;
             }
 
-            // Optional: copy file to /images
             if (selectedFile != null) {
                 File destDir = new File("images");
                 if (!destDir.exists()) destDir.mkdirs();

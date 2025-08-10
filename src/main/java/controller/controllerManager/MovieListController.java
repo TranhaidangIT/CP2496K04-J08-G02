@@ -161,24 +161,22 @@ public class MovieListController {
         datePicker.setValue(movie.getReleasedDate());
         txtDescription.setText(movie.getDescription());
 
+        String defaultImagePath = getClass().getResource("/images/default-poster.png").toExternalForm();
 
         if (movie.getPoster() != null && !movie.getPoster().isEmpty()) {
-            String posterPath = "/images" + movie.getPoster();
-            URL imageUrl = getClass().getResource(posterPath);
-            if (imageUrl != null) {
-                Image image = new Image(imageUrl.toExternalForm());
-                posterImage.setImage(image);
+            File file = new File("images/" + movie.getPoster());
+            if (file.exists()) {
+                posterImage.setImage(new Image(file.toURI().toString()));
             } else {
-                posterImage.setImage(new Image(getClass().getResource("/images/default-poster.png").toExternalForm()));
+                posterImage.setImage(new Image(defaultImagePath));
             }
         } else {
-            posterImage.setImage(new Image(getClass().getResource("/images/default-poster.png").toExternalForm()));
+            posterImage.setImage(new Image(defaultImagePath));
         }
+
     }
 
-
     // ALERT HELPERS
-
     private void showWarningAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);

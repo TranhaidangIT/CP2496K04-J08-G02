@@ -401,7 +401,7 @@ public class InvoiceHistoryController {
 
             String fileName = invoicesDir + "/" + invoice.getInvoiceNumber() + ".txt";
 
-            // Get detailed invoice information from database
+            // Get detailed invoice information from db
             String invoiceContent = generateInvoiceContent(invoice);
 
             // Write to file
@@ -509,8 +509,8 @@ public class InvoiceHistoryController {
                 SELECT seat.seatRow, seat.seatColumn, st.seatTypeName, st.price
                 FROM tickets t
                 JOIN ticketSeats ts ON t.ticketId = ts.ticketId
-                JOIN Seat seat ON ts.seatId = seat.seatId
-                JOIN SeatType st ON seat.seatTypeId = st.seatTypeId
+                JOIN seats seat ON ts.seatId = seat.seatId
+                JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
                 WHERE t.ticketCode = ?
                 """;
 

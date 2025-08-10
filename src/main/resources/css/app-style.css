@@ -50,26 +50,85 @@
     -fx-border-width: 2;
 }
 
-/* ========== TABLE VIEW ========== */
+/* ========== TABLE VIEW (Đơn giản, gọn) ========== */
 .table-view {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #fff;
     -fx-border-color: #dee2e6;
-    -fx-border-width: 1;
     -fx-border-radius: 4;
-    -fx-padding: 4;
     -fx-font-size: 14px;
+    -fx-padding: 4;
+    -fx-table-cell-border-color: transparent; /* bỏ đường viền cell rối mắt */
+    -fx-table-header-border-color: transparent;
 }
 
 .table-view .column-header {
     -fx-background-color: grey;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-alignment: CENTER;
+    -fx-alignment: center;
+    -fx-padding: 8 0;
+    -fx-border-radius: 4 4 0 0;
 }
 
 .table-view .table-cell {
-    -fx-padding: 6px;
-    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 6 10;
+    -fx-alignment: center-left;
+}
+
+/* ========== SPINNER (Đơn giản, gọn) ========== */
+.spinner {
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 4;
+    -fx-padding: 2;
+    -fx-font-size: 16px;
+    -fx-text-fill: #212529;
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-text-fill: #212529;
+    -fx-font-weight: normal;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: #e9ecef;
+    -fx-padding: 3 6;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: #dee2e6;
+}
+
+/* ========== SCROLL PANE (Đơn giản, gọn) ========== */
+.scroll-pane {
+    -fx-background-color: #f8f9fa;
+}
+
+.scroll-pane > .viewport * {
+    -fx-font-size: 16px;
+}
+
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 8;
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 8;
+    -fx-background-color: transparent;
+}
+
+.scroll-barIncrement-button,
+.scroll-barDecrement-button {
+    -fx-opacity: 0;
+    -fx-padding: 0;
 }
 
 
@@ -139,15 +198,17 @@
     -fx-background-color: #880000;
 }
 
-/* Refresh / Load */
 .btnRefresh {
-    -fx-background-color: #17a2b8;
-    -fx-background-radius: 25px;
-    -fx-text-fill: white;
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-text-fill: black;
+    -fx-font-weight: normal;
+    -fx-cursor: hand;
 }
+
 .btnRefresh:hover {
-    -fx-background-color: #138496;
+    -fx-font-weight: bold;
 }
+
 /* Find */
 .btnFind {
     -fx-background-color: #0056b3;
@@ -159,48 +220,4 @@
 }
 .btnFind:hover {
     -fx-background-color: #004494;
-}
-
-.spinner {
-    -fx-background-color: white;
-    -fx-border-color: #ced4da;
-    -fx-border-width: 1.5px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-padding: 2px;
-    -fx-font-size: 16px;
-    -fx-text-fill: #212529;
-}
-
-/* Text bên trong spinner */
-.spinner .text-field {
-    -fx-background-color: white;
-    -fx-border-width: 0;
-    -fx-text-fill: #212529;
-    -fx-font-weight: normal;
-}
-
-.spinner .increment-arrow-button,
-.spinner .decrement-arrow-button {
-    -fx-background-color: #e9ecef;
-    -fx-padding: 3px;
-}
-
-.spinner .increment-arrow-button:hover,
-.spinner .decrement-arrow-button:hover {
-    -fx-background-color: #dee2e6;
-}
-
-
-
-/* ========== BUTTON CONTAINER (Align Right) ========== */
-.hboxButton-right {
-    -fx-alignment: center-right;
-    -fx-spacing: 10;
-}
-
-.warningText {
-    -fx-font-size: 14px;
-    -fx-text-fill: #dc3545; /* màu đỏ cảnh báo */
-    -fx-font-weight: normal;
 }

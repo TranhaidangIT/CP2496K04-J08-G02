@@ -45,6 +45,34 @@ public class MovieDAO {
         return movies;
     }
 
+    public static Movie getMovieByTitle(String title) {
+        String sql = "SELECT * FROM movies WHERE title = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, title);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Movie movie = new Movie();
+                    movie.setMovieId(rs.getInt("movieId"));
+                    movie.setTitle(rs.getString("title"));
+                    movie.setDuration(rs.getInt("duration"));
+                    movie.setGenre(rs.getString("genre"));
+                    movie.setDescription(rs.getString("description"));
+                    movie.setDirectedBy(rs.getString("directedBy"));
+                    movie.setLanguage(rs.getString("language"));
+                    movie.setPoster(rs.getString("poster"));
+                    movie.setAgeRating(rs.getString("ageRating"));
+                    movie.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+                    movie.setReleasedDate(rs.getDate("releaseDate").toLocalDate());
+                    return movie;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     /**
      * Insert a new movie into the database.
      * @param movie the movie object to insert
@@ -152,5 +180,26 @@ public class MovieDAO {
         }
 
         return false;
+    }
+
+    public static Movie getMovieById(int movieId) {
+        String sql = "SELECT movieId, title, duration FROM movies WHERE movieId = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, movieId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Movie m = new Movie();
+                    m.setMovieId(rs.getInt("movieId"));
+                    m.setTitle(rs.getString("title"));
+                    m.setDuration(rs.getInt("duration"));
+                    return m;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -14,6 +14,7 @@ public class Showtime {
     private LocalDateTime createdAt;
     private String movieTitle;
     private String roomName;
+    private String poster; //
 
     public Showtime() {
     }
@@ -21,7 +22,7 @@ public class Showtime {
     public Showtime(int showtimeId, int movieId, int roomId,
                     LocalDate showDate, LocalTime showTime,
                     LocalTime endTime, LocalDateTime createdAt,
-                    String movieTitle, String roomName) {
+                    String movieTitle, String roomName, String poster) {
         this.showtimeId = showtimeId;
         this.movieId = movieId;
         this.roomId = roomId;
@@ -31,6 +32,7 @@ public class Showtime {
         this.createdAt = createdAt;
         this.movieTitle = movieTitle;
         this.roomName = roomName;
+        this.poster = poster;
     }
 
     public int getShowtimeId() {
@@ -105,6 +107,14 @@ public class Showtime {
         this.roomName = roomName;
     }
 
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
+    }
+
     @Override
     public String toString() {
         return "Showtime{" +
@@ -117,6 +127,9 @@ public class Showtime {
                 ", createdAt=" + createdAt +
                 ", movieTitle='" + movieTitle + '\'' +
                 ", roomName='" + roomName + '\'' +
+                ", poster='" + poster + '\'' +
                 '}';
     }
+
+
 }

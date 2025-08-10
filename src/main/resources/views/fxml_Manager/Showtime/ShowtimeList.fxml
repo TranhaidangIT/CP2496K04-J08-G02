@@ -1,53 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="768.0" prefWidth="1124.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.ShowtimeListController">
-   <children>
-      <AnchorPane fx:id="paneShowtimeList" layoutX="17.0" layoutY="93.0" prefHeight="664.0" prefWidth="1090.0" styleClass="bg-white">
-         <children>
-            <ScrollPane fx:id="scrShowtimeItemList" layoutX="8.0" layoutY="77.0" prefHeight="581.0" prefWidth="1074.0">
-               <content>
-                  <VBox fx:id="showtimeItemList" prefHeight="578.0" prefWidth="1058.0" />
-               </content>
-            </ScrollPane>
-            <AnchorPane fx:id="tfFindShowtime" layoutX="725.0" layoutY="28.0" prefHeight="35.0" prefWidth="350.0" styleClass="search-bar" stylesheets="@../../../css/manager.css">
-               <children>
-                  <TextField fx:id="tfFind" layoutX="23.0" layoutY="2.0" prefHeight="31.0" prefWidth="285.0" styleClass="search-barTextField" stylesheets="@../../../css/manager.css" />
-                  <ImageView fx:id="btnFInd" fitHeight="18.0" fitWidth="18.0" layoutX="318.0" layoutY="9.0" onMouseClicked="#handleFindClick" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../icon/search.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </AnchorPane>
-            <Label layoutX="28.0" layoutY="32.0" styleClass="titleSub" text="List showtime" />
-         </children>
-         <stylesheets>
-            <URL value="@../../../css/manager.css" />
-            <URL value="@../../../css/app-style.css" />
-         </stylesheets>
-      </AnchorPane>
-      <Button fx:id="btnAdd" layoutX="365.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleAddNewShowtime" prefHeight="62.0" prefWidth="393.0" styleClass="bg-white" stylesheets="@../../../css/manager.css" text="Add New Showtime" textFill="GREEN">
+   <AnchorPane fx:id="paneShowtimeList" layoutX="7.0" layoutY="7.0" prefHeight="750.0" prefWidth="1100.0" styleClass="bg-white">
+      <stylesheets>
+         <URL value="@../../../css/manager.css" />
+         <URL value="@../../../css/app-style.css" />
+      </stylesheets>
+      <ScrollPane fx:id="scrShowtimeItemList" layoutX="8.0" layoutY="77.0" prefHeight="665.0" prefWidth="1074.0">
+         <VBox fx:id="showtimeItemList" prefHeight="667.0" prefWidth="1074.0" />
+      </ScrollPane>
+      <Label layoutX="23.0" layoutY="27.0" styleClass="titleSub" text="List showtime" />
+      <HBox layoutX="178.0" layoutY="19.0" prefHeight="44.0" prefWidth="652.0">
+         <HBox prefHeight="35.0" prefWidth="306.0">
+            <Label prefHeight="50.0" prefWidth="50.0" styleClass="labelCaption" text="Room" />
+            <ComboBox fx:id="cbRoomFilter" editable="true" prefHeight="38.0" prefWidth="256.0" styleClass="comboBox" />
+         </HBox>
+         <HBox prefHeight="44.0" prefWidth="348.0">
+            <padding>
+               <Insets left="20.0" />
+            </padding>
+            <Label prefHeight="47.0" prefWidth="50.0" styleClass="labelCaption" text="Date" />
+            <DatePicker fx:id="pickerDateFilter" prefHeight="40.0" prefWidth="258.0" styleClass="datePicker" />
+         </HBox>
+      </HBox>
+      <Button fx:id="btnAdd" layoutX="840.0" layoutY="19.0" mnemonicParsing="false" onAction="#handleAddNewShowtime" prefHeight="44.0" prefWidth="234.0" styleClass="bg-white" stylesheets="@../../../css/manager.css" text="Add Showtime" textFill="GREEN">
          <graphic>
-            <ImageView fitHeight="51.0" fitWidth="103.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../icon/add_to_queue.png" />
-               </image>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+               <Image url="@../../../icon/add_to_queue.png" />
             </ImageView>
          </graphic>
          <font>
             <Font name="System Bold" size="16.0" />
          </font>
       </Button>
-   </children>
+   </AnchorPane>
 </AnchorPane>

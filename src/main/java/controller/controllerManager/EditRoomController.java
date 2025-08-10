@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import models.RoomType;
 import models.ScreeningRoom;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class EditRoomController {
@@ -43,12 +44,37 @@ public class EditRoomController {
     }
 
     @FXML
-    void handleDelete(ActionEvent event) {
-        if (currentRoom != null) {
-            ScreeningRoomDAO.deleteRoomById(currentRoom.getRoomId());
+    void handleDelete(ActionEvent event) throws SQLException {
+        if (currentRoom == null) return;
+
+        // Confirm deletion
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirm Delete");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Are you sure you want to delete this room?");
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+            return;
+        }
+
+        boolean success = ScreeningRoomDAO.deleteRoomById(currentRoom.getRoomId());
+
+        if (success) {
+            Alert info = new Alert(Alert.AlertType.INFORMATION);
+            info.setTitle("Room Deleted");
+            info.setHeaderText(null);
+            info.setContentText("Room deleted successfully along with its seats.");
+            info.showAndWait();
             ((Stage) btnDelete.getScene().getWindow()).close();
+        } else {
+            Alert warn = new Alert(Alert.AlertType.WARNING);
+            warn.setTitle("Cannot Delete Room");
+            warn.setHeaderText(null);
+            warn.setContentText("This room has scheduled showtimes.\n" +
+                    "Please delete those showtimes or wait until they are finished.");
+            warn.showAndWait();
         }
     }
+
 
     @FXML
     void handleUpdate(ActionEvent event) {

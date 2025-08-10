@@ -163,7 +163,7 @@
 }
 
 .btnAddTimeSlot {
-    -fx-background-color: #28a745;
+    -fx-background-color: #FFCC66;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 16px;
@@ -175,7 +175,17 @@
 }
 
 .btnAddTimeSlot:hover {
-    -fx-background-color: #218838;
+    -fx-background-color: #FFB84D;
+}
+
+.btnSave {
+    -fx-background-color: #1e7e34;  /* xanh lá đậm */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.btnSave:hover {
+    -fx-background-color: #155724;  /* xanh lá đậm hơn khi hover */
 }
 
 .time-ticket {

@@ -1,6 +1,7 @@
 package controller.controllerManager;
 
 import dao.MovieDAO;
+import dao.ShowtimeDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -27,6 +28,8 @@ public class EditMovieController {
     private Movie movie;
     private File selectedFile;
     private MovieListController movieListController;
+
+    private final ShowtimeDAO showtimeDAO = new ShowtimeDAO();
 
     public void setMovieListController(MovieListController controller) {
         this.movieListController = controller;
@@ -91,7 +94,7 @@ public class EditMovieController {
             int duration = Integer.parseInt(durationStr);
 
             if (!MovieDAO.isMovieIdExists(movie.getMovieId())) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Movie ID không tồn tại trong database.");
+                showAlert(Alert.AlertType.ERROR, "Error", "Movie ID does not exist.");
                 return;
             }
 
@@ -131,6 +134,7 @@ public class EditMovieController {
 
     @FXML
     void handleDelete(ActionEvent event) {
+
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirm Delete");
         confirmAlert.setHeaderText("Are you sure you want to delete this movie?");
@@ -149,7 +153,7 @@ public class EditMovieController {
                     showAlert(Alert.AlertType.INFORMATION, "Deleted", "Movie deleted successfully.");
                     closeWindow();
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Failed", "Failed to delete movie.");
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Movie is currently screening and cannot be deleted.\nPlease delete all showtimes or wait until the screenings end.");
                 }
             }
         });

@@ -125,18 +125,7 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "Movie{" +
-                "movieId=" + movieId +
-                ", title='" + title + '\'' +
-                ", duration=" + duration +
-                ", genre='" + genre + '\'' +
-                ", description='" + description + '\'' +
-                ", directedBy='" + directedBy + '\'' +
-                ", language='" + language + '\'' +
-                ", poster='" + poster + '\'' +
-                ", ageRating='" + ageRating + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", releaseDate='" + releaseDate + '\'' +
-                '}';
+        return title;
     }
+
 }

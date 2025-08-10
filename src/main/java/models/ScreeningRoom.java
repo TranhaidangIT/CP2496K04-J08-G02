@@ -104,4 +104,9 @@ public class ScreeningRoom {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public String toString() {
+        return roomNumber;
+    }
+
 }
