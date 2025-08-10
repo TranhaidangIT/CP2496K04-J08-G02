@@ -24,15 +24,19 @@ public class MovieShowtimeItemController {
 
     private final DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
 
-    // Dùng Consumer để truyền sự kiện chọn showtime ra bên ngoài
+    // Consumer callback to notify external classes when a showtime is clicked
     private Consumer<Showtime> onShowtimeSelected;
 
-    // Danh sách showtimes gốc, để lấy showtime theo index khi click
+    // Original list of showtimes, used to retrieve the clicked showtime by index
     private List<Showtime> showtimes;
 
     /**
-     * Thiết lập dữ liệu cho item: lấy showtime đầu để hiển thị thông tin phim và ngày,
-     * và danh sách showtime đầy đủ để hiển thị các giờ chiếu.
+     * Sets the movie showtime item data.
+     * Uses the first showtime to display the date and movie title,
+     * while storing the full list to display all available showtimes.
+     *
+     * @param firstShowtime the first showtime (used for date and movie title)
+     * @param showtimes     the full list of showtimes for this movie
      */
     public void setData(Showtime firstShowtime, List<Showtime> showtimes) {
         this.showtimes = showtimes;
@@ -47,8 +51,11 @@ public class MovieShowtimeItemController {
     }
 
     /**
-     * Hiển thị danh sách giờ chiếu trong GridPane, tối đa 10 giờ mỗi hàng.
-     * Tạo các box giờ chiếu có thể click được.
+     * Displays the list of showtimes in the GridPane.
+     * Shows a maximum of 10 showtimes per row.
+     * Each showtime is displayed as a clickable box.
+     *
+     * @param showtimesLocalTime list of showtime LocalTime objects
      */
     public void setShowtimeList(List<java.time.LocalTime> showtimesLocalTime) {
         gridShowtime.getChildren().clear();
@@ -59,6 +66,7 @@ public class MovieShowtimeItemController {
         gridShowtime.getColumnConstraints().clear();
         gridShowtime.getRowConstraints().clear();
 
+        // Configure column constraints
         for (int i = 0; i < maxPerRow; i++) {
             javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
             cc.setPrefWidth(80);
@@ -67,6 +75,7 @@ public class MovieShowtimeItemController {
             gridShowtime.getColumnConstraints().add(cc);
         }
 
+        // Configure row constraints
         int rowCount = (showtimesLocalTime.size() + maxPerRow - 1) / maxPerRow;
         for (int i = 0; i < rowCount; i++) {
             javafx.scene.layout.RowConstraints rc = new javafx.scene.layout.RowConstraints();
@@ -76,6 +85,7 @@ public class MovieShowtimeItemController {
             gridShowtime.getRowConstraints().add(rc);
         }
 
+        // Add clickable time boxes to the grid
         for (int i = 0; i < showtimesLocalTime.size(); i++) {
             java.time.LocalTime time = showtimesLocalTime.get(i);
 
@@ -90,7 +100,7 @@ public class MovieShowtimeItemController {
 
             box.getChildren().add(timeLabel);
 
-            // Đăng ký sự kiện click, truyền showtime tương ứng ra bên ngoài
+            // Register click event to send the clicked showtime to the listener
             final int index = i;
             box.setOnMouseClicked((MouseEvent event) -> {
                 if (onShowtimeSelected != null && showtimes != null && index < showtimes.size()) {
@@ -109,7 +119,9 @@ public class MovieShowtimeItemController {
     }
 
     /**
-     * Cho phép set listener bên ngoài lắng nghe sự kiện chọn showtime
+     * Sets an external listener for showtime click events.
+     *
+     * @param listener a Consumer that handles the selected Showtime
      */
     public void setOnShowtimeSelected(Consumer<Showtime> listener) {
         this.onShowtimeSelected = listener;

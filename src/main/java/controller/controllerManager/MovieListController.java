@@ -1,10 +1,6 @@
 package controller.controllerManager;
 
 import dao.MovieDAO;
-import dao.RoomTypeDAO;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,11 +17,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Movie;
-import models.ScreeningRoom;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 public class MovieListController {
@@ -53,36 +47,45 @@ public class MovieListController {
     @FXML private TextArea txtDescription;
     @FXML private ImageView posterImage;
 
-
     private ObservableList<Movie> movieList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        // 1. Initialize ComboBoxes
-        cbGenre.setItems(FXCollections.observableArrayList(
-                "Action", "Adventure", "Comedy", "Drama", "Horror", "Sci-Fi"
-        ));
-        cbLanguage.setItems(FXCollections.observableArrayList(
-                "English", "Vietnamese", "Japanese", "Korean", "French"
-        ));
-        cbAgeRating.setItems(FXCollections.observableArrayList(
-                "G", "PG", "PG-13", "R", "NC-17"
-        ));
+        cbGenre.getItems().addAll(
+                "Action", "Drama", "Comedy", "Horror", "Romance",
+                "Thriller", "Sci-Fi", "Fantasy", "Animation", "Documentary",
+                "Adventure", "Crime", "Mystery", "Family", "Musical"
+        );
 
+        // Languages
+        cbLanguage.getItems().addAll(
+                "English", "Vietnamese", "Korean", "Japanese",
+                "Chinese", "French", "Thai", "Hindi"
+        );
 
+        // Age ratings
+        cbAgeRating.getItems().addAll(
+                "G",        // General audiences
+                "PG",       // Parental guidance suggested
+                "PG-13",    // Parents strongly cautioned
+                "R",        // Restricted
+                "NC-17",    // Adults only
+                "C18"       // 18+ (common in CGV Vietnam)
+        );
+
+        // Table column mapping
         colId.setCellValueFactory(new PropertyValueFactory<>("movieId"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colGenre.setCellValueFactory(new PropertyValueFactory<>("genre"));
         colDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
         colReleaseDate.setCellValueFactory(new PropertyValueFactory<>("releasedDate"));
 
-        // 3. Load movie data
+        // Load movie data
         loadMovieList();
     }
 
     public void loadMovieList() {
         List<Movie> movies = MovieDAO.getAllMovies();
-        System.out.println("DEBUG: Loaded movies count = " + movies.size());
         movieList.setAll(movies);
         tblMovies.setItems(movieList);
     }
@@ -107,7 +110,6 @@ public class MovieListController {
             loadMovieList();
 
         } catch (IOException e) {
-            System.out.println();
             showErrorAlert("Error", "Failed to load the Add Movie form.");
         }
     }
@@ -153,16 +155,39 @@ public class MovieListController {
     }
 
     private void showMovieDetails(Movie movie) {
+        // Text fields - chỉ đọc
         txtTitle.setText(movie.getTitle());
+        txtTitle.setEditable(false);
+
         txtDuration.setText(String.valueOf(movie.getDuration()));
-        cbGenre.setValue(movie.getGenre());
-        cbLanguage.setValue(movie.getLanguage());
-        cbAgeRating.setValue(movie.getAgeRating());
-        datePicker.setValue(movie.getReleasedDate());
+        txtDuration.setEditable(false);
+
+        txtDirectedby.setText(movie.getDirectedBy());
+        txtDirectedby.setEditable(false);
+
         txtDescription.setText(movie.getDescription());
+        txtDescription.setEditable(false);
 
+        // ComboBox - chỉ hiển thị, không cho chọn
+        cbGenre.setValue(movie.getGenre());
+        cbGenre.setMouseTransparent(true);
+        cbGenre.setFocusTraversable(false);
+
+        cbLanguage.setValue(movie.getLanguage());
+        cbLanguage.setMouseTransparent(true);
+        cbLanguage.setFocusTraversable(false);
+
+        cbAgeRating.setValue(movie.getAgeRating());
+        cbAgeRating.setMouseTransparent(true);
+        cbAgeRating.setFocusTraversable(false);
+
+        // DatePicker - chỉ đọc
+        datePicker.setValue(movie.getReleasedDate());
+        datePicker.setMouseTransparent(true);
+        datePicker.setFocusTraversable(false);
+
+        // Poster
         String defaultImagePath = getClass().getResource("/images/default-poster.png").toExternalForm();
-
         if (movie.getPoster() != null && !movie.getPoster().isEmpty()) {
             File file = new File("images/" + movie.getPoster());
             if (file.exists()) {
@@ -173,7 +198,6 @@ public class MovieListController {
         } else {
             posterImage.setImage(new Image(defaultImagePath));
         }
-
     }
 
     // ALERT HELPERS
@@ -195,15 +219,6 @@ public class MovieListController {
         alert.showAndWait();
     }
 
-    private void showInfoAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.showAndWait();
-    }
-
     @FXML
     void handleFindClick(MouseEvent event) {
         String keyword = tfFind.getText().trim().toLowerCase();
@@ -213,9 +228,7 @@ public class MovieListController {
         }
 
         ObservableList<Movie> filteredList = FXCollections.observableArrayList();
-
         for (Movie movie : movieList) {
-            // Kiểm tra các trường có chứa keyword không
             if (movie.getTitle().toLowerCase().contains(keyword)
                     || movie.getGenre().toLowerCase().contains(keyword)
                     || movie.getLanguage().toLowerCase().contains(keyword)
@@ -224,8 +237,6 @@ public class MovieListController {
                 filteredList.add(movie);
             }
         }
-
         tblMovies.setItems(filteredList);
     }
-
 }

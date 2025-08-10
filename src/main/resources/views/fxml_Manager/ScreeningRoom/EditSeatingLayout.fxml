@@ -2,45 +2,46 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.layout.GridPane?>
-<AnchorPane prefHeight="768.0" prefWidth="950.0" style="-fx-background-color: #1e1e1e;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditSeatingLayoutController">
-
-    <!-- SCREEN label -->
-    <Label layoutX="451.0" layoutY="58.0" style="-fx-font-weight: bold;" text="SCREEN" textFill="white">
-        <font>
-            <Font size="16" />
-        </font>
-    </Label>
+<AnchorPane prefHeight="768.0" prefWidth="950.0" style="-fx-background-color: #1e1e1e;" stylesheets="@../../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditSeatingLayoutController">
 
     <!--Seat Area-->
-    <AnchorPane fx:id="seatingArea" layoutX="135.0" layoutY="112.0" prefHeight="478.0" prefWidth="700.0">
+    <AnchorPane fx:id="seatingArea" layoutX="157.0" layoutY="110.0" prefHeight="478.0" prefWidth="700.0">
         <GridPane fx:id="seatGrid" hgap="5" layoutX="50" layoutY="60" vgap="5" />
     </AnchorPane>
 
-    <Separator layoutX="125.0" layoutY="82.0" prefWidth="700" />
-
     <!-- Legend Title -->
-    <Label layoutX="149.0" layoutY="608.0" style="-fx-font-weight: bold;" text="Seat Legend:" textFill="white">
+    <Label layoutX="135.0" layoutY="605.0" style="-fx-font-weight: bold;" text="Seat Legend:" textFill="white">
         <font>
-            <Font size="14" />
+            <Font size="18.0" />
         </font>
     </Label>
 
     <!-- Standard -->
-    <AnchorPane fx:id="legendStandardColor" layoutX="250.0" layoutY="611.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #ff69b4; -fx-border-color: white;" />
-    <Label fx:id="legendStandardLabel" layoutX="275.0" layoutY="611.0" text="Standard" textFill="white" />
+    <AnchorPane fx:id="legendStandardColor" layoutX="250.0" layoutY="611.0" prefHeight="16.0" prefWidth="16.0" style="-fx-background-color: #ff69b4; -fx-border-color: white;" />
+    <Label fx:id="legendStandardLabel" layoutX="275.0" layoutY="611.0" text="Standard" textFill="white">
+      <font>
+         <Font size="14.0" />
+      </font></Label>
 
     <!-- VIP -->
     <AnchorPane fx:id="legendVIPColor" layoutX="342.0" layoutY="610.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #00bfff; -fx-border-color: white;" />
-    <Label fx:id="legendVIPLabel" layoutX="372.0" layoutY="610.0" text="VIP" textFill="white" />
+    <Label fx:id="legendVIPLabel" layoutX="372.0" layoutY="610.0" text="VIP" textFill="white">
+      <font>
+         <Font size="14.0" />
+      </font></Label>
 
     <!-- SweetBox -->
     <AnchorPane fx:id="legendSweetboxColor" layoutX="410.0" layoutY="611.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #dc3545; -fx-border-color: white;" />
-    <Label fx:id="legendSweetboxLabel" layoutX="440.0" layoutY="611.0" text="SweetBox" textFill="white" />
+    <Label fx:id="legendSweetboxLabel" layoutX="440.0" layoutY="611.0" text="SweetBox" textFill="white">
+      <font>
+         <Font size="14.0" />
+      </font></Label>
 
     <!-- Gold -->
     <AnchorPane fx:id="legendGoldColor" layoutX="247.0" layoutY="610.0" prefHeight="16" prefWidth="16" style="-fx-background-color: #ffc107; -fx-border-color: white;" visible="false" />
@@ -58,13 +59,26 @@
       </font>
    </Button>
 
-   <Label layoutX="149.0" layoutY="641.0" style="-fx-font-weight: bold;" text="Seat Status:" textFill="white">
+   <Label layoutX="139.0" layoutY="637.0" style="-fx-font-weight: bold;" text="Seat Status:" textFill="white">
       <font>
-         <Font size="14" />
+         <Font size="18.0" />
       </font>
    </Label>
    <AnchorPane fx:id="legendUnavailableColor" layoutX="250.0" layoutY="643.0" prefHeight="16" prefWidth="16" style="-fx-background-color: grey; -fx-border-color: white;" />
-   <Label fx:id="legendUnavailable" layoutX="279.0" layoutY="642.0" text="Unavailable" textFill="white" />
+   <Label fx:id="legendUnavailable" layoutX="279.0" layoutY="642.0" text="Unavailable" textFill="white">
+      <font>
+         <Font size="14.0" />
+      </font></Label>
+   <AnchorPane layoutX="20.0" layoutY="20.0" prefHeight="58.0" prefWidth="973.0">
+      <children>
+         <Label layoutX="423.0" layoutY="1.0" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: white;" text="CINEMA SCREEN" />
+         <ImageView fitHeight="27.0" fitWidth="858.0" layoutX="164.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../../../icon/screen.png" />
+            </image>
+         </ImageView>
+      </children>
+   </AnchorPane>
 
 
 

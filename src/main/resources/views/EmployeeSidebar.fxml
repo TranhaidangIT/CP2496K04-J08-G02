@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
@@ -7,14 +8,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.geometry.Insets?>
 
-<BorderPane fx:id="mainBorderPane"
-            xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.EmployeeSidebarController"
-            prefWidth="1440.0" prefHeight="768.0"
-            stylesheets="@../css/dashboard.css">
+<BorderPane fx:id="mainBorderPane" prefHeight="768.0" prefWidth="1440.0" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EmployeeSidebarController">
 
     <left>
         <VBox prefWidth="316.0" styleClass="sideBar">
@@ -24,11 +19,11 @@
                         <Insets left="79.0" top="50.0" />
                     </VBox.margin>
                     <image>
-                        <Image url="@../icon/manager-pic.png" />
+                        <Image url="@../icon/staff.png" />
                     </image>
                 </ImageView>
 
-                <Label fx:id="helloUser" prefHeight="111.0" prefWidth="318.0" styleClass="helloUser" text="Hello, User" wrapText="true" />
+                <Label fx:id="helloUser" prefHeight="111.0" prefWidth="318.0" styleClass="helloUser" text="Hello, Employee" wrapText="true" />
 
                 <Button fx:id="btnListMovies" onAction="#loadListMovies" prefHeight="60.0" prefWidth="316.0" styleClass="btnSelect" text="List Movies">
                     <graphic>

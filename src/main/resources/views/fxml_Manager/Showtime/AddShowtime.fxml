@@ -155,7 +155,10 @@
                                     <Button fx:id="btnSaveSlotTime" layoutX="155.0" layoutY="15.0" mnemonicParsing="false" onAction="#handleSaveTimeSlot" prefHeight="38.0" prefWidth="139.0" styleClass="btnInsert" text="💾 Save Time Slot" />
                                  </children>
                               </AnchorPane>
-                              <Label styleClass="warningText" text="Please save the time slot before inserting." />
+                              <Label prefHeight="47.0" prefWidth="450.0" style="-fx-text-fill: red;" styleClass="warningText" text="Please save the time slot before inserting.">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font></Label>
                            </children>
                         </VBox>
                      </children>

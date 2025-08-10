@@ -4,45 +4,44 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddLockerController">
+<AnchorPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddLockerController">
     <children>
-        <AnchorPane layoutX="50.0" layoutY="25.0" prefHeight="400.0" prefWidth="500.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+        <AnchorPane layoutX="12.0" layoutY="8.0" prefHeight="433.0" prefWidth="578.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
             <children>
-                <Label layoutX="190.0" layoutY="14.0" text="Add New Locker" textFill="#aa0000">
+                <Label layoutX="196.0" layoutY="14.0" text="Add New Locker" textFill="#aa0000">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
 
                 <!-- Locker Icon -->
-                <ImageView fitHeight="120.0" fitWidth="120.0" layoutX="190.0" layoutY="49.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="120.0" fitWidth="127.0" layoutX="222.0" layoutY="49.0" pickOnBounds="true" preserveRatio="true">
                     <image>
 <!--                        <Image url="@../../../icon/locker_icon.png" />-->
                     </image>
                 </ImageView>
 
-                <AnchorPane layoutX="50.0" layoutY="180.0" prefHeight="150.0" prefWidth="400.0" stylesheets="@../../../css/app-style.css">
+                <AnchorPane layoutX="89.0" layoutY="169.0" prefHeight="150.0" prefWidth="400.0" stylesheets="@../../../css/app-style.css">
                     <children>
-                        <Label layoutX="35.0" layoutY="19.0" text="Locker Number:">
+                        <Label layoutX="35.0" layoutY="19.0" styleClass="labelCaption" text="Locker Number:">
                             <font>
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="txtLockerNumber" layoutX="150.0" layoutY="6.0" prefHeight="26.0" prefWidth="250.0" promptText="e.g. L001, A-12" styleClass="textField" />
+                        <TextField fx:id="txtLockerNumber" layoutX="150.0" layoutY="6.0" prefHeight="40.0" prefWidth="250.0" promptText="e.g. L001, A-12" styleClass="textField" />
 
-                        <Label layoutX="35.0" layoutY="69.0" text="Location Info:">
+                        <Label layoutX="49.0" layoutY="66.0" styleClass="labelCaption" text="Location Info:">
                             <font>
                                 <Font size="16.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="txtLocationInfo" layoutX="150.0" layoutY="56.0" prefHeight="26.0" prefWidth="250.0" promptText="e.g. Floor 1, Near entrance" styleClass="textField" />
+                        <TextField fx:id="txtLocationInfo" layoutX="150.0" layoutY="56.0" prefHeight="40.0" prefWidth="250.0" promptText="e.g. Floor 1, Near entrance" styleClass="textField" />
 
-                        <Label layoutX="35.0" layoutY="121.0" text="Status:">
+                        <Label layoutX="95.0" layoutY="120.0" styleClass="labelCaption" text="Status:">
                             <font>
                                 <Font size="16.0" />
                             </font>
@@ -52,19 +51,19 @@
                 </AnchorPane>
 
                 <!-- Help Text -->
-                <Label layoutX="50.0" layoutY="345.0" text="💡 Tip: Use clear numbering system (e.g. L001-L999) for easy identification" textFill="#666">
+                <Label layoutX="93.0" layoutY="335.0" text="💡 Tip: Use clear numbering system (e.g. L001-L999) for easy identification" textFill="#666">
                     <font>
                         <Font size="12.0" />
                     </font>
                 </Label>
 
-                <Button fx:id="btnCancel" layoutX="323.0" layoutY="365.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+                <Button fx:id="btnCancel" layoutX="448.0" layoutY="384.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
                     <font>
                         <Font size="16.0" />
                     </font>
                 </Button>
 
-                <Button fx:id="btnInsert" layoutX="210.0" layoutY="365.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnAdd" stylesheets="@../../../css/app-style.css" text="Add Locker">
+                <Button fx:id="btnInsert" layoutX="332.0" layoutY="384.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnInsert" stylesheets="@../../../css/app-style.css" text="Add Locker">
                     <font>
                         <Font size="16.0" />
                     </font>

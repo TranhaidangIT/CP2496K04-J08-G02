@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.InvoiceHistoryController">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.InvoiceHistoryController">
     <children>
-        <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox spacing="20.0" stylesheets="@../../css/app-style.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
             </padding>
@@ -66,16 +75,16 @@
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                     </padding>
                     <children>
-                        <TableView fx:id="invoicesTable" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="invoicesTable" style="-fx-text-fill: white;" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="invoiceNumberColumn" prefWidth="120.0" text="Invoice Number" />
                                 <TableColumn fx:id="ticketCodeColumn" prefWidth="100.0" text="Ticket Code" />
                                 <TableColumn fx:id="createdAtColumn" prefWidth="140.0" text="Created Date" />
                                 <TableColumn fx:id="employeeColumn" prefWidth="120.0" text="Employee" />
                                 <TableColumn fx:id="totalAmountColumn" prefWidth="100.0" text="Total Amount" />
-                                <TableColumn fx:id="paymentMethodColumn" prefWidth="100.0" text="Payment Method" />
-                                <TableColumn fx:id="statusColumn" prefWidth="80.0" text="Status" />
-                                <TableColumn fx:id="actionsColumn" prefWidth="150.0" text="Actions" />
+                                <TableColumn fx:id="paymentMethodColumn" prefWidth="159.199951171875" text="Payment Method" />
+                                <TableColumn fx:id="statusColumn" prefWidth="73.5999755859375" text="Status" />
+                                <TableColumn fx:id="actionsColumn" prefWidth="120.7999267578125" text="Actions" />
                             </columns>
                         </TableView>
                     </children>

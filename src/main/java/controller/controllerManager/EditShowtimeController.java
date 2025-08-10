@@ -28,7 +28,7 @@ public class EditShowtimeController {
     @FXML private Button btnSaveSlotTime;
     @FXML private Button btnUpdate;
 
-    @FXML private ComboBox<Movie> cbMovieList;
+    @FXML private ComboBox<String> cbMovieList;
     @FXML private TextField tfRoom;
     @FXML private TextField tfDate;
     @FXML private Spinner<String> hourSpinner;
@@ -46,6 +46,7 @@ public class EditShowtimeController {
     private Showtime selectedShowtime = null;
     private int breakTime = 30;
     private List<ScreeningRoom> roomList;
+    private Map<String, Movie> movieMap = new HashMap<>(); // To map movie titles to Movie objects
 
     private boolean isTimeSlotsSaved = false;
 
@@ -81,10 +82,13 @@ public class EditShowtimeController {
         loadShowtimes();
 
         cbMovieList.setOnAction(e -> {
-            Movie movie = cbMovieList.getSelectionModel().getSelectedItem();
-            if (movie != null) {
-                tfDuration.setText(String.valueOf(movie.getDuration()));
-                isTimeSlotsSaved = false;
+            String selectedTitle = cbMovieList.getSelectionModel().getSelectedItem();
+            if (selectedTitle != null) {
+                Movie movie = movieMap.get(selectedTitle);
+                if (movie != null) {
+                    tfDuration.setText(String.valueOf(movie.getDuration()));
+                    isTimeSlotsSaved = false;
+                }
             } else {
                 tfDuration.clear();
             }
@@ -101,26 +105,20 @@ public class EditShowtimeController {
 
     private void loadMovies() {
         List<Movie> movies = movieDAO.getAllMovies();
-        cbMovieList.setItems(FXCollections.observableArrayList(movies));
-        if (!movies.isEmpty()) {
-            cbMovieList.getSelectionModel().selectFirst();
-            tfDuration.setText(String.valueOf(movies.get(0).getDuration()));
+        List<String> movieTitles = new ArrayList<>();
+        movieMap.clear(); // Clear the map before populating
+        for (Movie movie : movies) {
+            movieTitles.add(movie.getTitle());
+            movieMap.put(movie.getTitle(), movie);
         }
-
-        cbMovieList.setCellFactory(lv -> new ListCell<Movie>() {
-            @Override
-            protected void updateItem(Movie item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getTitle());
+        cbMovieList.setItems(FXCollections.observableArrayList(movieTitles));
+        if (!movieTitles.isEmpty()) {
+            cbMovieList.getSelectionModel().selectFirst();
+            Movie firstMovie = movieMap.get(movieTitles.get(0));
+            if (firstMovie != null) {
+                tfDuration.setText(String.valueOf(firstMovie.getDuration()));
             }
-        });
-        cbMovieList.setButtonCell(new ListCell<Movie>() {
-            @Override
-            protected void updateItem(Movie item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getTitle());
-            }
-        });
+        }
     }
 
     private void loadShowtimes() {
@@ -152,18 +150,38 @@ public class EditShowtimeController {
             Button btnSelect = new Button("Select");
             btnSelect.setOnAction(e -> {
                 selectedShowtime = st;
-                cbMovieList.getSelectionModel().select(findMovieById(st.getMovieId()));
+                Movie movie = movieMap.get(st.getMovieTitle());
+                if (movie != null) {
+                    cbMovieList.getSelectionModel().select(st.getMovieTitle());
 
-                newTimeSlots.clear();
-                newTimeSlots.add(st.getShowTime());
-                renderTimeSlots();
+                    newTimeSlots.clear();
+                    List<Showtime> movieShowtimes = showtimeDAO.getShowtimesByRoomDateMovie(selectedRoom.getRoomId(), selectedDate, movieMap.get(st.getMovieTitle()).getMovieId());
+                    for (Showtime s : movieShowtimes) {
+                        newTimeSlots.add(s.getShowTime());
+                    }
+                    Collections.sort(newTimeSlots);
+                    renderTimeSlots();
 
-                tfDuration.setText(String.valueOf(findMovieById(st.getMovieId()).getDuration()));
-
+                    tfDuration.setText(String.valueOf(movie.getDuration()));
+                }
                 isTimeSlotsSaved = false;
             });
 
-            hbox.getChildren().addAll(lblTime, lblMovie, btnSelect);
+            Button btnDeleteIndividual = new Button("Delete");
+            btnDeleteIndividual.setOnAction(e -> {
+                boolean confirmed = showConfirm("Delete Showtime", "Are you sure you want to delete this showtime?");
+                if (confirmed) {
+                    boolean deleted = showtimeDAO.deleteShowtime(st.getShowtimeId());
+                    if (deleted) {
+                        showAlert(Alert.AlertType.INFORMATION, "Deleted", "Showtime deleted successfully.");
+                        loadShowtimes();
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete showtime.");
+                    }
+                }
+            });
+
+            hbox.getChildren().addAll(lblTime, lblMovie, btnSelect, btnDeleteIndividual);
             vboxShowtimeExistingList.getChildren().add(hbox);
         }
     }
@@ -174,13 +192,6 @@ public class EditShowtimeController {
             if (room.getRoomNumber().equals(name)) {
                 return room;
             }
-        }
-        return null;
-    }
-
-    private Movie findMovieById(int movieId) {
-        for (Movie m : cbMovieList.getItems()) {
-            if (m.getMovieId() == movieId) return m;
         }
         return null;
     }
@@ -232,24 +243,37 @@ public class EditShowtimeController {
     @FXML
     void handleCancel(ActionEvent event) {
         clearForm();
+        Stage stage = (Stage) btnCancel.getScene().getWindow();
+        stage.close();
     }
 
     @FXML
     void handleDelete(ActionEvent event) {
         if (selectedShowtime == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a showtime to delete.");
+            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a showtime to delete all for this movie.");
             return;
         }
 
-        boolean confirmed = showConfirm("Delete Showtime", "Are you sure you want to delete this showtime?");
+        boolean confirmed = showConfirm("Delete All for Movie", "Are you sure you want to delete all showtimes for this movie in the room on this date?");
         if (confirmed) {
-            boolean deleted = showtimeDAO.deleteShowtime(selectedShowtime.getShowtimeId());
-            if (deleted) {
-                showAlert(Alert.AlertType.INFORMATION, "Deleted", "Showtime deleted successfully.");
-                loadShowtimes();
-                clearForm();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete showtime.");
+            ScreeningRoom selectedRoom = findRoomByName(tfRoom.getText());
+            LocalDate selectedDate;
+            try {
+                selectedDate = LocalDate.parse(tfDate.getText());
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Date", "Date format must be YYYY-MM-DD");
+                return;
+            }
+            Movie movie = movieMap.get(selectedShowtime.getMovieTitle());
+            if (movie != null) {
+                boolean deleted = showtimeDAO.deleteShowtimesByRoomDateMovie(selectedRoom.getRoomId(), selectedDate, movie.getMovieId());
+                if (deleted) {
+                    showAlert(Alert.AlertType.INFORMATION, "Deleted", "All showtimes for the movie deleted successfully.");
+                    loadShowtimes();
+                    clearForm();
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete showtimes.");
+                }
             }
         }
     }
@@ -266,9 +290,9 @@ public class EditShowtimeController {
             showAlert(Alert.AlertType.WARNING, "No Time Slots", "Please add at least one time slot.");
             return;
         }
-        Movie selectedMovie = cbMovieList.getSelectionModel().getSelectedItem();
+        String selectedTitle = cbMovieList.getSelectionModel().getSelectedItem();
         String durationStr = tfDuration.getText();
-        if (selectedMovie == null || durationStr.isEmpty()) {
+        if (selectedTitle == null || durationStr.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Missing Data", "Please select a movie and enter duration.");
             return;
         }
@@ -284,10 +308,13 @@ public class EditShowtimeController {
 
     @FXML
     void handleSelectMovie(ActionEvent event) {
-        Movie movie = cbMovieList.getSelectionModel().getSelectedItem();
-        if (movie != null) {
-            tfDuration.setText(String.valueOf(movie.getDuration()));
-            isTimeSlotsSaved = false;
+        String selectedTitle = cbMovieList.getSelectionModel().getSelectedItem();
+        if (selectedTitle != null) {
+            Movie movie = movieMap.get(selectedTitle);
+            if (movie != null) {
+                tfDuration.setText(String.valueOf(movie.getDuration()));
+                isTimeSlotsSaved = false;
+            }
         } else {
             tfDuration.clear();
         }
@@ -295,16 +322,6 @@ public class EditShowtimeController {
 
     @FXML
     void handleUpdate(ActionEvent event) {
-        if (!isTimeSlotsSaved) {
-            showAlert(Alert.AlertType.WARNING, "Not Saved", "Please save time slots before updating.");
-            return;
-        }
-
-        if (selectedShowtime == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a showtime to update.");
-            return;
-        }
-
         ScreeningRoom selectedRoom = findRoomByName(tfRoom.getText());
         LocalDate selectedDate;
         try {
@@ -313,10 +330,10 @@ public class EditShowtimeController {
             showAlert(Alert.AlertType.ERROR, "Invalid Date", "Date format must be YYYY-MM-DD");
             return;
         }
-        Movie selectedMovie = cbMovieList.getSelectionModel().getSelectedItem();
+        String selectedTitle = cbMovieList.getSelectionModel().getSelectedItem();
         String durationStr = tfDuration.getText();
 
-        if (selectedRoom == null || selectedDate == null || selectedMovie == null || durationStr.isEmpty()) {
+        if (selectedRoom == null || selectedDate == null || selectedTitle == null || durationStr.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Missing Data", "Please fill all required fields.");
             return;
         }
@@ -327,39 +344,39 @@ public class EditShowtimeController {
 
         try {
             int duration = Integer.parseInt(durationStr);
+            Movie movie = movieMap.get(selectedTitle);
+            if (movie != null) {
+                showtimeDAO.deleteShowtimesByRoomDateMovie(selectedRoom.getRoomId(), selectedDate, movie.getMovieId());
 
-            // Delete old showtimes
-            showtimeDAO.deleteShowtimesByRoomDateMovie(selectedRoom.getRoomId(), selectedDate, selectedMovie.getMovieId());
+                LocalTime closeTime = LocalTime.of(22, 0);
 
-            LocalTime closeTime = LocalTime.of(22, 0);
+                for (LocalTime startTime : newTimeSlots) {
+                    LocalTime endTime = startTime.plusMinutes(duration + breakTime);
 
-            for (LocalTime startTime : newTimeSlots) {
-                LocalTime endTime = startTime.plusMinutes(duration + breakTime);
+                    if (endTime.isAfter(closeTime)) {
+                        showAlert(Alert.AlertType.WARNING, "Invalid Showtime", "Showtime starting at " + startTime + " ends after 22:00. Please adjust.");
+                        return;
+                    }
 
-                if (endTime.isAfter(closeTime)) {
-                    showAlert(Alert.AlertType.WARNING, "Invalid Showtime", "Showtime starting at " + startTime + " ends after 22:00. Please adjust.");
-                    return;
+                    Showtime newShowtime = new Showtime();
+                    newShowtime.setRoomId(selectedRoom.getRoomId());
+                    newShowtime.setMovieId(movie.getMovieId());
+                    newShowtime.setShowDate(selectedDate);
+                    newShowtime.setShowTime(startTime);
+                    newShowtime.setEndTime(endTime);
+
+                    showtimeDAO.insertShowtime(newShowtime);
                 }
 
-                Showtime newShowtime = new Showtime();
-                newShowtime.setRoomId(selectedRoom.getRoomId());
-                newShowtime.setMovieId(selectedMovie.getMovieId());
-                newShowtime.setShowDate(selectedDate);
-                newShowtime.setShowTime(startTime);
-                newShowtime.setEndTime(endTime);
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Showtimes updated successfully.");
+                loadShowtimes();
+                clearForm();
 
-                showtimeDAO.insertShowtime(newShowtime);
+                isTimeSlotsSaved = false;
+
+                Stage stage = (Stage) btnUpdate.getScene().getWindow();
+                stage.close();
             }
-
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Showtimes updated successfully.");
-            loadShowtimes();
-            clearForm();
-
-            isTimeSlotsSaved = false;
-
-            Stage stage = (Stage) btnUpdate.getScene().getWindow();
-            stage.close();
-
         } catch (NumberFormatException ex) {
             showAlert(Alert.AlertType.ERROR, "Invalid Duration", "Duration must be a number.");
         }

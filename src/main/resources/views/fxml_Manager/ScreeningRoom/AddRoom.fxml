@@ -9,65 +9,102 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="578.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddRoomController">
+<AnchorPane prefHeight="621.0" prefWidth="573.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddRoomController">
    <children>
-      <AnchorPane layoutX="14.0" layoutY="17.0" prefHeight="734.0" prefWidth="550.0" styleClass="bg-white">
+      <AnchorPane layoutX="13.0" layoutY="9.0" prefHeight="603.0" prefWidth="546.0" styleClass="bg-white">
          <children>
-            <Label layoutX="175.0" layoutY="14.0" styleClass="titleSub" text="Add Screening Room">
+            <Label layoutX="156.0" layoutY="14.0" styleClass="titleMain" text="Add Screening Room">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <AnchorPane layoutX="9.0" layoutY="60.0" prefHeight="546.0" prefWidth="526.0" stylesheets="@../../../css/app-style.css">
+            <AnchorPane layoutX="9.0" layoutY="60.0" prefHeight="492.0" prefWidth="526.0" stylesheets="@../../../css/app-style.css">
                <children>
-                  <Label layoutX="18.0" layoutY="253.0" styleClass="labelCaption" text="Total Capacity:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <TextField id="tfTotalCap" fx:id="tfTotalCap" layoutX="151.0" layoutY="242.0" prefHeight="46.0" prefWidth="324.0" styleClass="textField" />
-                  <Label layoutX="40.0" layoutY="86.0" styleClass="labelCaption" text="Room Type:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="42.0" layoutY="300.0" styleClass="labelCaption" text="Equipment:" />
-
-                  <ComboBox id="cbRoomStatus" fx:id="cbRoomStatus" layoutX="149.0" layoutY="456.0" prefHeight="51.0" prefWidth="324.0" styleClass="comboBox" />
-                  <ComboBox id="cbRoomType" fx:id="cbRoomType" layoutX="146.0" layoutY="73.0" prefHeight="51.0" prefWidth="324.0" styleClass="comboBox" />
-                  <Label layoutX="14.0" layoutY="21.0" styleClass="labelCaption" text="Room Number:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <TextField id="tfTotalCap" fx:id="tfRoomNumber" layoutX="148.0" layoutY="14.0" prefHeight="43.0" prefWidth="125.0" styleClass="textField" />
-                  <Label fx:id="txtSeatLayout" layoutX="16.0" layoutY="158.0" styleClass="labelCaption" text="Seating Layout:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <HBox layoutX="144.0" layoutY="149.0" prefHeight="43.0" prefWidth="338.0" spacing="10">
+                  <VBox layoutX="38.0" layoutY="23.0" prefHeight="474.0" prefWidth="466.0" spacing="10.0">
                      <children>
-                        <Label prefHeight="42.0" prefWidth="66.0" styleClass="mainContent" text="Columns:" />
-                        <Spinner fx:id="spinnerRows" editable="true" prefWidth="70" />
-                        <Label contentDisplay="CENTER" prefHeight="42.0" prefWidth="37.0" style="-fx-alignment: center;" styleClass="labelCaption" text="x" />
-                        <Label prefHeight="41.0" prefWidth="47.0" styleClass="mainContent" text="Rows:" />
-                        <Spinner fx:id="spinnerColumns" editable="true" prefHeight="43.0" prefWidth="66.0" />
+                        <HBox prefHeight="40.0" prefWidth="439.0" spacing="10.0">
+                           <children>
+                              <Label alignment="CENTER_RIGHT" prefWidth="125.0" styleClass="labelCaption" text="Room Number:">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <TextField id="tfTotalCap" fx:id="tfRoomNumber" prefHeight="40.0" prefWidth="125.0" styleClass="textField" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label alignment="CENTER_RIGHT" prefWidth="125.0" styleClass="labelCaption" text="Room Type:">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox id="cbRoomType" fx:id="cbRoomType" prefHeight="44.0" prefWidth="325.0" styleClass="comboBox" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label fx:id="txtSeatLayout" alignment="CENTER_RIGHT" prefWidth="125.0" styleClass="labelCaption" text="Seating Layout:">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <HBox prefHeight="43.0" prefWidth="325.0" spacing="10">
+                                 <children>
+                                    <Label prefHeight="40.0" prefWidth="66.0" styleClass="mainContent" text="Columns:" />
+                                    <Spinner fx:id="spinnerRows" editable="true" prefHeight="43.0" prefWidth="75.0" />
+                                    <Label contentDisplay="CENTER" prefHeight="40.0" prefWidth="24.0" style="-fx-alignment: center;" styleClass="labelCaption" text="x" />
+                                    <Label prefHeight="40.0" prefWidth="42.0" styleClass="mainContent" text="Rows:" />
+                                    <Spinner fx:id="spinnerColumns" editable="true" prefHeight="40.0" prefWidth="75.0" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <AnchorPane prefHeight="40.0" prefWidth="418.0">
+                           <children>
+                              <Label fx:id="lblLayoutWarning" alignment="CENTER" layoutY="-5.0" prefHeight="40.0" prefWidth="466.0" style="-fx-text-fill: red;" styleClass="labelCaption" text="Allowed seating layout: Minimum 5×5, Maximum 15×15.">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label alignment="CENTER_RIGHT" prefWidth="125.0" styleClass="labelCaption" text="Total Capacity:">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <TextField id="tfTotalCap" fx:id="tfTotalCap" prefHeight="40.0" prefWidth="325.0" styleClass="textField" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="148.0" prefWidth="466.0" spacing="10.0">
+                           <children>
+                              <Label alignment="CENTER_RIGHT" prefWidth="125.0" styleClass="labelCaption" text="Equipment:" />
+                              <TextArea id="tfTotalCap" fx:id="tfEquipment" prefHeight="70.0" prefWidth="326.0" styleClass="textField" wrapText="true" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="40.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label fx:id="txtRoomStatus" alignment="CENTER_RIGHT" prefWidth="125.0" styleClass="labelCaption" text="Room Status:" />
+            
+                              <ComboBox id="cbRoomStatus" fx:id="cbRoomStatus" prefHeight="40.0" prefWidth="325.0" styleClass="comboBox" />
+                           </children>
+                        </HBox>
                      </children>
-                  </HBox>
-                  <Label fx:id="txtRoomStatus" layoutX="35.0" layoutY="469.0" styleClass="labelCaption" text="Room Status:" />
-                  <Label fx:id="lblLayoutWarning" layoutX="144.0" layoutY="207.0" prefHeight="20.0" prefWidth="364.0" styleClass="warningText" text="Allowed seating layout: Minimum 5×5, Maximum 15×15." />
-                  <TextArea id="tfTotalCap" fx:id="tfEquipment" layoutX="149.0" layoutY="300.0" prefHeight="145.0" prefWidth="324.0" styleClass="textField" />
+                  </VBox>
                </children>
             </AnchorPane>
-            <Button id="btnCancel" fx:id="btnCancel" layoutX="436.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+            <Button id="btnCancel" fx:id="btnCancel" layoutX="413.0" layoutY="558.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
-            <Button id="btnAdd" fx:id="btnInsert" layoutX="319.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnAdd" stylesheets="@../../../css/app-style.css" text="Insert">
+            <Button id="btnAdd" fx:id="btnInsert" layoutX="296.0" layoutY="558.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnInsert" stylesheets="@../../../css/app-style.css" text="Insert">
                <font>
                   <Font size="16.0" />
                </font>

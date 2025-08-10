@@ -9,99 +9,133 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1124.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddMovieController">
+<AnchorPane prefHeight="762.0" prefWidth="623.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.AddMovieController">
    <children>
 
-      <AnchorPane layoutX="139.0" layoutY="26.0" prefHeight="735.0" prefWidth="900.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+      <AnchorPane layoutX="13.0" layoutY="10.0" prefHeight="742.0" prefWidth="601.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
          <children>
-            <Label layoutX="399.0" layoutY="14.0"  text=" Add New Movie" textFill="#aa0000">
+            <Label layoutX="218.0" layoutY="14.0" text=" Add New Movie" textFill="#aa0000">
                <font>
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
 
-            <ImageView fx:id="imgPreview" fitHeight="293.0" fitWidth="198.0" layoutX="128.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgPreview" fitHeight="260.0" fitWidth="188.0" layoutX="14.0" layoutY="84.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../icon/default_poster.jpg" />
+                  <Image url="@../../../icon/default.png" />
                </image>
             </ImageView>
-            <Button fx:id="btnChooseFile" layoutX="143.0" layoutY="374.0" mnemonicParsing="false" onAction="#handleChooseFile" prefHeight="42.0" prefWidth="167.0" styleClass="btnChooseFile" stylesheets="@../../../css/manager.css" text="Choose File">
+            <Button fx:id="btnChooseFile" layoutX="24.0" layoutY="360.0" mnemonicParsing="false" onAction="#handleChooseFile" prefHeight="42.0" prefWidth="167.0" styleClass="btnChooseFile" stylesheets="@../../../css/manager.css" text="Choose File">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
 
-            <AnchorPane layoutX="98.0" layoutY="484.0" prefHeight="165.0" prefWidth="690.0" stylesheets="@../../../css/app-style.css">
+            <AnchorPane layoutX="14.0" layoutY="444.0" prefHeight="212.0" prefWidth="576.0" stylesheets="@../../../css/app-style.css">
                <children>
                   <Label layoutY="6.0" styleClass="labelCaption" text="Descripton:">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <TextArea fx:id="descriptionTextArea" layoutY="43.0" prefHeight="119.0" prefWidth="690.0" styleClass="textField" />
+                  <TextArea fx:id="descriptionTextArea" layoutY="43.0" prefHeight="119.0" prefWidth="573.0" styleClass="textField" wrapText="true" />
                </children>
             </AnchorPane>
-            <Button fx:id="btnCancel" layoutX="690.0" layoutY="674.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+            <Button fx:id="btnCancel" layoutX="490.0" layoutY="691.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
 
-            <Button fx:id="btnInsert" layoutX="575.0" layoutY="674.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnAdd" stylesheets="@../../../css/app-style.css" text="Insert">
+            <Button fx:id="btnInsert" layoutX="377.0" layoutY="691.0" mnemonicParsing="false" onAction="#handleInsert" prefHeight="35.0" prefWidth="100.0" styleClass="btnInsert" stylesheets="@../../../css/app-style.css" text="Insert">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
-            <AnchorPane layoutX="378.0" layoutY="62.0" prefHeight="391.0" prefWidth="394.0" stylesheets="@../../../css/app-style.css">
+
+
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="229.0" layoutY="74.0" prefHeight="402.0" prefWidth="379.0" stylesheets="@../../../css/app-style.css">
+         <children>
+            <VBox layoutY="3.0" prefHeight="398.0" prefWidth="373.0" spacing="10.0">
                <children>
-                  <Label layoutX="35.0" layoutY="19.0" text="Movie Title:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="txtTitle" layoutX="124.0" layoutY="6.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
-                  <Label layoutX="35.0" layoutY="69.0" text="Directed by:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="txtDirectedby" layoutX="124.0" layoutY="56.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
-                  <Label layoutX="35.0" layoutY="121.0" text="Age Rating:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <ComboBox fx:id="cbAgeRating" layoutX="125.0" layoutY="108.0" prefHeight="40.0" prefWidth="250" styleClass="comboBox" />
-                  <Label layoutX="66.0" layoutY="183.0" text="Genre:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <ComboBox fx:id="cbGenre" layoutX="125.0" layoutY="170.0" prefWidth="250" styleClass="comboBox" />
-                  <Label layoutX="14.0" layoutY="238.0" text="Duration (min):">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="txtDuration" layoutX="127.0" layoutY="231.0" prefHeight="26.0" prefWidth="250.0" styleClass="textField" />
-                  <Label layoutX="44.0" layoutY="293.0" text="Language:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <ComboBox fx:id="cbLanguage" layoutX="129.0" layoutY="280.0" prefWidth="250" styleClass="comboBox" />
-                  <Label layoutX="22.0" layoutY="352.0" text="Release Date:">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-                  <DatePicker fx:id="datePicker" layoutX="129.0" layoutY="339.0" prefHeight="26.0" prefWidth="250" styleClass="datePicker" />
+                  <HBox prefHeight="40.0" prefWidth="0.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" styleClass="labelCaption" text="Movie Title:">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="txtTitle" prefHeight="40.0" prefWidth="250.0" styleClass="textField" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="40.0" prefWidth="0.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" styleClass="labelCaption" text="Directed by:">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="txtDirectedby" prefHeight="40.0" prefWidth="250.0" styleClass="textField" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="40.0" prefWidth="0.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" styleClass="labelCaption" text="Age Rating:">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cbAgeRating" prefHeight="40.0" prefWidth="250" styleClass="comboBox" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="40.0" prefWidth="0.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" styleClass="labelCaption" text="Genre:">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cbGenre" prefHeight="40.0" prefWidth="250" styleClass="comboBox" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="40.0" prefWidth="0.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" styleClass="labelCaption" text="Duration (min):">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="txtDuration" prefHeight="44.0" prefWidth="250.0" styleClass="textField" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="40.0" prefWidth="0.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" styleClass="labelCaption" text="Language:">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cbLanguage" prefHeight="35.0" prefWidth="250" styleClass="comboBox" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="40.0" prefWidth="0.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" styleClass="labelCaption" text="Release Date:">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <DatePicker fx:id="datePicker" prefHeight="42.0" prefWidth="250" styleClass="datePicker" />
+                     </children>
+                  </HBox>
                </children>
-            </AnchorPane>
-
-
+            </VBox>
          </children>
       </AnchorPane>
    </children>

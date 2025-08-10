@@ -30,7 +30,7 @@ public class EditSeatingLayoutController {
     @FXML private GridPane seatGrid;
     @FXML private Button btnEditLayout;
 
-    // Legends
+    // Legend elements for seat types color coding
     @FXML private AnchorPane legendStandardColor;
     @FXML private Label legendStandardLabel;
     @FXML private AnchorPane legendVIPColor;
@@ -46,28 +46,33 @@ public class EditSeatingLayoutController {
 
     private int activeSeatCount;
 
-
     @FXML
     public void initialize() {
+        // Set background color of seating area and spacing between seats
         seatingArea.setStyle("-fx-background-color: #f0f0f0;");
         seatGrid.setHgap(5);
         seatGrid.setVgap(5);
     }
 
+    /**
+     * Sets the current screening room data, loads seat types,
+     * loads seats for the room, and generates the seating grid UI.
+     * @param room The ScreeningRoom object to edit
+     */
     public void setRoomData(ScreeningRoom room) {
         this.currentRoom = room;
 
-        // Load seat types từ DB
+        // Load all seat types from database
         loadSeatTypes();
 
-        // Lấy danh sách ghế theo roomId
+        // Load all seats for the current room from DB
         seatsInRoom = SeatDAO.getSeatsByRoomId(room.getRoomId());
         if (seatsInRoom.isEmpty()) {
             System.err.println("No seats found for room " + room.getRoomNumber());
             return;
         }
 
-        // Tính số hàng (A → Z) và cột (1 → N)
+        // Calculate max rows (A-Z) and columns (1-N) based on seats data
         int maxRow = 0, maxCol = 0;
         for (Seat s : seatsInRoom) {
             int rowIndex = s.getSeatRow() - 'A';
@@ -75,9 +80,10 @@ public class EditSeatingLayoutController {
             maxCol = Math.max(maxCol, s.getSeatColumn());
         }
 
+        // Generate the seat grid UI with proper row and column counts
         generateSeatGrid(maxRow + 1, maxCol);
 
-        // Hiển thị các loại ghế trong legend
+        // Collect all seat types present in this room for showing legends
         Set<String> seatTypesInRoom = new HashSet<>();
         for (Seat seat : seatsInRoom) {
             SeatType type = seat.getSeatType();
@@ -85,17 +91,23 @@ public class EditSeatingLayoutController {
                 seatTypesInRoom.add(type.getSeatTypeName().toLowerCase());
             }
         }
+        // Update legend visibility based on seat types found in the room
         updateLegendVisibility(seatTypesInRoom);
     }
 
-
-
+    /**
+     * Loads all seat types from the database.
+     */
     private void loadSeatTypes() {
         allSeatTypes = SeatTypeDAO.getAllSeatTypes();
     }
 
+    /**
+     * Updates the visibility of seat type legends based on seat types in the room.
+     * @param seatTypesInRoom Set of seat type names present in the current room
+     */
     private void updateLegendVisibility(Set<String> seatTypesInRoom) {
-        // Ẩn toàn bộ trước
+        // Hide all legend elements initially
         legendStandardColor.setVisible(false);
         legendStandardLabel.setVisible(false);
         legendVIPColor.setVisible(false);
@@ -105,7 +117,7 @@ public class EditSeatingLayoutController {
         legendGoldColor.setVisible(false);
         legendGoldLabel.setVisible(false);
 
-        // Hiện đúng loại có trong phòng
+        // Show only legends for seat types that exist in this room
         for (String type : seatTypesInRoom) {
             switch (type) {
                 case "standard":
@@ -128,17 +140,23 @@ public class EditSeatingLayoutController {
         }
     }
 
+    /**
+     * Generates the seating grid layout with seat rectangles and labels.
+     * Supports clicking seats to toggle active/inactive status (hide/show).
+     * @param rowCount Number of seat rows
+     * @param columnCount Number of seat columns
+     */
     private void generateSeatGrid(int rowCount, int columnCount) {
         seatGrid.getChildren().clear();
 
-        // 1. Cột header (1, 2, ..., columnCount)
+        // Add column headers (1, 2, ..., columnCount)
         for (int col = 1; col <= columnCount; col++) {
             Label colLabel = new Label(String.valueOf(col));
             colLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: black;");
             seatGrid.add(colLabel, col, 0);
         }
 
-        // 2. Hàng header (A, B, ..., Z)
+        // Add row headers (A, B, ..., based on rowCount)
         for (int row = 1; row <= rowCount; row++) {
             char rowChar = (char) ('A' + row - 1);
             Label rowLabel = new Label(String.valueOf(rowChar));
@@ -146,18 +164,19 @@ public class EditSeatingLayoutController {
             seatGrid.add(rowLabel, 0, row);
         }
 
-        // 3. Ghế: hiển thị đúng vị trí (col, row)
+        // Add seat rectangles with labels in the grid
         for (Seat seat : seatsInRoom) {
-            int rowIndex = seat.getSeatRow() - 'A' + 1;
-            int colIndex = seat.getSeatColumn();
+            int rowIndex = seat.getSeatRow() - 'A' + 1; // grid row index (1-based)
+            int colIndex = seat.getSeatColumn();       // grid column index
 
             String seatLabel = seat.getSeatRow() + String.valueOf(seat.getSeatColumn());
 
+            // Create a rectangle representing the seat
             Rectangle rect = new Rectangle(30, 30);
             String seatTypeName = (seat.getSeatType() != null) ? seat.getSeatType().getSeatTypeName() : "";
             Color originalColor = getColorForSeatType(seatTypeName);
 
-            // Màu ban đầu
+            // Fill color: original color if active, light gray if inactive
             if (seat.isActive()) {
                 rect.setFill(originalColor);
             } else {
@@ -166,21 +185,22 @@ public class EditSeatingLayoutController {
             rect.setStroke(Color.WHITE);
             rect.setStrokeWidth(1);
 
-            // Label hiển thị mã ghế (A1, B2,...)
+            // Label on top of rectangle showing seat code (e.g., A1)
             Label label = new Label(seatLabel);
             label.setStyle("-fx-font-size: 10px; -fx-text-fill: white; -fx-font-weight: bold;");
 
             StackPane seatPane = new StackPane(rect, label);
             seatPane.setId(seatLabel);
 
+            // Click event handler to toggle seat active status and update UI
             seatPane.setOnMouseClicked(event -> {
                 if (seat.isActive()) {
                     if (rect.getStroke() != Color.RED) {
-                        // Chọn ghế: thêm viền đỏ
+                        // Select seat: add red border
                         rect.setStroke(Color.RED);
                         rect.setStrokeWidth(2);
 
-                        // Bỏ viền đỏ các ghế khác
+                        // Remove red border from other seats
                         for (Node node : seatGrid.getChildren()) {
                             if (node instanceof StackPane && node != seatPane) {
                                 Node child = ((StackPane) node).getChildren().get(0);
@@ -191,20 +211,20 @@ public class EditSeatingLayoutController {
                             }
                         }
                     } else {
-                        // Ẩn ghế
+                        // Hide seat by graying out and removing stroke, mark inactive
                         rect.setFill(Color.LIGHTGRAY);
                         rect.setStroke(Color.TRANSPARENT);
                         seat.setActive(false);
                     }
                 } else {
-                    // Hiện lại ghế
+                    // Show seat again with original color and stroke, mark active
                     rect.setFill(originalColor);
                     rect.setStroke(Color.WHITE);
                     rect.setStrokeWidth(1);
                     seat.setActive(true);
                 }
 
-                // Debug
+                // Debug print seat status
                 System.out.println("Click " + seatLabel + " -> active: " + seat.isActive());
             });
 
@@ -212,8 +232,11 @@ public class EditSeatingLayoutController {
         }
     }
 
-
-
+    /**
+     * Returns the color for a seat type.
+     * @param typeName Seat type name string
+     * @return Corresponding Color object
+     */
     private Color getColorForSeatType(String typeName) {
         if (typeName == null) return Color.GRAY;
 
@@ -226,6 +249,9 @@ public class EditSeatingLayoutController {
         }
     }
 
+    /**
+     * Updates the room's total capacity in the database based on active seats.
+     */
     private void updateRoomCapacityInDatabase() {
         int activeSeats = 0;
         for (Seat seat : seatsInRoom) {
@@ -238,15 +264,19 @@ public class EditSeatingLayoutController {
         ScreeningRoomDAO.updateRoomCapacity(currentRoom.getRoomId(), activeSeats);
     }
 
-
+    /**
+     * Handles the update button action.
+     * Saves changes to seats and shows confirmation or error alerts.
+     * @param actionEvent The action event triggered by the update button
+     */
     public void handleUpdate(ActionEvent actionEvent) {
-        // Gợi ý kiểm tra dữ liệu và lưu cập nhật
+        // Validate that room and seats are loaded
         if (currentRoom == null || seatsInRoom == null) {
             System.err.println("Room or seat data is missing");
             return;
         }
 
-        // Gọi DAO để cập nhật danh sách ghế nếu có thay đổi
+        // Call DAO to update seats in the room
         boolean success = SeatDAO.updateSeatsInRoom(currentRoom.getRoomId(), seatsInRoom);
 
         if (success) {
@@ -256,7 +286,7 @@ public class EditSeatingLayoutController {
             alert.setContentText("Seating layout updated successfully!");
             alert.showAndWait();
 
-            // Đóng form sau khi cập nhật
+            // Close the form after successful update
             handleCancel(actionEvent);
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -267,13 +297,15 @@ public class EditSeatingLayoutController {
         }
     }
 
-
+    /**
+     * Handles the cancel button action.
+     * Closes the current window.
+     * @param actionEvent The action event triggered by the cancel button
+     */
     public void handleCancel(ActionEvent actionEvent) {
-        // Lấy stage hiện tại từ bất kỳ node nào (ví dụ nút cancel)
+        // Get the current stage from any node and close it
         Node source = (Node) actionEvent.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
     }
-
-
 }

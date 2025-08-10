@@ -33,9 +33,6 @@ public class EditRoomController {
 
     private ScreeningRoom currentRoom;
 
-    // ================================
-    // ========== BUTTONS ============
-    // ================================
 
     @FXML
     void handleCancel(ActionEvent event) {
@@ -113,9 +110,6 @@ public class EditRoomController {
         }
     }
 
-    // ================================
-    // ========== SET DATA ===========
-    // ================================
 
     public void setRoomData(ScreeningRoom selected) {
         this.currentRoom = selected;

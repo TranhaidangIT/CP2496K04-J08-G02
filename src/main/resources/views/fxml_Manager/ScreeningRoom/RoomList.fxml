@@ -5,8 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -60,19 +60,19 @@
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="tfSeatLayout" disable="true" editable="false" layoutX="137.0" layoutY="63.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <TextField fx:id="tfSeatLayout" editable="false" layoutX="137.0" layoutY="63.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
                   <Label layoutX="14.0" layoutY="120.0" styleClass="labelCaption" text="Total Capacity:">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="tfTotalCap" disable="true" editable="false" layoutX="137.0" layoutY="113.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <TextField fx:id="tfTotalCap" editable="false" layoutX="137.0" layoutY="113.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
                   <Label layoutX="33.0" layoutY="166.0" styleClass="labelCaption" text="Room Type:">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <TextField id="tfRoomType" fx:id="tfRoomType" disable="true" layoutX="137.0" layoutY="159.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <TextField id="tfRoomType" fx:id="tfRoomType" layoutX="137.0" layoutY="159.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
                   <Label layoutX="38.0" layoutY="206.0" prefHeight="26.0" prefWidth="90.0" styleClass="labelCaption" text="Equipment:">
                      <font>
                         <Font size="16.0" />
@@ -83,16 +83,16 @@
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="tfRoomStatus" disable="true" layoutX="136.0" layoutY="348.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <TextField fx:id="tfRoomStatus" layoutX="136.0" layoutY="348.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
                   <Label id="tfCreatedAt" layoutX="40.0" layoutY="403.0" styleClass="labelCaption" text="Created At:">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="tfCreatedAt" disable="true" layoutX="136.0" layoutY="396.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
+                  <TextField fx:id="tfCreatedAt" layoutX="136.0" layoutY="396.0" prefHeight="40.0" prefWidth="350.0" styleClass="textField" />
                   <Label fx:id="lbRoomNumb" layoutX="12.0" layoutY="21.0" style="-fx-font-weight: bold;" styleClass="labelCaption" text="Room Number:" />
-                  <TextField fx:id="tfRoomNumb" disable="true" editable="false" layoutX="137.0" layoutY="14.0" prefHeight="40.0" prefWidth="120.0" styleClass="textField" />
-                  <TextArea id="tfTotalCap" fx:id="tfEquipment" disable="true" editable="false" layoutX="137.0" layoutY="206.0" prefHeight="134.0" prefWidth="350.0" styleClass="textField" />
+                  <TextField fx:id="tfRoomNumb" editable="false" layoutX="137.0" layoutY="14.0" prefHeight="40.0" prefWidth="120.0" styleClass="textField" />
+                  <TextArea id="tfTotalCap" fx:id="tfEquipment" editable="false" layoutX="137.0" layoutY="206.0" prefHeight="134.0" prefWidth="350.0" styleClass="textField" />
                </children>
             </AnchorPane>
             <Button fx:id="btnEdit" layoutX="414.0" layoutY="673.0" mnemonicParsing="false" onAction="#handleEditRoom" prefHeight="38.0" prefWidth="106.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Edit">

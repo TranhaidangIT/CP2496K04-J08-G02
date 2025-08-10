@@ -47,7 +47,7 @@
       </Label>
       <ScrollPane fx:id="scrollListShowtime" layoutX="14.0" layoutY="49.0" prefHeight="231.0" prefWidth="808.0">
          <content>
-            <VBox fx:id="vboxListShowtime" prefHeight="231.0" prefWidth="806.0" />
+            <VBox fx:id="vboxListShowtime" prefHeight="231.0" prefWidth="800.0" />
          </content>
       </ScrollPane>
    </children>

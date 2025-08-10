@@ -10,27 +10,45 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1124.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.LockerController">
+<AnchorPane prefHeight="768.0" prefWidth="1124.0" stylesheets="@../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.LockerController">
     <children>
         <!-- Title -->
-        <Label alignment="CENTER" layoutX="20.0" layoutY="20.0" prefHeight="40.0" prefWidth="300.0" text="SELECT LOCKER">
+        <Label alignment="CENTER" layoutX="20.0" layoutY="20.0" prefHeight="40.0" prefWidth="141.0" styleClass="titleSub" text="SELECT LOCKER">
             <font>
                 <Font size="24.0" />
             </font>
         </Label>
 
         <!-- Booking Info Panel -->
-        <VBox layoutX="700.0" layoutY="20.0" prefHeight="372.0" prefWidth="380.0" style="-fx-border-color: #ddd; -fx-border-radius: 8; -fx-background-color: #f8f9fa; -fx-padding: 15;" spacing="10">
+        <VBox layoutX="700.0" layoutY="20.0" prefHeight="372.0" prefWidth="380.0" spacing="10" style="-fx-border-color: #ddd; -fx-border-radius: 8; -fx-background-color: #f8f9fa; -fx-padding: 15;">
             <children>
                 <Label style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2c3e50;" text="ORDER INFORMATION" />
                 <VBox fx:id="bookingInfoBox" prefHeight="357.0" prefWidth="348.0" spacing="8" style="-fx-font-size: 13px; -fx-text-fill: #495057;">
                     <children>
-                        <Label fx:id="movieTitleLabel" style="-fx-font-weight: bold; -fx-text-fill: #007bff;" text="Movie: No information available" wrapText="true" />
-                        <Label fx:id="showtimeLabel" text="Showtime: No information available" wrapText="true" />
-                        <Label fx:id="roomLabel" text="Room: No information available" wrapText="true" />
-                        <Label fx:id="seatsLabel" text="Seats: No information available" wrapText="true" />
-                        <Label fx:id="addonsLabel" text="Additional Services: None" wrapText="true" />
-                        <Label fx:id="totalPriceLabel" style="-fx-font-weight: bold; -fx-text-fill: #dc3545;" text="Total: 0 VND" wrapText="true" />
+                        <Label fx:id="movieTitleLabel" prefHeight="19.0" prefWidth="237.0" style="-fx-font-weight: bold; -fx-text-fill: #007bff;" styleClass="labelCaption" text="Movie: No information available" wrapText="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
+                        <Label fx:id="showtimeLabel" text="Showtime: No information available" wrapText="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
+                        <Label fx:id="roomLabel" text="Room: No information available" wrapText="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
+                        <Label fx:id="seatsLabel" text="Seats: No information available" wrapText="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
+                        <Label fx:id="addonsLabel" text="Additional Services: None" wrapText="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
+                        <Label fx:id="totalPriceLabel" style="-fx-font-weight: bold; -fx-text-fill: #dc3545;" styleClass="labelCaption" text="Total: 0 VND" wrapText="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
                     </children>
                 </VBox>
             </children>
@@ -39,8 +57,8 @@
         <!-- Available Lockers Grid -->
         <VBox layoutX="20.0" layoutY="80.0" prefWidth="650.0" spacing="10">
             <children>
-                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="AVAILABLE LOCKERS" />
-                <GridPane fx:id="lockerGrid" alignment="TOP_LEFT" hgap="8.0" prefHeight="350.0" prefWidth="650.0" vgap="8.0">
+                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" styleClass="labelCaption" text="AVAILABLE LOCKERS" />
+                <GridPane fx:id="lockerGrid" alignment="TOP_LEFT" hgap="8.0" prefHeight="322.0" prefWidth="650.0" vgap="8.0">
                     <padding>
                         <Insets bottom="10" left="10" right="10" top="10" />
                     </padding>
@@ -81,7 +99,7 @@
         </VBox>
 
         <!-- Locker Status Legend -->
-        <VBox layoutX="20.0" layoutY="666.0" prefHeight="74.0" prefWidth="418.0" spacing="8">
+        <VBox layoutX="20.0" layoutY="666.0" prefHeight="74.0" prefWidth="498.0" spacing="8">
             <children>
                 <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="LOCKER STATUS:" />
                 <HBox spacing="20">
@@ -89,25 +107,25 @@
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #4CAF50; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="Available" />
+                                <Label style="-fx-font-size: 13px;" styleClass="labelCaption" text="Available" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #2196F3; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="Selected" />
+                                <Label style="-fx-font-size: 13px;" styleClass="labelCaption" text="Selected" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #F44336; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="In Use" />
+                                <Label style="-fx-font-size: 13px;" styleClass="labelCaption" text="In Use" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="8">
                             <children>
                                 <Label prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #FF9800; -fx-background-radius: 3;" />
-                                <Label style="-fx-font-size: 13px;" text="Under Maintenance" />
+                                <Label style="-fx-font-size: 13px;" styleClass="labelCaption" text="Under Maintenance" />
                             </children>
                         </HBox>
                     </children>

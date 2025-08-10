@@ -39,7 +39,7 @@ public class RoomListController {
     @FXML private Spinner<Integer> spCols;
     @FXML private TextField tfTotalCap;
     @FXML private TextField tfRoomType;
-    @FXML private ComboBox<String> cbRoomStatus;
+    @FXML private TextField tfRoomStatus;
     @FXML private TextArea tfEquipment;
     @FXML private TextField tfCreatedAt;
     @FXML private TextField tfFind;
@@ -50,7 +50,6 @@ public class RoomListController {
     public void initialize() {
         setupTable();
         setupSpinners();
-        setupRoomStatusCombo();
         loadRoomData();
         tblRoomList.setOnMouseClicked(this::handleTableClick);
     }
@@ -58,9 +57,12 @@ public class RoomListController {
     private void setupTable() {
         colRoomID.setCellValueFactory(new PropertyValueFactory<>("roomId"));
         colRoomNumber.setCellValueFactory(new PropertyValueFactory<>("roomNumber"));
-        colRoomType.setCellValueFactory(new PropertyValueFactory<>("typeName")); // Assuming typeName is fetched via RoomTypeDAO
+        colRoomType.setCellValueFactory(new PropertyValueFactory<>("typeName"));
         colRoomStatus.setCellValueFactory(new PropertyValueFactory<>("roomStatus"));
         colRoomCap.setCellValueFactory(new PropertyValueFactory<>("totalCapacity"));
+
+        // Debug: Check if roomStatus is populated
+        tblRoomList.getItems().forEach(room -> System.out.println("Room Status: " + room.getRoomStatus()));
     }
 
     private void setupSpinners() {
@@ -71,11 +73,6 @@ public class RoomListController {
         tfSeatLayout.setText(spRows.getValue() + "x" + spCols.getValue());
         spRows.valueProperty().addListener((obs, oldVal, newVal) -> tfSeatLayout.setText(newVal + "x" + spCols.getValue()));
         spCols.valueProperty().addListener((obs, oldVal, newVal) -> tfSeatLayout.setText(spRows.getValue() + "x" + newVal));
-    }
-
-    private void setupRoomStatusCombo() {
-        cbRoomStatus = new ComboBox<>(FXCollections.observableArrayList("Available", "Unavailable", "Maintenance"));
-        cbRoomStatus.setValue("Available");
     }
 
     private void updateCapacity() {
@@ -98,7 +95,7 @@ public class RoomListController {
             String roomTypeName = RoomTypeDAO.getRoomTypeNameById(room.getRoomTypeId());
             tfRoomType.setText(roomTypeName);
 
-            cbRoomStatus.setValue(room.getRoomStatus());
+            tfRoomStatus.setText(room.getRoomStatus() != null ? room.getRoomStatus() : ""); // Updated for TextField
             tfCreatedAt.setText(room.getCreatedAt() != null ? room.getCreatedAt().toString() : LocalDateTime.now().toString());
 
             String[] layout = room.getSeatingLayout().split("x");

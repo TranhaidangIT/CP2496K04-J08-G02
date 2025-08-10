@@ -18,7 +18,7 @@
 
 
       <!--Sidebar-->
-      <VBox fx:id="sideBarManager" prefWidth="316.0" styleClass="sideBar" stylesheets="@../css/dashboard.css" visible="false">
+      <VBox fx:id="sideBarManager" prefWidth="316.0" styleClass="sideBar" stylesheets="@../css/dashboard.css">
          <children>
             <ImageView fx:id="avrManager" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <VBox.margin>
@@ -28,7 +28,7 @@
                   <Image url="@../icon/manager-pic.png" />
                </image>
             </ImageView>
-            <Label fx:id="helloManager" prefHeight="111.0" prefWidth="318.0" styleClass="helloUser" text="Hello, Manager" wrapText="true" />
+            <Label fx:id="helloManager" prefHeight="111.0" prefWidth="316.0" styleClass="helloUser" text="Hello, Manager" wrapText="true" />
             <Button fx:id="btnOverviewManager" onAction="#onOverviewClickedbyManager" prefHeight="60.0" prefWidth="316.0" styleClass="btnSelect" text="Overview">
                <graphic>
                   <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
@@ -65,7 +65,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="btnService" onAction="#onServiceClickedbyManager" prefHeight="60.0" prefWidth="382.0" styleClass="btnSelect" text="Service">
+            <Button fx:id="btnService" onAction="#onServiceClicked" prefHeight="60.0" prefWidth="382.0" styleClass="btnSelect" text="Service">
                <graphic>
                   <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
                      <image>
@@ -74,108 +74,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <AnchorPane prefHeight="156.0" prefWidth="316.0">
-               <children>
-                  <Button fx:id="btnLogoutManager" layoutY="99.0" onAction="#onLogoutClicked" prefHeight="50.0" prefWidth="150.0" styleClass="btnLogout" text="Logout">
-                     <graphic>
-                        <ImageView fitHeight="22.0" fitWidth="20.0" preserveRatio="true">
-                           <image>
-                              <Image url="@../icon/logout.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-               </children>
-            </AnchorPane>
-         </children>
-      </VBox>
-      <VBox fx:id="sideBarAdmin" prefWidth="316.0" styleClass="sideBar" stylesheets="@../css/dashboard.css">
-         <children>
-            <ImageView fx:id="avtAdmin" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <VBox.margin>
-                  <Insets left="79.0" top="50.0" />
-               </VBox.margin>
-               <image>
-                  <Image url="@../icon/businessman.png" />
-               </image>
-            </ImageView>
-            <Label fx:id="helloAdmin" prefHeight="111.0" prefWidth="318.0" styleClass="helloUser" text="Hello, Admin" wrapText="true" />
-            <Button fx:id="btnOverview" onAction="#handleDashboardClick" prefHeight="60.0" prefWidth="316.0" styleClass="btnSelect" text="Overview">
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../icon/house.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button fx:id="btnUser" onAction="#handleUserManageClick" prefHeight="60.0" prefWidth="324.0" styleClass="btnSelect" text="Manage User">
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../icon/user_management.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button fx:id="btnTicketsHistory" onAction="#handleTicketsHistoryClick" prefHeight="60.0" prefWidth="366.0" styleClass="btnSelect" text="Tickets History">
-               <graphic>
-                  <ImageView fitHeight="34.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
-               </graphic></Button>
-            <AnchorPane prefHeight="280.0" prefWidth="316.0">
-               <children>
-                  <Button fx:id="btnLogoutAdmin" layoutY="229.0" onAction="#onLogoutClicked" prefHeight="50.0" prefWidth="150.0" styleClass="btnLogout" text="Logout">
-                     <graphic>
-                        <ImageView fitHeight="22.0" fitWidth="20.0" preserveRatio="true">
-                           <image>
-                              <Image url="@../icon/logout.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-               </children>
-            </AnchorPane>
-         </children>
-      </VBox>
-      <VBox fx:id="sideBarEmployee" prefWidth="316.0" styleClass="sideBar" stylesheets="@../css/dashboard.css" visible="false">
-         <children>
-            <ImageView fx:id="avtEmployee" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <VBox.margin>
-                  <Insets left="79.0" top="50.0" />
-               </VBox.margin>
-               <image>
-                  <Image url="@../icon/staff.png" />
-               </image>
-            </ImageView>
-            <Label fx:id="helloEmployee" prefHeight="111.0" prefWidth="318.0" styleClass="helloUser" text="Hello, Employee" wrapText="true" />
-            <Button fx:id="btnOverviewEmp" onAction="#onOverviewClickedbyEmp" prefHeight="60.0" prefWidth="316.0" styleClass="btnSelect" text="Overview">
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../icon/house.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button fx:id="btnMovieList" onAction="#onMovieClickedbyEmp" prefHeight="60.0" prefWidth="324.0" styleClass="btnSelect" text="Movie Lists">
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../icon/multimedia.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button fx:id="btnSellTicket" onAction="#onSellTicketClickedbyEmp" prefHeight="60.0" prefWidth="366.0" styleClass="btnSelect" text="Sell Tickets">
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../icon/ticket-machine.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button fx:id="btnLocker" onAction="#onLockerClickedbyEmp" prefHeight="60.0" prefWidth="382.0" styleClass="btnSelect" text="Lockers For Guest">
+            <Button fx:id="btnLocker" onAction="#onLockerClicked" prefHeight="60.0" prefWidth="316.0" styleClass="btnSelect" text="Locker">
                <graphic>
                   <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
                      <image>
@@ -184,18 +83,9 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="btnTotal" onAction="#onTotalClickedbyEmp" prefHeight="60.0" prefWidth="382.0" styleClass="btnSelect" text="Totals">
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="66.0" preserveRatio="true">
-                     <image>
-                        <Image url="@../icon/economy.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <AnchorPane prefHeight="156.0" prefWidth="316.0">
+            <AnchorPane prefHeight="98.0" prefWidth="316.0">
                <children>
-                  <Button fx:id="btnLogoutEmp" layoutY="99.0" onAction="#onLogoutClicked" prefHeight="50.0" prefWidth="150.0" styleClass="btnLogout" text="Logout">
+                  <Button fx:id="btnLogoutManager" layoutY="35.0" onAction="#onLogoutClicked" prefHeight="60.0" prefWidth="150.0" styleClass="btnLogout" text="Logout">
                      <graphic>
                         <ImageView fitHeight="22.0" fitWidth="20.0" preserveRatio="true">
                            <image>

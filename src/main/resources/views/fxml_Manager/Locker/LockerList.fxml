@@ -11,20 +11,21 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.LockerListController">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" stylesheets="@../../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.LockerListController">
     <children>
         <VBox prefHeight="412.0" prefWidth="1000.0" AnchorPane.bottomAnchor="192.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <!-- Header and Controls -->
                 <HBox spacing="10" style="-fx-padding: 10;">
                     <children>
-                        <Button fx:id="btnAdd" onAction="#handleAddNewLocker" text="Add New Locker" />
-                        <Button fx:id="btnEdit" onAction="#openEditLockerForm" text="Edit Locker" />
+                        <Button fx:id="btnAdd" onAction="#handleAddNewLocker" styleClass="btnInsert" text="Add New Locker" />
+                        <Button fx:id="btnEdit" onAction="#openEditLockerForm" styleClass="btnEdit" text="Edit Locker" />
                         <ComboBox fx:id="cbStatusFilter" prefWidth="150.0" />
-                        <TextField fx:id="txtSearch" promptText="Search by number or location" />
-                        <Button fx:id="btnFind" onAction="#handleFind" text="Find" />
-                        <Button onAction="#handleClearFilter" text="Clear Filter" />
+                        <TextField fx:id="txtSearch" prefHeight="26.0" prefWidth="188.0" promptText="Search by number or location" />
+                        <Button fx:id="btnFind" onAction="#handleFind" prefHeight="26.0" prefWidth="58.0" text="Find" />
+                        <Button onAction="#handleClearFilter" prefHeight="26.0" prefWidth="93.0" text="Clear Filter" />
                     </children>
                 </HBox>
 
@@ -32,10 +33,10 @@
                 <TableView fx:id="tblLockers" onMouseClicked="#handleTableClick" prefHeight="355.0" prefWidth="979.0">
                     <columns>
                         <TableColumn fx:id="colId" prefWidth="100.0" text="ID" />
-                        <TableColumn fx:id="colNumber" prefWidth="150.0" text="Locker Number" />
-                        <TableColumn fx:id="colLocation" prefWidth="200.0" text="Location" />
-                        <TableColumn fx:id="colStatus" prefWidth="150.0" text="Status" />
-                        <TableColumn fx:id="colPinCode" prefWidth="100.0" text="PIN Code" />
+                        <TableColumn fx:id="colNumber" prefWidth="257.60005950927734" text="Locker Number" />
+                        <TableColumn fx:id="colLocation" prefWidth="266.3999328613281" text="Location" />
+                        <TableColumn fx:id="colStatus" prefWidth="114.39996337890625" text="Status" />
+                        <TableColumn fx:id="colPinCode" prefWidth="242.4000244140625" text="PIN Code" />
                     </columns>
                 </TableView>
             </children>
@@ -43,16 +44,25 @@
                 <Insets bottom="10" left="10" right="10" top="10" />
             </padding>
         </VBox>
-             <Label layoutX="43.0" layoutY="552.0" prefHeight="18.0" prefWidth="39.0" text="Status:" />
-             <Label layoutX="43.0" layoutY="507.0" text="Location:" />
-            <Label fx:id="selectedLockerLabel" layoutX="72.0" layoutY="586.0" text="Click on a locker to view details" />
-             <TextField fx:id="txtLocationInfo" editable="false" layoutX="154.0" layoutY="504.0" prefHeight="26.0" prefWidth="150.0" />
-            <Label fx:id="lblStatusInfo" layoutX="614.0" layoutY="586.0" text="Select a locker to view details" />
-             <Label layoutX="43.0" layoutY="465.0" text="Locker Number:" />
-             <TextField fx:id="txtLockerNumber" editable="false" layoutX="155.0" layoutY="461.0" />
-             <ComboBox fx:id="cbStatus" editable="false" layoutX="155.0" layoutY="548.0" prefHeight="26.0" prefWidth="112.0" />
+             <Label layoutX="89.0" layoutY="522.0" prefHeight="20.0" prefWidth="42.0" text="Status:">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+             <Label layoutX="74.0" layoutY="474.0" text="Location:">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+            <Label fx:id="selectedLockerLabel" layoutX="71.0" layoutY="572.0" text="Click on a locker to view details" />
+             <TextField fx:id="txtLocationInfo" editable="false" layoutX="153.0" layoutY="462.0" prefHeight="44.0" prefWidth="180.0" styleClass="textField" />
+            <Label fx:id="lblStatusInfo" layoutX="623.0" layoutY="572.0" text="Select a locker to view details" />
+             <Label layoutX="40.0" layoutY="428.0" text="Locker Number:">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+             <TextField fx:id="txtLockerNumber" editable="false" layoutX="153.0" layoutY="416.0" prefHeight="44.0" prefWidth="180.0" styleClass="textField" />
+             <ComboBox fx:id="cbStatus" editable="false" layoutX="153.0" layoutY="510.0" prefHeight="44.0" prefWidth="180.0" styleClass="comboBox" />
 
           <!-- Locker Grid -->
-          <GridPane fx:id="lockerGrid" hgap="5" layoutX="379.0" layoutY="413.0" prefHeight="159.0" prefWidth="587.0" style="-fx-padding: 10;" vgap="5" />
+          <GridPane fx:id="lockerGrid" hgap="5" layoutX="377.0" layoutY="404.0" prefHeight="159.0" prefWidth="613.0" style="-fx-padding: 10;" styleClass="bg-white" stylesheets="@../../../css/manager.css" vgap="5" />
     </children>
 </AnchorPane>

@@ -12,10 +12,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1124.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.SellAddonsController">
+<AnchorPane prefHeight="768.0" prefWidth="1124.0" stylesheets="@../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerEmployees.SellAddonsController">
     <children>
         <!-- Title -->
-        <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="59.0" prefWidth="200.0" text="Additional Services">
+        <Label alignment="CENTER" layoutX="23.0" layoutY="14.0" prefHeight="59.0" prefWidth="250.0" styleClass="titleSub" text="Additional Services">
             <font>
                 <Font size="24.0" />
             </font>
@@ -29,22 +29,22 @@
         </Label>
 
         <!-- Search Bar -->
-        <TextField fx:id="searchField" layoutX="14.0" layoutY="85.0" prefHeight="34.0" prefWidth="300.0" promptText="🔍 Search Services" style="-fx-padding: 8; -fx-background-radius: 5; -fx-border-radius: 5;" />
+        <TextField fx:id="searchField" layoutX="23.0" layoutY="85.0" prefHeight="34.0" prefWidth="300.0" promptText="🔍 Search Services" style="-fx-padding: 8; -fx-background-radius: 5; -fx-border-radius: 5;" styleClass="search-bar" stylesheets="@../../css/manager.css" />
 
         <!-- Category Filter -->
-        <ComboBox fx:id="categoryFilter" layoutX="330.0" layoutY="89.0" onAction="#filterByCategory" prefHeight="26.0" prefWidth="110.0" promptText="Category" />
+        <ComboBox fx:id="categoryFilter" layoutX="333.0" layoutY="80.0" onAction="#filterByCategory" prefHeight="44.0" prefWidth="130.0" promptText="Category" styleClass="comboBox" />
 
         <!-- Services Table -->
         <TableView fx:id="addonsTable" layoutX="14.0" layoutY="130.0" prefHeight="400.0" prefWidth="450.0">
             <columns>
-                <TableColumn fx:id="serviceNameColumn" prefWidth="200" text="Service Name" />
-                <TableColumn fx:id="priceColumn" prefWidth="100" text="Price" />
+                <TableColumn fx:id="serviceNameColumn" prefWidth="189.59997177124023" text="Service Name" />
+                <TableColumn fx:id="priceColumn" prefWidth="110.40000915527344" text="Price" />
                 <TableColumn fx:id="categoryColumn" prefWidth="150" text="Category" />
             </columns>
         </TableView>
 
         <!-- Add to Cart Button -->
-        <Button fx:id="addToCartButton" layoutX="14.0" layoutY="540.0" onAction="#handleAddToCart" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Add to Cart" />
+        <Button fx:id="addToCartButton" layoutX="14.0" layoutY="540.0" onAction="#handleAddToCart" prefHeight="30.0" prefWidth="100.0" styleClass="btnInsert" text="Add to Cart" />
 
         <!-- Image and Selected Service Info -->
         <ImageView fx:id="productImage" fitHeight="200.0" fitWidth="250.0" layoutX="480.0" layoutY="130.0" preserveRatio="true" />
@@ -55,17 +55,17 @@
         <ListView fx:id="cartListView" layoutX="750.0" layoutY="155.0" prefHeight="200.0" prefWidth="350.0" />
 
         <!-- Remove from Cart Button -->
-        <Button fx:id="removeFromCartButton" layoutX="865.0" layoutY="369.0" onAction="#handleRemoveFromCart" prefHeight="30.0" prefWidth="120.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Remove from Cart" />
+        <Button fx:id="removeFromCartButton" layoutX="865.0" layoutY="369.0" onAction="#handleRemoveFromCart" prefHeight="35.0" prefWidth="151.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Remove from Cart" />
 
         <!-- Total Amount -->
-        <Label fx:id="totalLabel" layoutX="750.0" layoutY="410.0" prefHeight="127.0" prefWidth="350.0" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #f8f9fa; -fx-padding: 10; -fx-border-color: #dee2e6; -fx-border-radius: 5; -fx-background-radius: 5;" text="Total: 0 VND" wrapText="true" />
+        <Label fx:id="totalLabel" layoutX="750.0" layoutY="427.0" prefHeight="127.0" prefWidth="350.0" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #f8f9fa; -fx-padding: 10; -fx-border-color: #dee2e6; -fx-border-radius: 5; -fx-background-radius: 5;" text="Total: 0 VND" wrapText="true" />
 
         <!-- Action Buttons -->
-        <HBox layoutX="749.0" layoutY="570.0" spacing="10.0">
+        <HBox layoutX="780.0" layoutY="570.0" spacing="10.0">
             <children>
-                <Button fx:id="backToSeatsButton" onAction="#handleBackToSeats" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white;" text="Back" />
-                <Button fx:id="skipAddonsButton" onAction="#handleSkipAddons" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Skip" />
-                <Button fx:id="finishOrderButton" onAction="#handleFinishOrder" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Complete" />
+                <Button fx:id="backToSeatsButton" onAction="#handleBackToSeats" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white;" text="← Back" />
+                <Button fx:id="skipAddonsButton" onAction="#handleSkipAddons" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Skip" />
+                <Button fx:id="finishOrderButton" onAction="#handleFinishOrder" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Complete" />
             </children>
         </HBox>
     </children>
