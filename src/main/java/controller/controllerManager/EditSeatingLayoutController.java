@@ -30,7 +30,6 @@ public class EditSeatingLayoutController {
     @FXML private GridPane seatGrid;
     @FXML private Button btnEditLayout;
 
-    // Legend elements for seat types color coding
     @FXML private AnchorPane legendStandardColor;
     @FXML private Label legendStandardLabel;
     @FXML private AnchorPane legendVIPColor;
@@ -40,6 +39,8 @@ public class EditSeatingLayoutController {
     @FXML private AnchorPane legendGoldColor;
     @FXML private Label legendGoldLabel;
 
+    @FXML private Label lblTotalCapacity;
+
     private List<Seat> seatsInRoom;
     private List<SeatType> allSeatTypes;
     private ScreeningRoom currentRoom;
@@ -48,31 +49,22 @@ public class EditSeatingLayoutController {
 
     @FXML
     public void initialize() {
-        // Set background color of seating area and spacing between seats
         seatingArea.setStyle("-fx-background-color: #f0f0f0;");
         seatGrid.setHgap(5);
         seatGrid.setVgap(5);
     }
 
-    /**
-     * Sets the current screening room data, loads seat types,
-     * loads seats for the room, and generates the seating grid UI.
-     * @param room The ScreeningRoom object to edit
-     */
     public void setRoomData(ScreeningRoom room) {
         this.currentRoom = room;
 
-        // Load all seat types from database
         loadSeatTypes();
-
-        // Load all seats for the current room from DB
         seatsInRoom = SeatDAO.getSeatsByRoomId(room.getRoomId());
+
         if (seatsInRoom.isEmpty()) {
             System.err.println("No seats found for room " + room.getRoomNumber());
             return;
         }
 
-        // Calculate max rows (A-Z) and columns (1-N) based on seats data
         int maxRow = 0, maxCol = 0;
         for (Seat s : seatsInRoom) {
             int rowIndex = s.getSeatRow() - 'A';
@@ -80,10 +72,9 @@ public class EditSeatingLayoutController {
             maxCol = Math.max(maxCol, s.getSeatColumn());
         }
 
-        // Generate the seat grid UI with proper row and column counts
         generateSeatGrid(maxRow + 1, maxCol);
 
-        // Collect all seat types present in this room for showing legends
+        // Cập nhật hiển thị legend
         Set<String> seatTypesInRoom = new HashSet<>();
         for (Seat seat : seatsInRoom) {
             SeatType type = seat.getSeatType();
@@ -91,23 +82,16 @@ public class EditSeatingLayoutController {
                 seatTypesInRoom.add(type.getSeatTypeName().toLowerCase());
             }
         }
-        // Update legend visibility based on seat types found in the room
         updateLegendVisibility(seatTypesInRoom);
+
+        updateActiveSeatCount();
     }
 
-    /**
-     * Loads all seat types from the database.
-     */
     private void loadSeatTypes() {
         allSeatTypes = SeatTypeDAO.getAllSeatTypes();
     }
 
-    /**
-     * Updates the visibility of seat type legends based on seat types in the room.
-     * @param seatTypesInRoom Set of seat type names present in the current room
-     */
     private void updateLegendVisibility(Set<String> seatTypesInRoom) {
-        // Hide all legend elements initially
         legendStandardColor.setVisible(false);
         legendStandardLabel.setVisible(false);
         legendVIPColor.setVisible(false);
@@ -117,7 +101,6 @@ public class EditSeatingLayoutController {
         legendGoldColor.setVisible(false);
         legendGoldLabel.setVisible(false);
 
-        // Show only legends for seat types that exist in this room
         for (String type : seatTypesInRoom) {
             switch (type) {
                 case "standard":
@@ -140,23 +123,17 @@ public class EditSeatingLayoutController {
         }
     }
 
-    /**
-     * Generates the seating grid layout with seat rectangles and labels.
-     * Supports clicking seats to toggle active/inactive status (hide/show).
-     * @param rowCount Number of seat rows
-     * @param columnCount Number of seat columns
-     */
     private void generateSeatGrid(int rowCount, int columnCount) {
         seatGrid.getChildren().clear();
 
-        // Add column headers (1, 2, ..., columnCount)
+        // Header cột
         for (int col = 1; col <= columnCount; col++) {
             Label colLabel = new Label(String.valueOf(col));
             colLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: black;");
             seatGrid.add(colLabel, col, 0);
         }
 
-        // Add row headers (A, B, ..., based on rowCount)
+        // Header hàng
         for (int row = 1; row <= rowCount; row++) {
             char rowChar = (char) ('A' + row - 1);
             Label rowLabel = new Label(String.valueOf(rowChar));
@@ -164,19 +141,16 @@ public class EditSeatingLayoutController {
             seatGrid.add(rowLabel, 0, row);
         }
 
-        // Add seat rectangles with labels in the grid
+        // Ghế
         for (Seat seat : seatsInRoom) {
-            int rowIndex = seat.getSeatRow() - 'A' + 1; // grid row index (1-based)
-            int colIndex = seat.getSeatColumn();       // grid column index
-
+            int rowIndex = seat.getSeatRow() - 'A' + 1;
+            int colIndex = seat.getSeatColumn();
             String seatLabel = seat.getSeatRow() + String.valueOf(seat.getSeatColumn());
 
-            // Create a rectangle representing the seat
             Rectangle rect = new Rectangle(30, 30);
             String seatTypeName = (seat.getSeatType() != null) ? seat.getSeatType().getSeatTypeName() : "";
             Color originalColor = getColorForSeatType(seatTypeName);
 
-            // Fill color: original color if active, light gray if inactive
             if (seat.isActive()) {
                 rect.setFill(originalColor);
             } else {
@@ -185,22 +159,17 @@ public class EditSeatingLayoutController {
             rect.setStroke(Color.WHITE);
             rect.setStrokeWidth(1);
 
-            // Label on top of rectangle showing seat code (e.g., A1)
             Label label = new Label(seatLabel);
             label.setStyle("-fx-font-size: 10px; -fx-text-fill: white; -fx-font-weight: bold;");
 
             StackPane seatPane = new StackPane(rect, label);
             seatPane.setId(seatLabel);
 
-            // Click event handler to toggle seat active status and update UI
             seatPane.setOnMouseClicked(event -> {
                 if (seat.isActive()) {
                     if (rect.getStroke() != Color.RED) {
-                        // Select seat: add red border
                         rect.setStroke(Color.RED);
                         rect.setStrokeWidth(2);
-
-                        // Remove red border from other seats
                         for (Node node : seatGrid.getChildren()) {
                             if (node instanceof StackPane && node != seatPane) {
                                 Node child = ((StackPane) node).getChildren().get(0);
@@ -211,20 +180,18 @@ public class EditSeatingLayoutController {
                             }
                         }
                     } else {
-                        // Hide seat by graying out and removing stroke, mark inactive
                         rect.setFill(Color.LIGHTGRAY);
                         rect.setStroke(Color.TRANSPARENT);
                         seat.setActive(false);
                     }
                 } else {
-                    // Show seat again with original color and stroke, mark active
                     rect.setFill(originalColor);
                     rect.setStroke(Color.WHITE);
                     rect.setStrokeWidth(1);
                     seat.setActive(true);
                 }
 
-                // Debug print seat status
+                updateActiveSeatCount();
                 System.out.println("Click " + seatLabel + " -> active: " + seat.isActive());
             });
 
@@ -232,11 +199,14 @@ public class EditSeatingLayoutController {
         }
     }
 
-    /**
-     * Returns the color for a seat type.
-     * @param typeName Seat type name string
-     * @return Corresponding Color object
-     */
+    private void updateActiveSeatCount() {
+        activeSeatCount = (int) seatsInRoom.stream().filter(Seat::isActive).count();
+        if (lblTotalCapacity != null) {
+            lblTotalCapacity.setText(String.valueOf(activeSeatCount));
+        }
+        currentRoom.setTotalCapacity(activeSeatCount);
+    }
+
     private Color getColorForSeatType(String typeName) {
         if (typeName == null) return Color.GRAY;
 
@@ -249,61 +219,32 @@ public class EditSeatingLayoutController {
         }
     }
 
-    /**
-     * Updates the room's total capacity in the database based on active seats.
-     */
-    private void updateRoomCapacityInDatabase() {
-        int activeSeats = 0;
-        for (Seat seat : seatsInRoom) {
-            if (seat.isActive()) {
-                activeSeats++;
-            }
-        }
-
-        currentRoom.setTotalCapacity(activeSeats);
-        ScreeningRoomDAO.updateRoomCapacity(currentRoom.getRoomId(), activeSeats);
-    }
-
-    /**
-     * Handles the update button action.
-     * Saves changes to seats and shows confirmation or error alerts.
-     * @param actionEvent The action event triggered by the update button
-     */
     public void handleUpdate(ActionEvent actionEvent) {
-        // Validate that room and seats are loaded
         if (currentRoom == null || seatsInRoom == null) {
             System.err.println("Room or seat data is missing");
             return;
         }
 
-        // Call DAO to update seats in the room
+        ScreeningRoomDAO.updateRoomCapacity(currentRoom.getRoomId(), activeSeatCount);
+
         boolean success = SeatDAO.updateSeatsInRoom(currentRoom.getRoomId(), seatsInRoom);
 
+        Alert alert;
         if (success) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Update Successful");
-            alert.setHeaderText(null);
             alert.setContentText("Seating layout updated successfully!");
             alert.showAndWait();
-
-            // Close the form after successful update
             handleCancel(actionEvent);
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Update Failed");
-            alert.setHeaderText(null);
             alert.setContentText("Failed to update seating layout.");
             alert.showAndWait();
         }
     }
 
-    /**
-     * Handles the cancel button action.
-     * Closes the current window.
-     * @param actionEvent The action event triggered by the cancel button
-     */
     public void handleCancel(ActionEvent actionEvent) {
-        // Get the current stage from any node and close it
         Node source = (Node) actionEvent.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();

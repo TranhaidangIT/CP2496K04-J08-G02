@@ -10,35 +10,37 @@ import java.util.List;
 
 public class UserDAO {
 
-    public static User login(String username, String plainPassword) {
+    public static User login(String username, String plainPassword) throws SQLException {
         String sql = "SELECT * FROM Users WHERE username = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                String hashedPassword = rs.getString("passwordHash");
-                if (PasswordUtil.checkPassword(plainPassword, hashedPassword)) {
-                    return new User(
-                            rs.getInt("userId"),
-                            rs.getString("employeeId"),
-                            rs.getString("username"),
-                            hashedPassword,
-                            rs.getString("fullName"),
-                            rs.getString("email"),
-                            rs.getString("phone"),
-                            rs.getString("role"),
-                            rs.getTimestamp("createdAt")
-                    );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String hashedPassword = rs.getString("passwordHash");
+                    if (PasswordUtil.checkPassword(plainPassword, hashedPassword)) {
+                        User user = new User(
+                                rs.getInt("userId"),
+                                rs.getString("employeeId"),
+                                rs.getString("username"),
+                                hashedPassword,
+                                rs.getString("fullName"),
+                                rs.getString("email"),
+                                rs.getString("phone"),
+                                rs.getString("role"),
+                                rs.getTimestamp("createdAt")
+                        );
+                        user.setSecurityQuestion(rs.getString("securityQuestion"));
+                        user.setSecurityAnswer(rs.getString("securityAnswer"));
+                        return user;
+                    }
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return null;
     }
 
-    public static List<User> getAllUsers() {
+    public static List<User> getAllUsers() throws SQLException {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM Users ORDER BY userId DESC";
         try (Connection conn = DBConnection.getConnection();
@@ -56,154 +58,235 @@ public class UserDAO {
                         rs.getString("role"),
                         rs.getTimestamp("createdAt")
                 );
+                u.setSecurityQuestion(rs.getString("securityQuestion"));
+                u.setSecurityAnswer(rs.getString("securityAnswer"));
                 list.add(u);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return list;
     }
 
-    public static boolean addUser(User u) {
-        return insertUser(u);
-    }
+    public static boolean addUser(User u) throws SQLException {
+        String sql = "INSERT INTO Users (employeeId, username, passwordHash, fullName, email, phone, role, securityQuestion, securityAnswer, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                String hashedPassword = PasswordUtil.hashPassword(u.getPassword());
+                String hashedSecurityAnswer = PasswordUtil.hashPassword(u.getSecurityAnswer()); // Hash security answer
 
-    public static boolean insertUser(User u) {
-        String sql = "INSERT INTO Users (employeeId, username, passwordHash, fullName, email, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            String hashed = PasswordUtil.hashPassword(u.getPassword());
-            ps.setString(1, u.getEmployeeId());
-            ps.setString(2, u.getUsername());
-            ps.setString(3, hashed);
-            ps.setString(4, u.getFullName());
-            ps.setString(5, u.getEmail());
-            ps.setString(6, u.getPhone());
-            ps.setString(7, u.getRole());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+                ps.setString(1, u.getEmployeeId());
+                ps.setString(2, u.getUsername());
+                ps.setString(3, hashedPassword);
+                ps.setString(4, u.getFullName());
+                ps.setString(5, u.getEmail());
+                ps.setString(6, u.getPhone());
+                ps.setString(7, u.getRole());
+                ps.setString(8, u.getSecurityQuestion());
+                ps.setString(9, hashedSecurityAnswer);
+                // createdAt is set to NOW() in the query
+
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    conn.commit(); // Commit transaction
+                    return true;
+                }
+                conn.rollback(); // Rollback on failure
+                return false;
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback on exception
+                throw e;
+            } finally {
+                conn.setAutoCommit(true); // Restore auto-commit
+            }
         }
-        return false;
     }
 
-    public static boolean updateUser(User u) {
-        String sql = "UPDATE Users SET fullName = ?, email = ?, phone = ?, role = ? WHERE userId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, u.getFullName());
-            ps.setString(2, u.getEmail());
-            ps.setString(3, u.getPhone());
-            ps.setString(4, u.getRole());
-            ps.setInt(5, u.getUserId());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public static boolean updateUser(User u) throws SQLException {
+        String sql = "UPDATE Users SET employeeId = ?, username = ?, passwordHash = ?, fullName = ?, email = ?, phone = ?, role = ?, securityQuestion = ?, securityAnswer = ? WHERE userId = ?";
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, u.getEmployeeId());
+                ps.setString(2, u.getUsername());
+                ps.setString(3, u.getPassword()); // Assuming password is already hashed
+                ps.setString(4, u.getFullName());
+                ps.setString(5, u.getEmail());
+                ps.setString(6, u.getPhone());
+                ps.setString(7, u.getRole());
+                ps.setString(8, u.getSecurityQuestion());
+                ps.setString(9, PasswordUtil.hashPassword(u.getSecurityAnswer())); // Hash security answer
+                ps.setInt(10, u.getUserId());
+
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    conn.commit(); // Commit transaction
+                    return true;
+                }
+                conn.rollback(); // Rollback on failure
+                return false;
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback on exception
+                throw e;
+            } finally {
+                conn.setAutoCommit(true); // Restore auto-commit
+            }
         }
-        return false;
     }
 
-    public static boolean deleteUser(int userId) {
+    public static boolean deleteUser(int userId) throws SQLException {
         String sql = "DELETE FROM Users WHERE userId = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    conn.commit(); // Commit transaction
+                    return true;
+                }
+                conn.rollback(); // Rollback on failure
+                return false;
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback on exception
+                throw e;
+            } finally {
+                conn.setAutoCommit(true); // Restore auto-commit
+            }
         }
-        return false;
     }
 
-    public static boolean updatePasswordByUsername(String username, String newPlainPassword) {
+    public static boolean updatePasswordByUsername(String username, String newPlainPassword) throws SQLException {
         String sql = "UPDATE Users SET passwordHash = ? WHERE username = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            String hashed = PasswordUtil.hashPassword(newPlainPassword);
-            ps.setString(1, hashed);
-            ps.setString(2, username);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                String hashed = PasswordUtil.hashPassword(newPlainPassword);
+                ps.setString(1, hashed);
+                ps.setString(2, username);
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    conn.commit(); // Commit transaction
+                    return true;
+                }
+                conn.rollback(); // Rollback on failure
+                return false;
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback on exception
+                throw e;
+            } finally {
+                conn.setAutoCommit(true); // Restore auto-commit
+            }
         }
-        return false;
     }
 
-    public static boolean updatePasswordByEmail(String email, String newPlainPassword) {
+    public static boolean updatePasswordByEmail(String email, String newPlainPassword) throws SQLException {
         String sql = "UPDATE Users SET passwordHash = ? WHERE email = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            String hashedPassword = PasswordUtil.hashPassword(newPlainPassword);
-            ps.setString(1, hashedPassword);
-            ps.setString(2, email);
-            int affectedRows = ps.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            System.err.println("Error updating password by email: " + e.getMessage());
-            e.printStackTrace();
-            return false;
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false); // Start transaction
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                String hashedPassword = PasswordUtil.hashPassword(newPlainPassword);
+                ps.setString(1, hashedPassword);
+                ps.setString(2, email);
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    conn.commit(); // Commit transaction
+                    return true;
+                }
+                conn.rollback(); // Rollback on failure
+                return false;
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback on exception
+                throw e;
+            } finally {
+                conn.setAutoCommit(true); // Restore auto-commit
+            }
         }
     }
 
-    public static boolean isEmailExists(String email) {
+    public static boolean isEmailExists(String email) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Users WHERE email = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return false;
     }
 
-    public static boolean isEmployeeIdExists(String employeeId) {
+    public static boolean isEmployeeIdExists(String employeeId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Users WHERE employeeId = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, employeeId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return false;
     }
 
-    public static boolean isUsernameExists(String username) {
+    public static boolean isUsernameExists(String username) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Users WHERE username = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return false;
     }
 
-    public static boolean isUserExists(String employeeId, String username, String email) {
+    public static boolean isUserExists(String employeeId, String username, String email) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Users WHERE employeeId = ? AND username = ? AND email = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, employeeId);
             ps.setString(2, username);
             ps.setString(3, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return false;
+    }
+
+    public static int getTotalUsersCount() throws SQLException {
+        String query = "SELECT COUNT(*) FROM Users";
+        try (Connection con = DBConnection.getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting total users count: " + e.getMessage());
+            throw e;
+        }
+        return 0;
+    }
+
+    public static String[] getSecurityQuestionAndAnswer(String username) throws SQLException {
+        String sql = "SELECT securityQuestion, securityAnswer FROM Users WHERE username = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{rs.getString("securityQuestion"), rs.getString("securityAnswer")};
+                }
+            }
+        }
+        return null;
     }
 }

@@ -17,9 +17,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
- * Controller xử lý đăng nhập cho 3 vai trò: admin, manage, employee.
+ * Controller handling login for 3 roles: admin, manager, employee.
  */
 public class LoginController {
 
@@ -30,24 +31,24 @@ public class LoginController {
     private PasswordField passwordField;
 
     /**
-     * Xử lý khi nhấn nút Đăng nhập.
+     * Handles when the Login button is clicked.
      */
     @FXML
-    private void handleLogin(ActionEvent event) {
+    private void handleLogin(ActionEvent event) throws SQLException {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Gọi DAO để kiểm tra username & password
+        // Call DAO to check username & password
         User user = UserDAO.login(username, password);
 
         if (user != null) {
-            // Lưu thông tin user vào session
+            // Save user information into session
             Session.setCurrentUser(user);
 
-            // Hiển thị thông báo
-            showAlert(AlertType.INFORMATION, "Thành công", "Chào mừng " + user.getFullName());
+            // Show notification
+            showAlert(AlertType.INFORMATION, "Success", "Welcome " + user.getFullName());
 
-            // Chuyển theo vai trò
+            // Redirect based on role
             switch (user.getRole().toLowerCase()) {
                 case "admin":
                     loadScene("/views/AdminDashboard.fxml", event);
@@ -59,16 +60,16 @@ public class LoginController {
                     loadScene("/views/EmployeeSidebar.fxml", event);
                     break;
                 default:
-                    showAlert(AlertType.ERROR, "Lỗi", "Vai trò không xác định.");
+                    showAlert(AlertType.ERROR, "Error", "Undefined role.");
             }
 
         } else {
-            showAlert(AlertType.ERROR, "Đăng nhập thất bại", "Sai tài khoản hoặc mật khẩu.");
+            showAlert(AlertType.ERROR, "Login Failed", "Incorrect username or password.");
         }
     }
 
     /**
-     * Hiển thị cảnh báo dạng popup.
+     * Display a popup alert.
      */
     private void showAlert(AlertType type, String title, String message) {
         Alert alert = new Alert(type);
@@ -79,7 +80,7 @@ public class LoginController {
     }
 
     /**
-     * Mở giao diện mới.
+     * Open a new interface.
      */
     private void loadScene(String fxmlPath, ActionEvent event) {
         try {
@@ -90,15 +91,15 @@ public class LoginController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(AlertType.ERROR, "Lỗi", "Không thể tải giao diện: " + fxmlPath);
+            showAlert(AlertType.ERROR, "Error", "Unable to load interface: " + fxmlPath);
         }
     }
 
     /**
-     * Mở giao diện quên mật khẩu khi nhấn link "Forgot Password?".
+     * Open the Forgot Password interface when clicking "Forgot Password?" link.
      */
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        loadScene("/views/fxml_Admin/ForgotPassword_Step1.fxml", event);
+        loadScene("/views/fxml_Admin/ForgotPassword.fxml", event);
     }
 }

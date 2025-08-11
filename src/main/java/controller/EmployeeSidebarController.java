@@ -102,7 +102,7 @@ public class EmployeeSidebarController {
     private void onLogoutClicked(ActionEvent event) {
         try {
             Node source = (Node) event.getSource();
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml_Login/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/views/fxml_Admin/login.fxml"));
             source.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();

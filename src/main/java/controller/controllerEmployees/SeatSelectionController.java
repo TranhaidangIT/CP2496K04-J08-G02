@@ -55,7 +55,7 @@ public class SeatSelectionController {
         seatTypePrices = new HashMap<>();
         if (showtimeLabel == null || seatGrid == null || totalPriceLabel == null ||
                 cancelButton == null || confirmButton == null) {
-            System.err.println("Lỗi: Một hoặc nhiều fx:id không được khởi tạo đúng trong SeatSelection.fxml");
+            System.err.println("Error: One or more fx:id not initialized properly in SeatSelection.fxml");
         }
         updateTotalPrice();
     }
@@ -65,7 +65,7 @@ public class SeatSelectionController {
         System.out.println("setData called with showtime: " + (showtime != null ? showtime.toString() : "null"));
 
         if (selectedShowtime == null) {
-            showErrorAlert("Lỗi suất chiếu", "Không có thông tin suất chiếu. Vui lòng chọn lại suất chiếu.");
+            showErrorAlert("Error showtime", "Cant found showtime information.");
             return;
         }
 
@@ -102,28 +102,43 @@ public class SeatSelectionController {
             loadSeats();
             updateTotalPrice();
         } else {
-            showErrorAlert("Dữ liệu không hợp lệ", "Không tìm thấy thông tin đặt vé. Vui lòng thử lại.");
+            showErrorAlert("Database invalid", "Cant found booking data");
         }
     }
 
     private boolean validateShowtime() {
-        try (Connection conn = DBConnection.getConnection()) {
-            String checkQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
-            PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
-            checkStmt.setInt(1, selectedShowtime.getShowtimeId());
-            ResultSet rs = checkStmt.executeQuery();
-
-            if (rs.next() && rs.getInt(1) == 0) {
-                System.err.println("Lỗi: showtimeId " + selectedShowtime.getShowtimeId() + " không tồn tại trong bảng showtimes!");
-                showErrorAlert("Lỗi suất chiếu", "Suất chiếu không tồn tại trong cơ sở dữ liệu. Vui lòng kiểm tra lại.");
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            if (conn == null) {
+                showErrorAlert("Error", "Cant connect to database.");
                 return false;
+            }
+            String checkQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                checkStmt.setInt(1, selectedShowtime.getShowtimeId());
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        System.err.println("Error: showtimeId " + selectedShowtime.getShowtimeId() + " not exist in showtimes!");
+                        showErrorAlert("Error Showtime", "Showtime not existed in database");
+                        return false;
+                    }
+                }
             }
             return true;
         } catch (SQLException ex) {
-            System.err.println("Lỗi khi kiểm tra showtimeId: " + ex.getMessage());
+            System.err.println("Error check showtimeId: " + ex.getMessage());
             ex.printStackTrace();
-            showErrorAlert("Lỗi cơ sở dữ liệu", "Không thể kiểm tra suất chiếu: " + ex.getMessage());
+            showErrorAlert("Error Database", "Cant check showtime: " + ex.getMessage());
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error Database: " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -134,11 +149,11 @@ public class SeatSelectionController {
     }
 
     private void displayShowtimeInfo() {
-        System.out.println("Phim: " + selectedShowtime.getMovieTitle());
-        System.out.println("Phòng: " + selectedShowtime.getRoomName());
-        System.out.println("Ngày chiếu: " + selectedShowtime.getShowDate());
-        System.out.println("Giờ bắt đầu: " + selectedShowtime.getShowTime());
-        System.out.println("Giờ kết thúc: " + selectedShowtime.getEndTime());
+        System.out.println("Movie: " + selectedShowtime.getMovieTitle());
+        System.out.println("Room: " + selectedShowtime.getRoomName());
+        System.out.println("Showtime: " + selectedShowtime.getShowDate());
+        System.out.println("Start time: " + selectedShowtime.getShowTime());
+        System.out.println("End time: " + selectedShowtime.getEndTime());
 
         showtimeLabel.setText(
                 selectedShowtime.getMovieTitle() + " | " +
@@ -148,34 +163,51 @@ public class SeatSelectionController {
     }
 
     private void loadSeatTypePrices() {
-        try (Connection conn = DBConnection.getConnection()) {
-            String query = "SELECT seatTypeId, price FROM seatTypes";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                seatTypePrices.put(rs.getInt("seatTypeId"), rs.getDouble("price"));
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            if (conn == null) {
+                showErrorAlert("Error", "Cant connect to database.");
+                return;
             }
-            System.out.println("Đã tải giá ghế: " + seatTypePrices);
+            String query = "SELECT seatTypeId, price FROM seatTypes";
+            try (PreparedStatement stmt = conn.prepareStatement(query);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    seatTypePrices.put(rs.getInt("seatTypeId"), rs.getDouble("price"));
+                }
+            }
+            System.out.println("Loaded seat price: " + seatTypePrices);
         } catch (SQLException ex) {
-            System.err.println("Lỗi khi tải giá SeatType: " + ex.getMessage());
+            System.err.println("Error load SeatType price: " + ex.getMessage());
             ex.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error Database: " + e.getMessage());
+                }
+            }
         }
     }
 
     private void loadSeats() {
         seatGrid.getChildren().clear();
-        System.out.println("Tạo lưới ghế từ cơ sở dữ liệu");
+        System.out.println("Create gird seats");
         System.out.println("roomId: " + selectedShowtime.getRoomId());
 
-        try (Connection conn = DBConnection.getConnection()) {
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
             if (conn == null) {
-                showErrorAlert("Lỗi kết nối", "Không thể kết nối đến cơ sở dữ liệu.");
+                showErrorAlert("Error Connection", "Cant connect to database.");
                 return;
             }
 
             // Kiểm tra bảng seats
             if (!checkTableExists(conn, "seats")) {
-                showErrorAlert("Lỗi cơ sở dữ liệu", "Bảng seats không tồn tại.");
+                showErrorAlert("Error Database", "Table seats not exists!.");
                 return;
             }
 
@@ -186,13 +218,22 @@ public class SeatSelectionController {
             loadAndDisplaySeats(conn, bookedSeatIds);
 
         } catch (SQLException ex) {
-            showErrorAlert("Lỗi cơ sở dữ liệu", "Không thể tải danh sách ghế: " + ex.getMessage());
+            showErrorAlert("Error Database", "Cant load seat layout: " + ex.getMessage());
             ex.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error Connect: " + e.getMessage());
+                }
+            }
         }
     }
 
     private boolean checkTableExists(Connection conn, String tableName) throws SQLException {
-        String checkTableQuery = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'dbo' AND table_name = ?";
+        // Fixed for MySQL: Use actual database name instead of 'dbo' (which is for SQL Server)
+        String checkTableQuery = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'sql12793875' AND table_name = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkTableQuery)) {
             checkStmt.setString(1, tableName);
             try (ResultSet checkRs = checkStmt.executeQuery()) {
@@ -214,7 +255,7 @@ public class SeatSelectionController {
             }
         }
 
-        System.out.println("Số ghế đã đặt: " + bookedSeatIds.size());
+        System.out.println("Total Seat: " + bookedSeatIds.size());
         return bookedSeatIds;
     }
 
@@ -254,9 +295,9 @@ public class SeatSelectionController {
             }
         }
 
-        System.out.println("Số ghế được thêm vào seatGrid: " + seatCount);
+        System.out.println("Seat number added seatGrid: " + seatCount);
         if (seatCount == 0) {
-            showErrorAlert("Không có ghế", "Không tìm thấy ghế khả dụng cho phòng này.");
+            showErrorAlert("Null seats", "Seat not found in this room.");
         }
     }
 
@@ -283,7 +324,7 @@ public class SeatSelectionController {
     private void setupSeatInteraction(Button seat, SeatInfo seatInfo, int seatId, String seatRow,
                                       int seatColumn, String seatTypeName, int seatTypeId, boolean isBooked) {
         if (isBooked) {
-            return; // Không setup interaction cho ghế đã đặt
+            return;
         }
 
         seat.setOnMouseEntered(e -> {
@@ -393,12 +434,12 @@ public class SeatSelectionController {
             seatInfoMap.put("seatTypeId", seatTypeId);
             seatInfoMap.put("button", seat);
             selectedSeats.add(seatInfoMap);
-            System.out.println("Chọn ghế: " + seatRow + seatColumn + " (" + seatTypeName + ")");
+            System.out.println("Select seat: " + seatRow + seatColumn + " (" + seatTypeName + ")");
         } else {
             // Bỏ chọn ghế
             selectedSeats.remove(selectedSeat);
             seat.setStyle(getAvailableSeatStyle(seatInfo.color));
-            System.out.println("Bỏ chọn ghế: " + seatRow + seatColumn + " (" + seatTypeName + ")");
+            System.out.println("Deselect the seat: " + seatRow + seatColumn + " (" + seatTypeName + ")");
         }
         updateTotalPrice();
     }
@@ -407,12 +448,12 @@ public class SeatSelectionController {
         double totalPrice = selectedSeats.stream()
                 .mapToDouble(seat -> seatTypePrices.getOrDefault((int)seat.get("seatTypeId"), 0.0))
                 .sum();
-        totalPriceLabel.setText(String.format("Tổng tiền: %.2f", totalPrice));
+        totalPriceLabel.setText(String.format("Total: %.2f VND", totalPrice));
     }
 
     @FXML
     private void handleCancel() {
-        for (Map<String, Object> seatInfo : selectedSeats) {
+        for (Map<String, Object> seatInfo : new ArrayList<>(selectedSeats)) {
             Button seat = (Button) seatInfo.get("button");
             String seatTypeName = (String) seatInfo.get("seatTypeName");
             SeatInfo info = getSeatInfo(seatTypeName);
@@ -420,24 +461,24 @@ public class SeatSelectionController {
         }
         selectedSeats.clear();
         updateTotalPrice();
-        System.out.println("Hủy tất cả ghế đã chọn");
+        System.out.println("Cancel");
     }
 
     @FXML
     private void handleConfirm() {
         if (selectedSeats.isEmpty()) {
-            showErrorAlert("Chưa chọn ghế", "Vui lòng chọn ít nhất một ghế trước khi xác nhận.");
+            showErrorAlert("Haven't chosen a seat yet", "Please select at least one seat before confirming.");
             return;
         }
 
         User currentUser = Session.getCurrentUser();
         if (currentUser == null || currentUser.getUserId() == 0) {
-            showErrorAlert("Lỗi thông tin nhân viên", "Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.");
+            showErrorAlert("Error Employee Infomation", "Not found employee information.");
             return;
         }
 
         if (selectedShowtime == null || selectedShowtime.getShowtimeId() <= 0) {
-            showErrorAlert("Lỗi suất chiếu", "Suất chiếu không hợp lệ. Vui lòng chọn lại suất chiếu.");
+            showErrorAlert("Error Showtime", "showtime not found.");
             return;
         }
 
@@ -457,7 +498,7 @@ public class SeatSelectionController {
         // Lưu vào Session
         Session.setBookingData(bookingData);
 
-        System.out.println("Đã lưu thông tin đặt ghế vào Session. Chuyển sang SellAddons...");
+        System.out.println("Saved seats in Session. Loading SellAddons...");
 
         try {
             // Chuyển sang trang SellAddons
@@ -476,13 +517,13 @@ public class SeatSelectionController {
                 AnchorPane.setLeftAnchor(sellAddonsRoot, 0.0);
                 AnchorPane.setRightAnchor(sellAddonsRoot, 0.0);
             } else {
-                System.err.println("Không tìm thấy #contentArea trong scene!");
+                System.err.println("Not found information");
             }
 
         } catch (IOException ex) {
-            System.err.println("Lỗi khi tải SellAddons.fxml: " + ex.getMessage());
+            System.err.println("Error load SellAddons.fxml: " + ex.getMessage());
             ex.printStackTrace();
-            showErrorAlert("Lỗi", "Không thể chuyển sang trang bán addon: " + ex.getMessage());
+            showErrorAlert("Error", "Can't Addon Service Page: " + ex.getMessage());
         }
     }
 

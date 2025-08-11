@@ -2,6 +2,7 @@ package controller.controllerAdmin;
 
 import dao.UserDAO;
 import models.User;
+import utils.Session;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -28,54 +30,45 @@ public class UserController implements Initializable {
     @FXML private TableColumn<User, Integer> idCol;
     @FXML private TableColumn<User, String> usernameCol;
     @FXML private TableColumn<User, String> fullNameCol;
+    @FXML private TableColumn<User, String> emailCol;
     @FXML private TableColumn<User, String> roleCol;
     @FXML private TableColumn<User, Void> editCol;
     @FXML private TableColumn<User, Void> deleteCol;
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private TextField nameField;
-    @FXML private TextField roleField;
     @FXML private Button addNewButton;
-    @FXML private Button saveButton;
-    @FXML private Button cancelButton;
 
     private ObservableList<User> userList = FXCollections.observableArrayList();
-    private User currentUser;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         idCol.setCellValueFactory(new PropertyValueFactory<>("employeeId"));
         usernameCol.setCellValueFactory(new PropertyValueFactory<>("username"));
         fullNameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
         roleCol.setCellValueFactory(new PropertyValueFactory<>("role"));
 
         loadUserData();
         setupEditButtonColumn();
         setupDeleteButtonColumn();
-
-        userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                populateForm(newSelection);
-                currentUser = newSelection;
-            }
-        });
     }
 
     private void loadUserData() {
         userList.clear();
-        userList.addAll(UserDAO.getAllUsers());
+        try {
+            userList.addAll(UserDAO.getAllUsers());
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Data Load Error", "Unable to load user data from the database.");
+            e.printStackTrace();
+        }
         userTable.setItems(userList);
     }
 
     private void setupEditButtonColumn() {
         Callback<TableColumn<User, Void>, TableCell<User, Void>> cellFactory = param -> new TableCell<>() {
             private final Button btn = new Button("Edit");
-
             {
                 btn.setOnAction((ActionEvent event) -> {
-                    User user = getTableView().getItems().get(getIndex());
-                    populateForm(user);
-                    currentUser = user;
+                    User userToEdit = getTableView().getItems().get(getIndex());
+                    openEditUserDialog(userToEdit);
                 });
             }
 
@@ -108,8 +101,7 @@ public class UserController implements Initializable {
         deleteCol.setCellFactory(cellFactory);
     }
 
-    @FXML
-    private void handleSearch(ActionEvent event) {
+    @FXML private void handleSearch(ActionEvent event) {
         String keyword = searchField.getText().toLowerCase();
         ObservableList<User> filteredList = userList.filtered(user ->
                 user.getUsername().toLowerCase().contains(keyword) ||
@@ -119,8 +111,7 @@ public class UserController implements Initializable {
         userTable.setItems(filteredList);
     }
 
-    @FXML
-    private void handleAddNew(ActionEvent event) {
+    @FXML private void handleAddNew(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Admin/AddUserDialog.fxml"));
             Parent root = loader.load();
@@ -128,97 +119,78 @@ public class UserController implements Initializable {
             AddUserDialogController dialogController = loader.getController();
 
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Thêm Người Dùng Mới");
+            dialogStage.setTitle("Add New User");
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setScene(new Scene(root));
-
             dialogController.setDialogStage(dialogStage);
-
             dialogStage.showAndWait();
 
             if (dialogController.isSaveClicked()) {
                 User newUser = dialogController.getNewUser();
-                if (UserDAO.insertUser(newUser)) {
-                    showAlert(Alert.AlertType.INFORMATION, "Thành công", "Thêm người dùng thành công!");
-                    loadUserData();
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Thêm người dùng thất bại.");
+                try {
+                    if (UserDAO.addUser(newUser)) {
+                        showAlert(Alert.AlertType.INFORMATION, "Success", "User added successfully!");
+                        loadUserData();
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to add user.");
+                    }
+                } catch (SQLException e) {
+                    showAlert(Alert.AlertType.ERROR, "Database Error", "Unable to add user to the database.");
+                    e.printStackTrace();
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải giao diện thêm người dùng.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to load Add User interface.");
         }
     }
 
-    @FXML
-    private void handleSave(ActionEvent event) {
-        if (currentUser == null) {
-            // Logic thêm người dùng mới
-            // Code này đã được chuyển sang AddUserDialogController
-        } else {
-            // Cập nhật người dùng hiện tại
-            currentUser.setUsername(usernameField.getText());
-            currentUser.setFullName(nameField.getText());
-            currentUser.setRole(roleField.getText());
+    private void openEditUserDialog(User userToEdit) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Admin/EditUserDialog.fxml"));
+            Parent root = loader.load();
 
-            // Cập nhật mật khẩu nếu người dùng nhập mật khẩu mới
-            if (!passwordField.getText().isEmpty()) {
-                String newPassword = passwordField.getText();
-                if (UserDAO.updatePasswordByUsername(currentUser.getUsername(), newPassword)) {
-                    showAlert(Alert.AlertType.INFORMATION, "Thành công", "Cập nhật mật khẩu thành công!");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Cập nhật mật khẩu thất bại.");
-                    return;
-                }
-            }
+            EditUserDialogController dialogController = loader.getController();
+            dialogController.setUser(userToEdit);
 
-            if (UserDAO.updateUser(currentUser)) {
-                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Cập nhật người dùng thành công!");
-                loadUserData();
-                clearForm();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Cập nhật người dùng thất bại.");
-            }
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Edit User");
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setScene(new Scene(root));
+            dialogController.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+
+            loadUserData();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to load Edit User interface.");
         }
-    }
-
-    @FXML
-    private void handleCancel(ActionEvent event) {
-        clearForm();
-        currentUser = null;
-        userTable.getSelectionModel().clearSelection();
-        loadUserData();
-    }
-
-    private void populateForm(User user) {
-        usernameField.setText(user.getUsername());
-        passwordField.setText("");
-        nameField.setText(user.getFullName());
-        roleField.setText(user.getRole());
-    }
-
-    private void clearForm() {
-        usernameField.clear();
-        passwordField.clear();
-        nameField.clear();
-        roleField.clear();
     }
 
     private void confirmAndDeleteUser(User user) {
+        User currentUser = Session.getCurrentUser();
+        if (currentUser != null && user.getUserId() == currentUser.getUserId()) {
+            showAlert(Alert.AlertType.ERROR, "Delete User Error", "You cannot delete your own account!");
+            return;
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Xác nhận");
-        alert.setHeaderText("Xóa người dùng " + user.getUsername() + "?");
-        alert.setContentText("Bạn có chắc chắn muốn xóa người dùng này không?");
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Delete user " + user.getUsername() + "?");
+        alert.setContentText("Are you sure you want to delete this user?");
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            if (UserDAO.deleteUser(user.getUserId())) {
-                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Xóa người dùng thành công!");
-                loadUserData();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Xóa người dùng thất bại.");
+            try {
+                if (UserDAO.deleteUser(user.getUserId())) {
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "User deleted successfully!");
+                    loadUserData();
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete user.");
+                }
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Database Error", "Unable to delete user.");
+                e.printStackTrace();
             }
         }
     }

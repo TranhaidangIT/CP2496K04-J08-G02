@@ -2,6 +2,7 @@ package controller.controllerManager;
 
 import dao.RoomTypeDAO;
 import dao.ScreeningRoomDAO;
+import dao.SeatDAO;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -84,14 +85,14 @@ public class EditRoomController {
 
             RoomType selectedType = cbRoomType.getValue();
             if (selectedType == null) {
-                System.out.println("Vui lòng chọn loại phòng.");
+                System.out.println("Please select type of room");
                 return;
             }
 
             String equipment = tfEquipment.getText();
             String status = cbRoomStatus.getValue();
             if (status == null) {
-                System.out.println("Vui lòng chọn trạng thái phòng.");
+                System.out.println("Please select room status.");
                 return;
             }
 
@@ -102,13 +103,35 @@ public class EditRoomController {
             currentRoom.setEquipment(equipment);
             currentRoom.setRoomStatus(status);
 
-            ScreeningRoomDAO.updateRoom(currentRoom);
-            ((Stage) btnUpdate.getScene().getWindow()).close();
+            //Update Seat
+            boolean updated = ScreeningRoomDAO.updateRoom(currentRoom);
+
+            if (updated) {
+                //Delete old seat
+                SeatDAO.deleteSeatsByRoomId(currentRoom.getRoomId());
+
+                //Insert new seat
+                SeatDAO.insertSeatsForRoom(
+                        currentRoom.getRoomId(),
+                        rows,
+                        cols,
+                        selectedType.getRoomTypeId()
+                );
+
+                Alert info = new Alert(Alert.AlertType.INFORMATION);
+                info.setTitle("Room Updated");
+                info.setHeaderText(null);
+                info.setContentText("Room and seat layout updated successfully!");
+                info.showAndWait();
+
+                ((Stage) btnUpdate.getScene().getWindow()).close();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
 
     public void setRoomData(ScreeningRoom selected) {
@@ -141,10 +164,6 @@ public class EditRoomController {
             }
         }
     }
-
-    // ================================
-    // ========== INITIALIZER =========
-    // ================================
 
     public void initializeSpinners() {
         spinnerRows.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 5));

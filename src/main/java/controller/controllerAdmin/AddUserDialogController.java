@@ -10,27 +10,26 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
 import java.util.Random;
 import java.util.UUID;
 
 public class AddUserDialogController {
 
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField nameField;
-    @FXML
-    private TextField emailField;
-    @FXML
-    private TextField phoneField;
-    @FXML
-    private ComboBox<String> roleComboBox;
+    @FXML private TextField usernameField;
+    @FXML private TextField nameField;
+    @FXML private TextField emailField;
+    @FXML private TextField phoneField;
+    @FXML private ComboBox<String> roleComboBox;
+
+    // Add new fields for security question and answer
+    @FXML private TextField securityQuestionField;
+    @FXML private TextField securityAnswerField;
 
     private Stage dialogStage;
     private boolean saveClicked = false;
     private User newUser;
 
-    // Phương thức này được gọi tự động sau khi FXML đã được tải và các thành phần đã được tiêm
     @FXML
     private void initialize() {
         roleComboBox.setItems(FXCollections.observableArrayList("Admin", "Manager", "Employee"));
@@ -49,8 +48,7 @@ public class AddUserDialogController {
         return newUser;
     }
 
-    // Phương thức mới để tạo EmployeeId
-    private String generateEmployeeId(String role) {
+    private String generateEmployeeId(String role) throws SQLException {
         String prefix = "";
         switch (role) {
             case "Admin":
@@ -67,11 +65,9 @@ public class AddUserDialogController {
                 return uuid.substring(0, 10).toUpperCase();
         }
 
-        // Tạo phần số ngẫu nhiên không trùng lặp bằng cách gọi UserDAO
         String newId;
         Random random = new Random();
         do {
-            // Tạo số ngẫu nhiên
             int number = 100 + random.nextInt(900);
             newId = prefix + number;
         } while (UserDAO.isEmployeeIdExists(newId));
@@ -83,24 +79,28 @@ public class AddUserDialogController {
     private void handleSave() {
         if (isInputValid()) {
             newUser = new User();
+            try {
+                String role = roleComboBox.getValue();
+                String employeeId = generateEmployeeId(role);
 
-            // Lấy vai trò trước
-            String role = roleComboBox.getValue();
-            // Tạo mã ID dựa trên vai trò đã chọn
-            String employeeId = generateEmployeeId(role);
+                newUser.setEmployeeId(employeeId);
+                newUser.setUsername(usernameField.getText());
+                newUser.setPassword("123");
+                newUser.setFullName(nameField.getText());
+                newUser.setEmail(emailField.getText());
+                newUser.setPhone(phoneField.getText());
+                newUser.setRole(role);
+                // Get values from new fields and assign them to the User object
+                newUser.setSecurityQuestion(securityQuestionField.getText());
+                newUser.setSecurityAnswer(securityAnswerField.getText());
 
-            newUser.setEmployeeId(employeeId);
-            newUser.setUsername(usernameField.getText());
-            newUser.setPassword("123");
-            newUser.setFullName(nameField.getText());
-            newUser.setEmail(emailField.getText());
-            newUser.setPhone(phoneField.getText());
-            newUser.setRole(role);
+                saveClicked = true;
+                dialogStage.close();
 
-
-
-            saveClicked = true;
-            dialogStage.close();
+            } catch (SQLException e) {
+                showAlert("Database Error", "An error occurred while generating EmployeeId.");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -113,19 +113,26 @@ public class AddUserDialogController {
         String errorMessage = "";
 
         if (usernameField.getText() == null || usernameField.getText().isEmpty()) {
-            errorMessage += "Không có tên đăng nhập!\n";
+            errorMessage += "No username provided!\n";
         }
         if (nameField.getText() == null || nameField.getText().isEmpty()) {
-            errorMessage += "Không có họ và tên!\n";
+            errorMessage += "No full name provided!\n";
         }
         if (emailField.getText() == null || emailField.getText().isEmpty()) {
-            errorMessage += "Không có email!\n";
+            errorMessage += "No email provided!\n";
         }
         if (phoneField.getText() == null || phoneField.getText().isEmpty()) {
-            errorMessage += "Không có số điện thoại!\n";
+            errorMessage += "No phone number provided!\n";
         }
         if (roleComboBox.getValue() == null) {
-            errorMessage += "Không có vai trò!\n";
+            errorMessage += "No role selected!\n";
+        }
+        // Check new fields
+        if (securityQuestionField.getText() == null || securityQuestionField.getText().isEmpty()) {
+            errorMessage += "No security question provided!\n";
+        }
+        if (securityAnswerField.getText() == null || securityAnswerField.getText().isEmpty()) {
+            errorMessage += "No security answer provided!\n";
         }
 
         if (errorMessage.isEmpty()) {
@@ -133,12 +140,21 @@ public class AddUserDialogController {
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(dialogStage);
-            alert.setTitle("Thông tin không hợp lệ");
-            alert.setHeaderText("Vui lòng điền đầy đủ các trường");
+            alert.setTitle("Invalid Information");
+            alert.setHeaderText("Please fill in all required fields");
             alert.setContentText(errorMessage);
 
             alert.showAndWait();
             return false;
         }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.initOwner(dialogStage);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

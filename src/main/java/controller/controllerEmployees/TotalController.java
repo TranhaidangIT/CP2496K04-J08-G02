@@ -306,11 +306,13 @@ public class TotalController {
     private Double getPriceFromSeatId(int seatId) {
         try (Connection conn = DBConnection.getConnection()) {
             String query = "SELECT st.price FROM seats s JOIN seatTypes st ON s.seatTypeId = st.seatTypeId WHERE s.seatId = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, seatId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getDouble("price");
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, seatId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getDouble("price");
+                    }
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error fetching price from seatId: " + e.getMessage());
@@ -321,8 +323,8 @@ public class TotalController {
     private void loadLatestTicketFromDatabase() {
         try (Connection conn = DBConnection.getConnection()) {
             String query = """
-                SELECT TOP 1 t.ticketCode, t.totalPrice, m.title, s.showDate, s.showTime, s.endTime,
-                       sr.roomNumber, ts.seatId, seat.seatRow, seat.seatColumn, st.seatTypeName, st.price
+                SELECT m.title, s.showDate, s.showTime, s.endTime, sr.roomNumber, ts.seatId, 
+                       seat.seatRow, seat.seatColumn, st.seatTypeName, st.price
                 FROM tickets t
                 JOIN showtimes s ON t.showtimeId = s.showtimeId
                 JOIN movies m ON s.movieId = m.movieId
@@ -330,31 +332,31 @@ public class TotalController {
                 JOIN ticketSeats ts ON t.ticketId = ts.ticketId
                 JOIN seats seat ON ts.seatId = seat.seatId
                 JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
-                ORDER BY t.ticketId DESC
+                ORDER BY t.ticketId DESC LIMIT 1
                 """;
 
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
+            try (PreparedStatement stmt = conn.prepareStatement(query);
+                 ResultSet rs = stmt.executeQuery()) {
 
-            if (rs.next()) {
-                currentTicketCode = rs.getString("ticketCode");
-                movieTitleLabel.setText(rs.getString("title"));
-                String showTime = rs.getString("showTime");
-                String endTime = rs.getString("endTime");
-                showtimeLabel.setText(rs.getString("showDate") + " " +
-                        (showTime != null ? showTime : "") + (endTime != null ? " - " + endTime : ""));
-                roomLabel.setText("Room " + rs.getString("roomNumber"));
+                if (rs.next()) {
+                    movieTitleLabel.setText(rs.getString("title"));
+                    String showTime = rs.getString("showTime");
+                    String endTime = rs.getString("endTime");
+                    showtimeLabel.setText(rs.getString("showDate") + " " +
+                            (showTime != null ? showTime : "") + (endTime != null ? " - " + endTime : ""));
+                    roomLabel.setText("Room " + rs.getString("roomNumber"));
 
-                do {
-                    String seatNumber = rs.getString("seatRow") + rs.getInt("seatColumn");
-                    String seatType = rs.getString("seatTypeName");
-                    double price = rs.getDouble("price");
-                    ticketDetails.add(new TicketDetail(seatNumber, seatType, price));
-                } while (rs.next());
-            } else {
-                movieTitleLabel.setText("No movie selected");
-                showtimeLabel.setText("No showtime selected");
-                roomLabel.setText("No room selected");
+                    do {
+                        String seatNumber = rs.getString("seatRow") + rs.getInt("seatColumn");
+                        String seatType = rs.getString("seatTypeName");
+                        double price = rs.getDouble("price");
+                        ticketDetails.add(new TicketDetail(seatNumber, seatType, price));
+                    } while (rs.next());
+                } else {
+                    movieTitleLabel.setText("No movie selected");
+                    showtimeLabel.setText("No showtime selected");
+                    roomLabel.setText("No room selected");
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error loading ticket information: " + e.getMessage());
@@ -551,11 +553,12 @@ public class TotalController {
             String checkShowtimeQuery = "SELECT COUNT(*) FROM showtimes WHERE showtimeId = ?";
             try (PreparedStatement checkShowtimeStmt = conn.prepareStatement(checkShowtimeQuery)) {
                 checkShowtimeStmt.setInt(1, selectedShowtime.getShowtimeId());
-                ResultSet checkRs = checkShowtimeStmt.executeQuery();
-                if (checkRs.next() && checkRs.getInt(1) == 0) {
-                    conn.rollback();
-                    showAlert(Alert.AlertType.ERROR, "Showtime Error", "Showtime does not exist in the database.");
-                    return null;
+                try (ResultSet checkRs = checkShowtimeStmt.executeQuery()) {
+                    if (checkRs.next() && checkRs.getInt(1) == 0) {
+                        conn.rollback();
+                        showAlert(Alert.AlertType.ERROR, "Showtime Error", "Showtime does not exist in the database.");
+                        return null;
+                    }
                 }
             }
 
@@ -563,23 +566,31 @@ public class TotalController {
             String checkQuery = "SELECT COUNT(*) FROM tickets WHERE ticketCode = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
                 checkStmt.setString(1, ticketCode);
-                ResultSet checkTicketRs = checkStmt.executeQuery();
-                checkTicketRs.next();
-                if (checkTicketRs.getInt(1) > 0) {
-                    ticketCode = "TICKET_" + UUID.randomUUID().toString().substring(0, 8);
+                try (ResultSet checkTicketRs = checkStmt.executeQuery()) {
+                    checkTicketRs.next();
+                    if (checkTicketRs.getInt(1) > 0) {
+                        ticketCode = "TICKET_" + UUID.randomUUID().toString().substring(0, 8);
+                    }
                 }
             }
 
-            String ticketQuery = "INSERT INTO tickets (ticketCode, showtimeId, totalPrice, soldBy) OUTPUT INSERTED.ticketId VALUES (?, ?, ?, ?)";
+            String ticketQuery = "INSERT INTO tickets (ticketCode, showtimeId, totalPrice, soldBy) VALUES (?, ?, ?, ?)";
             int ticketId = 0;
-            try (PreparedStatement ticketStmt = conn.prepareStatement(ticketQuery)) {
+            try (PreparedStatement ticketStmt = conn.prepareStatement(ticketQuery, Statement.RETURN_GENERATED_KEYS)) {
                 ticketStmt.setString(1, ticketCode);
                 ticketStmt.setInt(2, selectedShowtime.getShowtimeId());
                 ticketStmt.setBigDecimal(3, totalAmount);
                 ticketStmt.setInt(4, currentUser.getUserId());
-                ResultSet ticketRs = ticketStmt.executeQuery();
-                if (ticketRs.next()) {
-                    ticketId = ticketRs.getInt("ticketId");
+                ticketStmt.executeUpdate();
+
+                try (ResultSet generatedKeys = ticketStmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        ticketId = generatedKeys.getInt(1);
+                    } else {
+                        conn.rollback();
+                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to retrieve generated ticket ID.");
+                        return null;
+                    }
                 }
             }
 
@@ -624,36 +635,35 @@ public class TotalController {
 
         try (Connection conn = DBConnection.getConnection()) {
             String insertInvoice = """
-            INSERT INTO invoices (invoiceNumber, ticketCode, employeeId, 
-                                totalAmount, paymentMethod, receivedAmount, changeAmount, createdAt)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
+                INSERT INTO invoices (invoiceNumber, ticketCode, employeeId, 
+                                    totalAmount, paymentMethod, receivedAmount, changeAmount, createdAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+                """;
 
-            PreparedStatement stmt = conn.prepareStatement(insertInvoice);
-            stmt.setString(1, invoiceNumberLabel.getText());
-            stmt.setString(2, ticketCode);
-            stmt.setString(3, currentUser != null ? currentUser.getEmployeeId() : "");
-            stmt.setBigDecimal(4, totalAmount);
-            stmt.setString(5, "Cash");
-            BigDecimal receivedAmount;
-            try {
-                receivedAmount = new BigDecimal(receivedAmountField.getText().trim());
-            } catch (NumberFormatException e) {
-                receivedAmount = BigDecimal.ZERO;
+            try (PreparedStatement stmt = conn.prepareStatement(insertInvoice)) {
+                stmt.setString(1, invoiceNumberLabel.getText());
+                stmt.setString(2, ticketCode);
+                stmt.setString(3, currentUser != null ? currentUser.getEmployeeId() : "");
+                stmt.setBigDecimal(4, totalAmount);
+                stmt.setString(5, "Cash");
+                BigDecimal receivedAmount;
+                try {
+                    receivedAmount = new BigDecimal(receivedAmountField.getText().trim());
+                } catch (NumberFormatException e) {
+                    receivedAmount = BigDecimal.ZERO;
+                }
+                stmt.setBigDecimal(6, receivedAmount);
+
+                BigDecimal changeAmount = BigDecimal.ZERO;
+                String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
+                try {
+                    changeAmount = new BigDecimal(changeText);
+                } catch (NumberFormatException e) {
+                    changeAmount = BigDecimal.ZERO;
+                }
+                stmt.setBigDecimal(7, changeAmount);
+                stmt.executeUpdate();
             }
-            stmt.setBigDecimal(6, receivedAmount);
-
-            BigDecimal changeAmount = BigDecimal.ZERO;
-            String changeText = changeLabel.getText().replace("VND", "").replace(".", "").replace(",", "").trim();
-            try {
-                changeAmount = new BigDecimal(changeText);
-            } catch (NumberFormatException e) {
-                changeAmount = BigDecimal.ZERO;
-            }
-            stmt.setBigDecimal(7, changeAmount);
-            stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
-
-            stmt.executeUpdate();
 
         } catch (SQLException e) {
             System.err.println("Error saving invoice: " + e.getMessage());
@@ -664,9 +674,8 @@ public class TotalController {
     private void createInvoicesTableIfNotExists() {
         try (Connection conn = DBConnection.getConnection()) {
             String createTable = """
-                IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='invoices' AND xtype='U')
-                CREATE TABLE invoices (
-                    invoiceId INT IDENTITY(1,1) PRIMARY KEY,
+                CREATE TABLE IF NOT EXISTS invoices (
+                    invoiceId INT AUTO_INCREMENT PRIMARY KEY,
                     invoiceNumber VARCHAR(50) UNIQUE NOT NULL,
                     ticketCode VARCHAR(50),
                     employeeId VARCHAR(20),
@@ -674,12 +683,13 @@ public class TotalController {
                     paymentMethod VARCHAR(50) DEFAULT 'Cash',
                     receivedAmount DECIMAL(10,2),
                     changeAmount DECIMAL(10,2),
-                    createdAt DATETIME DEFAULT GETDATE()
+                    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
                 """;
 
-            PreparedStatement stmt = conn.prepareStatement(createTable);
-            stmt.executeUpdate();
+            try (PreparedStatement stmt = conn.prepareStatement(createTable)) {
+                stmt.executeUpdate();
+            }
 
         } catch (SQLException e) {
             System.err.println("Error creating invoices table: " + e.getMessage());
@@ -723,37 +733,37 @@ public class TotalController {
 
         try (Connection conn = DBConnection.getConnection()) {
             String query = """
-                SELECT TOP 50 invoiceNumber, ticketCode, employeeId, totalAmount, createdAt 
+                SELECT invoiceNumber, ticketCode, employeeId, totalAmount, createdAt 
                 FROM invoices 
-                ORDER BY createdAt DESC
+                ORDER BY createdAt DESC LIMIT 50
                 """;
 
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
+            try (PreparedStatement stmt = conn.prepareStatement(query);
+                 ResultSet rs = stmt.executeQuery()) {
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-            while (rs.next()) {
-                String invoiceNumber = rs.getString("invoiceNumber");
-                String ticketCode = rs.getString("ticketCode");
-                String employeeId = rs.getString("employeeId");
-                BigDecimal totalAmount = rs.getBigDecimal("totalAmount");
-                Timestamp createdAt = rs.getTimestamp("createdAt");
+                while (rs.next()) {
+                    String invoiceNumber = rs.getString("invoiceNumber");
+                    String ticketCode = rs.getString("ticketCode");
+                    String employeeId = rs.getString("employeeId");
+                    BigDecimal totalAmount = rs.getBigDecimal("totalAmount");
+                    Timestamp createdAt = rs.getTimestamp("createdAt");
 
-                String formattedDate = createdAt != null ?
-                        createdAt.toLocalDateTime().format(formatter) : "N/A";
-                String formattedTotal = totalAmount != null ?
-                        formatVND(totalAmount) : "0 VND";
+                    String formattedDate = createdAt != null ?
+                            createdAt.toLocalDateTime().format(formatter) : "N/A";
+                    String formattedTotal = totalAmount != null ?
+                            formatVND(totalAmount) : "0 VND";
 
-                invoices.add(new InvoiceRecord(
-                        invoiceNumber != null ? invoiceNumber : "N/A",
-                        ticketCode != null ? ticketCode : "N/A",
-                        employeeId != null ? employeeId : "N/A",
-                        formattedTotal,
-                        formattedDate
-                ));
+                    invoices.add(new InvoiceRecord(
+                            invoiceNumber != null ? invoiceNumber : "N/A",
+                            ticketCode != null ? ticketCode : "N/A",
+                            employeeId != null ? employeeId : "N/A",
+                            formattedTotal,
+                            formattedDate
+                    ));
+                }
             }
-
         } catch (SQLException e) {
             System.err.println("Error loading invoice history: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Database Error",
@@ -768,9 +778,10 @@ public class TotalController {
         if (selectedLocker != null) {
             try (Connection conn = DBConnection.getConnection()) {
                 String updateQuery = "UPDATE lockers SET status = 'Available' WHERE lockerId = ?";
-                PreparedStatement stmt = conn.prepareStatement(updateQuery);
-                stmt.setInt(1, selectedLocker.getLockerId());
-                stmt.executeUpdate();
+                try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                    stmt.setInt(1, selectedLocker.getLockerId());
+                    stmt.executeUpdate();
+                }
             } catch (SQLException e) {
                 System.err.println("Error resetting locker status: " + e.getMessage());
                 showAlert(Alert.AlertType.ERROR, "Error", "Failed to reset locker status: " + e.getMessage());
@@ -800,9 +811,10 @@ public class TotalController {
         if (selectedLocker != null) {
             try (Connection conn = DBConnection.getConnection()) {
                 String updateQuery = "UPDATE lockers SET status = 'Available' WHERE lockerId = ?";
-                PreparedStatement stmt = conn.prepareStatement(updateQuery);
-                stmt.setInt(1, selectedLocker.getLockerId());
-                stmt.executeUpdate();
+                try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                    stmt.setInt(1, selectedLocker.getLockerId());
+                    stmt.executeUpdate();
+                }
             } catch (SQLException e) {
                 System.err.println("Error resetting locker status: " + e.getMessage());
                 showAlert(Alert.AlertType.ERROR, "Error", "Failed to reset locker status: " + e.getMessage());

@@ -8,123 +8,144 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class ForgotPasswordController {
 
-    @FXML
-    private AnchorPane rootPane;
+    // Panes for each step
+    @FXML private AnchorPane step1Pane;
+    @FXML private AnchorPane step2Pane;
+    @FXML private AnchorPane step3Pane;
 
-    // Các trường cho trang xác minh (Trang 2)
-    @FXML
-    private TextField employeeIdField;
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private TextField emailField;
+    // UI elements for Step 1
+    @FXML private TextField usernameField;
 
-    // Các trường cho trang đặt lại mật khẩu (Trang 3)
+    // UI elements for Step 2
+    @FXML private Label questionLabel;
+    @FXML private TextField answerField;
+
+    // UI elements for Step 3
+    @FXML private PasswordField newPasswordField;
+    @FXML private PasswordField confirmPasswordField;
+
+    // State variables
+    private String currentUsername;
+    private String securityAnswer;
+
     @FXML
-    private PasswordField newPasswordField;
-    @FXML
-    private PasswordField confirmPasswordField;
+    public void initialize() {
+        // Initially show only Step 1
+        showStep(1);
+    }
 
-    private String userEmail; // Biến tạm để lưu email đã xác minh
+    private void showStep(int step) {
+        step1Pane.setVisible(false);
+        step2Pane.setVisible(false);
+        step3Pane.setVisible(false);
 
-    // Phương thức xử lý nút "Xác minh" ở Trang 2
-    @FXML
-    private void handleVerifyUser(ActionEvent event) {
-        String employeeId = employeeIdField.getText().trim();
-        String username = usernameField.getText().trim();
-        String email = emailField.getText().trim();
-
-        // Kiểm tra các trường có rỗng không
-        if (employeeId.isEmpty() || username.isEmpty() || email.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Vui lòng nhập đầy đủ thông tin.");
-            return;
-        }
-
-        // Gọi DAO để kiểm tra sự tồn tại của người dùng
-        if (UserDAO.isUserExists(employeeId, username, email)) {
-            // Nếu xác minh thành công, lưu email và chuyển sang Trang 3
-            this.userEmail = email;
-            loadResetPasswordPage(event);
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Thông tin không khớp. Vui lòng kiểm tra lại.");
+        switch (step) {
+            case 1:
+                step1Pane.setVisible(true);
+                break;
+            case 2:
+                step2Pane.setVisible(true);
+                break;
+            case 3:
+                step3Pane.setVisible(true);
+                break;
         }
     }
 
-    // Phương thức xử lý nút "Xác nhận" ở Trang 3
     @FXML
-    private void handleResetPassword() {
-        String newPassword = newPasswordField.getText().trim();
-        String confirmPassword = confirmPasswordField.getText().trim();
+    private void handleVerifyUser(ActionEvent event) {
+        String username = usernameField.getText().trim();
+        if (username.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Please enter your username.");
+            return;
+        }
+
+        try {
+            if (UserDAO.isUsernameExists(username)) {
+                this.currentUsername = username;
+                String[] questionAndAnswer = UserDAO.getSecurityQuestionAndAnswer(username);
+                if (questionAndAnswer != null) {
+                    questionLabel.setText(questionAndAnswer[0]);
+                    this.securityAnswer = questionAndAnswer[1];
+                    showStep(2); // Go to Step 2
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Error", "No security question found for this user.");
+                }
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Username does not exist.");
+            }
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "An error occurred while checking user information.");
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleSubmitAnswer(ActionEvent event) {
+        String userAnswer = answerField.getText().trim();
+        if (userAnswer.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Please enter the answer.");
+            return;
+        }
+
+        if (userAnswer.equals(this.securityAnswer)) {
+            showStep(3); // Go to Step 3
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", "Incorrect answer. Please try again.");
+        }
+    }
+
+    @FXML
+    private void handleResetPassword(ActionEvent event) {
+        String newPassword = newPasswordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
 
         if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng nhập mật khẩu mới và xác nhận.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Please fill in all password fields.");
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Mật khẩu xác nhận không khớp.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Passwords do not match.");
             return;
         }
 
-        if (newPassword.length() < 3) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Mật khẩu phải từ 3 ký tự trở lên.");
-            return;
-        }
+        // TODO: Validate password strength if needed
 
-        // Cập nhật mật khẩu trong cơ sở dữ liệu
-        if (UserDAO.updatePasswordByEmail(this.userEmail, newPassword)) {
-            showAlert(Alert.AlertType.INFORMATION, "Thành công", "Mật khẩu đã được cập nhật.");
-            // Quay lại màn hình đăng nhập
-            Stage stage = (Stage) rootPane.getScene().getWindow();
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Admin/Login.fxml"));
-                Parent root = loader.load();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.setTitle("Đăng nhập");
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Không thành công", "Đã xảy ra lỗi khi cập nhật mật khẩu.");
+        try {
+            // Update password in the database
+            UserDAO.updatePasswordByUsername(this.currentUsername, newPassword);
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Password has been successfully reset.");
+            loadLoginScene(event); // Return to login screen
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "An error occurred while updating the password.");
+            e.printStackTrace();
         }
     }
 
-    // Phương thức giúp chuyển từ Trang 2 sang Trang 3
-    private void loadResetPasswordPage(ActionEvent event) {
+    private void loadLoginScene(ActionEvent event) {
         try {
-            // Lấy Stage từ sự kiện của nút bấm
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Admin/ForgotPassword_Step3.fxml"));
-            Parent page = loader.load();
-
-            // Lấy controller của trang mới và truyền dữ liệu
-            ForgotPasswordController controller = loader.getController();
-            controller.userEmail = this.userEmail;
-
-            // Hiển thị email đã được xác minh trên trang mới
-            controller.emailField.setText(this.userEmail);
-            controller.emailField.setDisable(true); // Ngăn không cho người dùng sửa email
-
-            // Chuyển màn hình
-            Scene scene = new Scene(page);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/fxml_Admin/login.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("Đặt lại mật khẩu");
+            stage.setTitle("Login");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải trang đặt lại mật khẩu.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to load login page.");
         }
     }
 

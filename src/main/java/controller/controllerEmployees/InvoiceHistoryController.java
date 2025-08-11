@@ -172,7 +172,7 @@ public class InvoiceHistoryController {
                        i.totalAmount, i.paymentMethod, i.receivedAmount, i.changeAmount,
                        i.createdAt, u.fullName as employeeName
                 FROM invoices i
-                LEFT JOIN users u ON i.employeeId = u.employeeId
+                LEFT JOIN Users u ON i.employeeId = u.employeeId
                 ORDER BY i.createdAt DESC
                 """;
 
@@ -180,16 +180,26 @@ public class InvoiceHistoryController {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                Double totalAmount = rs.getDouble("totalAmount");
+                Double receivedAmount = rs.getDouble("receivedAmount");
+                Double changeAmount = rs.getDouble("changeAmount");
+                Timestamp createdAtTimestamp = rs.getTimestamp("createdAt");
+
+                if (rs.wasNull()) totalAmount = 0.0;
+                if (rs.wasNull()) receivedAmount = 0.0;
+                if (rs.wasNull()) changeAmount = 0.0;
+                if (createdAtTimestamp == null) continue; // Skip if createdAt is null
+
                 InvoiceRecord invoice = new InvoiceRecord(
                         rs.getString("invoiceNumber"),
                         rs.getString("ticketCode"),
                         rs.getString("employeeId"),
                         rs.getString("employeeName"),
-                        rs.getDouble("totalAmount"),
+                        totalAmount,
                         rs.getString("paymentMethod"),
-                        rs.getDouble("receivedAmount"),
-                        rs.getDouble("changeAmount"),
-                        rs.getTimestamp("createdAt").toLocalDateTime()
+                        receivedAmount,
+                        changeAmount,
+                        createdAtTimestamp.toLocalDateTime()
                 );
                 invoicesList.add(invoice);
             }
@@ -217,7 +227,7 @@ public class InvoiceHistoryController {
                        i.totalAmount, i.paymentMethod, i.receivedAmount, i.changeAmount,
                        i.createdAt, u.fullName as employeeName
                 FROM invoices i
-                LEFT JOIN users u ON i.employeeId = u.employeeId
+                LEFT JOIN Users u ON i.employeeId = u.employeeId
                 WHERE 1=1
                 """);
 
@@ -248,16 +258,26 @@ public class InvoiceHistoryController {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
+                Double totalAmount = rs.getDouble("totalAmount");
+                Double receivedAmount = rs.getDouble("receivedAmount");
+                Double changeAmount = rs.getDouble("changeAmount");
+                Timestamp createdAtTimestamp = rs.getTimestamp("createdAt");
+
+                if (rs.wasNull()) totalAmount = 0.0;
+                if (rs.wasNull()) receivedAmount = 0.0;
+                if (rs.wasNull()) changeAmount = 0.0;
+                if (createdAtTimestamp == null) continue; // Skip if createdAt is null
+
                 InvoiceRecord invoice = new InvoiceRecord(
                         rs.getString("invoiceNumber"),
                         rs.getString("ticketCode"),
                         rs.getString("employeeId"),
                         rs.getString("employeeName"),
-                        rs.getDouble("totalAmount"),
+                        totalAmount,
                         rs.getString("paymentMethod"),
-                        rs.getDouble("receivedAmount"),
-                        rs.getDouble("changeAmount"),
-                        rs.getTimestamp("createdAt").toLocalDateTime()
+                        receivedAmount,
+                        changeAmount,
+                        createdAtTimestamp.toLocalDateTime()
                 );
                 invoicesList.add(invoice);
             }
@@ -321,7 +341,6 @@ public class InvoiceHistoryController {
     }
 
     private void viewInvoiceDetails(InvoiceRecord invoice) {
-        // Generate and show invoice text file content
         generateAndShowInvoiceTxtFile(invoice);
     }
 
@@ -333,11 +352,10 @@ public class InvoiceHistoryController {
     }
 
     private void editInvoice(InvoiceRecord invoice) {
-        // Implementation for editing invoice
-        Alert info = new Alert(Alert.AlertType.INFORMATION);
-        info.setTitle("Information");
+        Alert info = new Alert(Alert.AlertType.WARNING);
+        info.setTitle("Under Development");
         info.setHeaderText(null);
-        info.setContentText("Edit invoice function is under development.\nInvoice number: " + invoice.getInvoiceNumber());
+        info.setContentText("Edit invoice functionality is not yet implemented.\nInvoice Number: " + invoice.getInvoiceNumber());
         info.showAndWait();
     }
 
@@ -384,32 +402,27 @@ public class InvoiceHistoryController {
     }
 
     private void exportToExcel() {
-        Alert info = new Alert(Alert.AlertType.INFORMATION);
-        info.setTitle("Information");
+        Alert info = new Alert(Alert.AlertType.WARNING);
+        info.setTitle("Under Development");
         info.setHeaderText(null);
-        info.setContentText("Export to Excel function is under development.");
+        info.setContentText("Export to Excel functionality is not yet implemented.");
         info.showAndWait();
     }
 
     private void generateAndShowInvoiceTxtFile(InvoiceRecord invoice) {
         try {
-            // Create invoices directory if it doesn't exist
             String invoicesDir = "invoices";
             if (!Files.exists(Paths.get(invoicesDir))) {
                 Files.createDirectories(Paths.get(invoicesDir));
             }
 
             String fileName = invoicesDir + "/" + invoice.getInvoiceNumber() + ".txt";
-
-            // Get detailed invoice information from db
             String invoiceContent = generateInvoiceContent(invoice);
 
-            // Write to file
             FileWriter writer = new FileWriter(fileName);
             writer.write(invoiceContent);
             writer.close();
 
-            // Show content in a dialog
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Invoice Details");
             alert.setHeaderText("Invoice: " + invoice.getInvoiceNumber());
@@ -438,13 +451,13 @@ public class InvoiceHistoryController {
         try (Connection conn = DBConnection.getConnection()) {
             // Get movie and showtime information
             String movieQuery = """
-                SELECT m.title, s.showDate, s.showTime, s.endTime, sr.roomNumber
-                FROM tickets t
-                JOIN showtimes s ON t.showtimeId = s.showtimeId
-                JOIN movies m ON s.movieId = m.movieId
-                JOIN screeningRooms sr ON s.roomId = sr.roomId
-                WHERE t.ticketCode = ?
-                """;
+            SELECT m.title, s.showDate, s.showTime, s.endTime, sr.roomNumber
+            FROM tickets t
+            JOIN showtimes s ON t.showtimeId = s.showtimeId
+            JOIN movies m ON s.movieId = m.movieId
+            JOIN screeningRooms sr ON s.roomId = sr.roomId
+            WHERE t.ticketCode = ?
+            """;
 
             PreparedStatement movieStmt = conn.prepareStatement(movieQuery);
             movieStmt.setString(1, invoice.getTicketCode());
@@ -455,21 +468,22 @@ public class InvoiceHistoryController {
             String roomNumber = "N/A";
 
             if (movieRs.next()) {
-                movieTitle = movieRs.getString("title");
-                showDateTime = movieRs.getString("showDate") + " " +
-                        (movieRs.getString("showTime") != null ? movieRs.getString("showTime") : "") +
-                        (movieRs.getString("endTime") != null ? " - " + movieRs.getString("endTime") : "");
-                roomNumber = "Room " + movieRs.getString("roomNumber");
+                movieTitle = movieRs.getString("title") != null ? movieRs.getString("title") : "N/A";
+                String showTime = movieRs.getString("showTime");
+                String endTime = movieRs.getString("endTime");
+                showDateTime = (movieRs.getString("showDate") != null ? movieRs.getString("showDate") : "") + " " +
+                        (showTime != null ? showTime : "") + (endTime != null ? " - " + endTime : "");
+                roomNumber = "Room " + (movieRs.getString("roomNumber") != null ? movieRs.getString("roomNumber") : "N/A");
             }
 
             // Get locker information
             String lockerQuery = """
-                SELECT l.lockerNumber, la.pinCode, la.itemDescription
-                FROM tickets t
-                JOIN lockerAssignments la ON t.ticketCode = ? 
-                JOIN lockers l ON la.lockerId = l.lockerId
-                WHERE la.releasedAt IS NULL
-                """;
+            SELECT l.lockerNumber, la.pinCode, la.itemDescription
+            FROM tickets t
+            JOIN lockerAssignments la ON t.ticketCode = la.ticketCode
+            JOIN lockers l ON la.lockerId = l.lockerId
+            WHERE la.releasedAt IS NULL AND t.ticketCode = ?
+            """;
 
             PreparedStatement lockerStmt = conn.prepareStatement(lockerQuery);
             lockerStmt.setString(1, invoice.getTicketCode());
@@ -481,7 +495,7 @@ public class InvoiceHistoryController {
                 String pinCode = lockerRs.getString("pinCode");
                 String itemDescription = lockerRs.getString("itemDescription");
 
-                lockerInfo = String.format("Locker %s - PIN: %s", lockerNumber, pinCode);
+                lockerInfo = String.format("Locker %s - PIN: %s", lockerNumber != null ? lockerNumber : "N/A", pinCode != null ? pinCode : "N/A");
                 if (itemDescription != null && !itemDescription.isEmpty()) {
                     lockerInfo += String.format("\nDescription: %s", itemDescription);
                 }
@@ -493,9 +507,9 @@ public class InvoiceHistoryController {
             content.append("         CGV Xuan Khanh Cinema      \n");
             content.append("=====================================\n\n");
 
-            content.append("Invoice Number: ").append(invoice.getInvoiceNumber()).append("\n");
-            content.append("Date & Time: ").append(invoice.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))).append("\n");
-            content.append("Employee: ").append(invoice.getEmployeeName() != null ? invoice.getEmployeeName() : invoice.getEmployeeId()).append("\n\n");
+            content.append("Invoice Number: ").append(invoice.getInvoiceNumber() != null ? invoice.getInvoiceNumber() : "N/A").append("\n");
+            content.append("Date & Time: ").append(invoice.getCreatedAt() != null ? invoice.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : "N/A").append("\n");
+            content.append("Employee: ").append(invoice.getEmployeeName() != null ? invoice.getEmployeeName() : (invoice.getEmployeeId() != null ? invoice.getEmployeeId() : "Unknown")).append("\n\n");
 
             content.append("-------------------------------------\n");
             content.append("          MOVIE INFORMATION         \n");
@@ -506,13 +520,13 @@ public class InvoiceHistoryController {
 
             // Get seat information
             String seatQuery = """
-                SELECT seat.seatRow, seat.seatColumn, st.seatTypeName, st.price
-                FROM tickets t
-                JOIN ticketSeats ts ON t.ticketId = ts.ticketId
-                JOIN seats seat ON ts.seatId = seat.seatId
-                JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
-                WHERE t.ticketCode = ?
-                """;
+            SELECT seat.seatRow, seat.seatColumn, st.seatTypeName, st.price
+            FROM tickets t
+            JOIN ticketSeats ts ON t.ticketId = ts.ticketId
+            JOIN seats seat ON ts.seatId = seat.seatId
+            JOIN seatTypes st ON seat.seatTypeId = st.seatTypeId
+            WHERE t.ticketCode = ?
+            """;
 
             PreparedStatement seatStmt = conn.prepareStatement(seatQuery);
             seatStmt.setString(1, invoice.getTicketCode());
@@ -524,19 +538,19 @@ public class InvoiceHistoryController {
 
             while (seatRs.next()) {
                 String seatNumber = seatRs.getString("seatRow") + seatRs.getInt("seatColumn");
-                String seatType = seatRs.getString("seatTypeName");
+                String seatType = seatRs.getString("seatTypeName") != null ? seatRs.getString("seatTypeName") : "N/A";
                 double price = seatRs.getDouble("price");
-                content.append(String.format("seats %s (%s): %.0f VND\n", seatNumber, seatType, price));
+                content.append(String.format("Seat %s (%s): %.0f VND\n", seatNumber, seatType, price));
             }
 
             // Get service information
             String serviceQuery = """
-                SELECT s.serviceName, ts.quantity, ts.servicePrice
-                FROM tickets t
-                JOIN ticketServices ts ON t.ticketId = ts.ticketId
-                JOIN services s ON ts.serviceId = s.serviceId
-                WHERE t.ticketCode = ?
-                """;
+            SELECT s.serviceName, ts.quantity, ts.servicePrice
+            FROM tickets t
+            JOIN ticketServices ts ON t.ticketId = ts.ticketId
+            JOIN services s ON ts.serviceId = s.serviceId
+            WHERE t.ticketCode = ?
+            """;
 
             PreparedStatement serviceStmt = conn.prepareStatement(serviceQuery);
             serviceStmt.setString(1, invoice.getTicketCode());
@@ -552,7 +566,7 @@ public class InvoiceHistoryController {
                     hasServices = true;
                 }
 
-                String serviceName = serviceRs.getString("serviceName");
+                String serviceName = serviceRs.getString("serviceName") != null ? serviceRs.getString("serviceName") : "N/A";
                 int quantity = serviceRs.getInt("quantity");
                 double servicePrice = serviceRs.getDouble("servicePrice");
                 double totalPrice = servicePrice * quantity;
@@ -570,11 +584,11 @@ public class InvoiceHistoryController {
             content.append(lockerInfo).append("\n");
 
             content.append("\n=====================================\n");
-            content.append(String.format("TOTAL: %.0f VND\n", invoice.getTotalAmount()));
+            content.append(String.format("TOTAL: %.0f VND\n", invoice.getTotalAmount())).append("\n");
             content.append("=====================================\n\n");
 
             content.append("-------------------------------------\n");
-            content.append("         PAYMENT (%s)               \n".formatted(invoice.getPaymentMethod().toUpperCase()));
+            content.append("         PAYMENT (%s)               \n".formatted(invoice.getPaymentMethod() != null ? invoice.getPaymentMethod().toUpperCase() : "N/A"));
             content.append("-------------------------------------\n");
             content.append(String.format("Amount Received: %.0f VND\n", invoice.getReceivedAmount()));
             content.append(String.format("Change: %.0f VND\n\n", invoice.getChangeAmount()));
@@ -585,7 +599,7 @@ public class InvoiceHistoryController {
 
         } catch (SQLException e) {
             System.err.println("Error generating invoice content: " + e.getMessage());
-            content.append("Error generating invoice content: ").append(e.getMessage());
+            content.append("\nError generating invoice content: ").append(e.getMessage());
         }
 
         return content.toString();
@@ -605,7 +619,7 @@ public class InvoiceHistoryController {
                 return;
             }
 
-            controller.setContentArea(contentArea); // Pass contentArea to TotalController
+            controller.setContentArea(contentArea);
             contentArea.getChildren().setAll(totalRoot);
             AnchorPane.setTopAnchor(totalRoot, 0.0);
             AnchorPane.setBottomAnchor(totalRoot, 0.0);
@@ -645,7 +659,7 @@ public class InvoiceHistoryController {
         private final StringProperty paymentMethod;
         private final DoubleProperty receivedAmount;
         private final DoubleProperty changeAmount;
-        private final LocalDateTime createdAt;
+        private final ObjectProperty<LocalDateTime> createdAt;
         private final StringProperty status;
 
         public InvoiceRecord(String invoiceNumber, String ticketCode, String employeeId, String employeeName,
@@ -659,8 +673,8 @@ public class InvoiceHistoryController {
             this.paymentMethod = new SimpleStringProperty(paymentMethod);
             this.receivedAmount = new SimpleDoubleProperty(receivedAmount);
             this.changeAmount = new SimpleDoubleProperty(changeAmount);
-            this.createdAt = createdAt;
-            this.status = new SimpleStringProperty("Completed");
+            this.createdAt = new SimpleObjectProperty<>(createdAt);
+            this.status = new SimpleStringProperty(isTicketStillValid(ticketCode) ? "Pending" : "Completed");
         }
 
         // Getters
@@ -673,9 +687,9 @@ public class InvoiceHistoryController {
         public String getPaymentMethod() { return paymentMethod.get(); }
         public double getReceivedAmount() { return receivedAmount.get(); }
         public double getChangeAmount() { return changeAmount.get(); }
-        public LocalDateTime getCreatedAt() { return createdAt; }
+        public LocalDateTime getCreatedAt() { return createdAt.get(); }
         public String getCreatedAtFormatted() {
-            return createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            return createdAt.get() != null ? createdAt.get().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
         }
         public String getStatus() { return status.get(); }
 
@@ -686,5 +700,31 @@ public class InvoiceHistoryController {
         public StringProperty employeeNameProperty() { return employeeName; }
         public StringProperty paymentMethodProperty() { return paymentMethod; }
         public StringProperty statusProperty() { return status; }
+
+        // Static method to check ticket validity (moved here for reuse)
+        private static boolean isTicketStillValid(String ticketCode) {
+            try (Connection conn = DBConnection.getConnection()) {
+                String query = """
+                    SELECT s.showDate, s.showTime
+                    FROM tickets t
+                    JOIN showtimes s ON t.showtimeId = s.showtimeId
+                    WHERE t.ticketCode = ?
+                    """;
+
+                PreparedStatement stmt = conn.prepareStatement(query);
+                stmt.setString(1, ticketCode);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    Date showDate = rs.getDate("showDate");
+                    Time showTime = rs.getTime("showTime");
+                    LocalDateTime showDateTime = LocalDateTime.of(showDate.toLocalDate(), showTime.toLocalTime());
+                    return showDateTime.isAfter(LocalDateTime.now());
+                }
+            } catch (SQLException e) {
+                System.err.println("Error checking ticket validity: " + e.getMessage());
+            }
+            return false;
+        }
     }
 }

@@ -8,25 +8,25 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="566.0" prefWidth="525.0" stylesheets="@../../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditServiceController">
+<AnchorPane prefHeight="510.0" prefWidth="550.0" stylesheets="@../../../css/app-style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.controllerManager.EditServiceController">
     <children>
-        <AnchorPane layoutX="13.0" layoutY="11.0" prefHeight="547.0" prefWidth="500.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
+        <AnchorPane layoutX="7.0" layoutY="5.0" prefHeight="500.0" prefWidth="540.0" styleClass="bg-white" stylesheets="@../../../css/manager.css">
             <children>
-                <Label layoutX="208.0" layoutY="14.0" text="Edit Service" textFill="#aa0000">
+                <Label layoutX="194.0" layoutY="14.0" text="Edit Service" textFill="#aa0000">
                     <font><Font name="System Bold" size="24.0" /></font>
                 </Label>
 
                 <!-- Service Image -->
-                <ImageView fx:id="imgService" fitHeight="115.0" fitWidth="131.0" layoutX="210.0" layoutY="49.0" pickOnBounds="true" preserveRatio="true" />
+                <ImageView fx:id="imgService" fitHeight="115.0" fitWidth="131.0" layoutX="194.0" layoutY="49.0" pickOnBounds="true" preserveRatio="true" />
 
                 <!-- Button to choose image -->
-                <Button fx:id="btnChooseImage" layoutX="194.0" layoutY="170.0" onAction="#handleChooseImage" prefHeight="42.0" prefWidth="160.0" styleClass="btnChooseFile" text="Choose Image">
+                <Button fx:id="btnChooseImage" layoutX="180.0" layoutY="170.0" onAction="#handleChooseImage" prefHeight="42.0" prefWidth="160.0" styleClass="btnChooseFile" text="Choose Image">
                     <font>
                         <Font size="12.0" />
                     </font>
                 </Button>
 
-                <AnchorPane layoutX="50.0" layoutY="223.0" prefHeight="180.0" prefWidth="400.0" stylesheets="@../../../css/app-style.css">
+                <AnchorPane layoutX="60.0" layoutY="233.0" prefHeight="180.0" prefWidth="400.0" stylesheets="@../../../css/app-style.css">
                     <children>
                         <Label layoutX="35.0" layoutY="19.0" styleClass="labelCaption" text="Service Name:">
                             <font><Font size="16.0" /></font>
@@ -51,15 +51,15 @@
                 </AnchorPane>
 
                 <!-- Buttons -->
-                <Button fx:id="btnCancel" layoutX="338.0" layoutY="497.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
+                <Button fx:id="btnCancel" layoutX="426.0" layoutY="453.0" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" styleClass="btnCancel" stylesheets="@../../../css/app-style.css" text="Cancel">
                     <font><Font size="16.0" /></font>
                 </Button>
 
-                <Button fx:id="btnDelete" layoutX="338.0" layoutY="450.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="35.0" prefWidth="100.0" styleClass="btnDelete" stylesheets="@../../../css/app-style.css" text="Delete">
+                <Button fx:id="btnDelete" layoutX="314.0" layoutY="453.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="35.0" prefWidth="100.0" styleClass="btnDelete" stylesheets="@../../../css/app-style.css" text="Delete">
                     <font><Font size="16.0" /></font>
                 </Button>
 
-                <Button fx:id="btnUpdate" layoutX="224.0" layoutY="450.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Update">
+                <Button fx:id="btnUpdate" layoutX="200.0" layoutY="453.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="35.0" prefWidth="100.0" styleClass="btnEdit" stylesheets="@../../../css/app-style.css" text="Update">
                     <font><Font size="16.0" /></font>
                 </Button>
             </children>

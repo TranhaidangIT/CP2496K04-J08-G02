@@ -12,14 +12,6 @@ import java.util.List;
 
 public class SeatDAO {
 
-    /**
-     * Automatically insert seats into a room with default seat type based on row and room type.
-     * @param roomId The ID of the room
-     * @param rows Number of seat rows
-     * @param cols Number of seat columns
-     * @param roomTypeId Room type ID used to determine seat type distribution
-     * @return true if insertion successful, false otherwise
-     */
     public static boolean insertSeatsForRoom(int roomId, int rows, int cols, int roomTypeId) {
         String seatInsertSQL = "INSERT INTO seats (roomId, seatRow, seatColumn, seatTypeId, isActive) VALUES (?, ?, ?, ?, ?)";
         Map<String, Integer> seatTypeMap = getSeatTypeMap(); // Get mapping from seat type names to IDs
@@ -54,10 +46,6 @@ public class SeatDAO {
         }
     }
 
-    /**
-     * Helper method to fetch seat type IDs mapped by their names.
-     * @return Map of seat type name -> seat type ID
-     */
     private static Map<String, Integer> getSeatTypeMap() {
         Map<String, Integer> seatTypeMap = new HashMap<>();
         String sql = "SELECT seatTypeId, seatTypeName FROM seatTypes";
@@ -79,16 +67,9 @@ public class SeatDAO {
         return seatTypeMap;
     }
 
-    /**
-     * Determine the seat type for a given row based on room type and position.
-     * @param r Row index (0-based)
-     * @param rows Total number of rows
-     * @param roomTypeId Type of the room
-     * @return seat type name ("Standard", "VIP", "Sweetbox", or "Gold")
-     */
     private static String getSeatTypeForRow(int r, int rows, int roomTypeId) {
         if (roomTypeId == 2) {
-            return "Gold"; // All seats in "Gold" room are gold
+            return "Gold";
         } else {
             int standardRows = 3;
             int sweetboxRows = 1;
@@ -105,11 +86,6 @@ public class SeatDAO {
         }
     }
 
-    /**
-     * Get all seats for a specific room including seat type details.
-     * @param roomId The ID of the room
-     * @return List of Seat objects with seat type data
-     */
     public static List<Seat> getSeatsByRoomId(int roomId) {
         List<Seat> seats = new ArrayList<>();
         String sql = "SELECT s.*, st.seatTypeId, st.seatTypeName, st.price " +
@@ -147,12 +123,21 @@ public class SeatDAO {
         return seats;
     }
 
-    /**
-     * Update all seats of a room (used to modify seat status, type, etc.).
-     * @param roomId Room ID
-     * @param seatsInRoom List of updated Seat objects
-     * @return true if all updates succeed, false if any failed
-     */
+    //Delete old seat layout
+    public static boolean deleteSeatsByRoomId(int roomId) {
+        String sql = "DELETE FROM seats WHERE roomId = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, roomId);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    //Add new seat layout
     public static boolean updateSeatsInRoom(int roomId, List<Seat> seatsInRoom) {
         String sql = """
             UPDATE seats

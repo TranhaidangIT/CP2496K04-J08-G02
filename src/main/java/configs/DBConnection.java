@@ -6,17 +6,27 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
+    // MySQL connection parameters
+    private static final String URL = "jdbc:mysql://sql12.freesqldatabase.com:3306/sql12793875?useSSL=false&serverTimezone=UTC";
+    private static final String USER = "sql12793875";
+    private static final String PASS = "3vZ24wMNpF";
+
     public static Connection getConnection() {
         Connection conn = null;
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=cinema_management;encrypt=true;trustServerCertificate=true;", "sa", "sqladmin");
+            // Load MySQL JDBC Driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Establish the connection
+            conn = DriverManager.getConnection(URL, USER, PASS);
             return conn;
-        } catch (ClassNotFoundException | SQLException ex) {
-            System.out.println("Connection Failed! Check output console");
+
+        } catch (ClassNotFoundException e) {
+            System.err.println("MySQL JDBC Driver not found: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("Connection failed: " + e.getMessage());
         }
 
         return conn;
     }
 }
-
